@@ -15,3 +15,4 @@ export * from './components/result/result.js';
 export * from './components/description-list/description-list.js';
 export * from './components/copy-button/copy-button.js';
 export * from './components/toast/toast.js';
+export * from './components/field/field.js';

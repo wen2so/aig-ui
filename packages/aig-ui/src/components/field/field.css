@@ -1,0 +1,1 @@
+.aig-field { display: grid; gap: 8px; min-inline-size: 0; }.aig-field > label { color: var(--aig-color-text); font-size: 14px; font-weight: 500; }.aig-field-description { font-size: 13px; color: var(--aig-color-text-muted); overflow-wrap: anywhere; }.aig-field-error { font-size: 13px; color: var(--aig-color-danger); overflow-wrap: anywhere; }

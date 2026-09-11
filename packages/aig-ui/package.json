@@ -91,6 +91,10 @@
     "./toast": {
       "types": "./dist/components/toast/toast.d.ts",
       "import": "./dist/components/toast/toast.js"
+    },
+    "./field": {
+      "types": "./dist/components/field/field.d.ts",
+      "import": "./dist/components/field/field.js"
     }
   },
   "peerDependencies": {
