@@ -47,6 +47,10 @@
     "./icon": {
       "types": "./dist/components/icon/icon.d.ts",
       "import": "./dist/components/icon/icon.js"
+    },
+    "./card": {
+      "types": "./dist/components/card/card.d.ts",
+      "import": "./dist/components/card/card.js"
     }
   },
   "peerDependencies": {
