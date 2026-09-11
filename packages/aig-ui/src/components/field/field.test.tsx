@@ -1,1 +1,21 @@
-import{it,expect}from'vitest';import{render,screen}from'@testing-library/react';import{Field}from'./field.js';it('标签帮助错误与控件稳定关联',()=>{const{rerender}=render(<Field label="名称" description="说明" error="错误" required>{p=><input {...p}/>}</Field>);const input=screen.getByLabelText('名称',{exact:false});const id=input.id;expect(input).toHaveAccessibleDescription('说明 错误');expect(input).toBeRequired();rerender(<Field label="名称" description="说明">{p=><input {...p}/>}</Field>);expect(screen.getByLabelText('名称').id).toBe(id);expect(screen.getByLabelText('名称')).not.toHaveAttribute('aria-invalid');});
+import { it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { Field } from './field.js';
+it('标签帮助错误与控件稳定关联', () => {
+  const { rerender } = render(
+    <Field label="名称" description="说明" error="错误" required>
+      {(p) => <input {...p} />}
+    </Field>,
+  );
+  const input = screen.getByLabelText('名称', { exact: false });
+  const id = input.id;
+  expect(input).toHaveAccessibleDescription('说明 错误');
+  expect(input).toBeRequired();
+  rerender(
+    <Field label="名称" description="说明">
+      {(p) => <input {...p} />}
+    </Field>,
+  );
+  expect(screen.getByLabelText('名称').id).toBe(id);
+  expect(screen.getByLabelText('名称')).not.toHaveAttribute('aria-invalid');
+});

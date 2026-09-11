@@ -1,1 +1,23 @@
-.aig-radio-group { border: 0; padding: 0; margin: 0; display: flex; gap: 16px; flex-wrap: wrap; min-inline-size: 0; }.aig-radio-group legend { margin-bottom: 12px; font-weight: 500; }.aig-radio-group label { display: inline-flex; gap: 8px; align-items: center; }.aig-radio-group input { accent-color: var(--aig-color-accent); width: 18px; height: 18px; }
+.aig-radio-group {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  min-inline-size: 0;
+}
+.aig-radio-group legend {
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.aig-radio-group label {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+.aig-radio-group input {
+  accent-color: var(--aig-color-accent);
+  width: 18px;
+  height: 18px;
+}

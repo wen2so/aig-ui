@@ -1,1 +1,29 @@
-.aig-progress { appearance: none; display: block; width: 100%; height: 6px; border: 0; border-radius: 99px; overflow: hidden; background: var(--aig-color-accent-soft); color: var(--aig-color-accent); }.aig-progress::-webkit-progress-bar { background: var(--aig-color-accent-soft); border-radius: 99px; }.aig-progress::-webkit-progress-value { background: var(--aig-color-accent); border-radius: 99px; }.aig-progress::-moz-progress-bar { background: var(--aig-color-accent); }.aig-progress:indeterminate { background: repeating-linear-gradient(90deg,var(--aig-color-accent-soft) 0 20%,var(--aig-color-accent) 20% 40%); }
+.aig-progress {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 6px;
+  border: 0;
+  border-radius: 99px;
+  overflow: hidden;
+  background: var(--aig-color-accent-soft);
+  color: var(--aig-color-accent);
+}
+.aig-progress::-webkit-progress-bar {
+  background: var(--aig-color-accent-soft);
+  border-radius: 99px;
+}
+.aig-progress::-webkit-progress-value {
+  background: var(--aig-color-accent);
+  border-radius: 99px;
+}
+.aig-progress::-moz-progress-bar {
+  background: var(--aig-color-accent);
+}
+.aig-progress:indeterminate {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--aig-color-accent-soft) 0 20%,
+    var(--aig-color-accent) 20% 40%
+  );
+}

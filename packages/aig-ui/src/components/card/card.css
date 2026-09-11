@@ -1,1 +1,30 @@
-.aig-card { min-inline-size: 0; padding: var(--aig-space-6); border: 1px solid var(--aig-color-border-subtle); border-radius: var(--aig-radius-card); background: var(--aig-color-surface); color: var(--aig-color-text); overflow-wrap: anywhere; }@supports (backdrop-filter: blur(20px)) { .aig-card[data-material=glass] { background: color-mix(in srgb, var(--aig-color-surface) 78%, transparent); backdrop-filter: blur(20px); box-shadow: inset 0 1px white, 0 12px 40px #3a323408; } }[data-aig-material=solid] .aig-card { background: var(--aig-color-surface); backdrop-filter: none; }[data-aig-density=compact] .aig-card { padding: var(--aig-space-4); }@media (forced-colors: active) { .aig-card { border-color: CanvasText; } }
+.aig-card {
+  min-inline-size: 0;
+  padding: var(--aig-space-6);
+  border: 1px solid var(--aig-color-border-subtle);
+  border-radius: var(--aig-radius-card);
+  background: var(--aig-color-surface);
+  color: var(--aig-color-text);
+  overflow-wrap: anywhere;
+}
+@supports (backdrop-filter: blur(20px)) {
+  .aig-card[data-material='glass'] {
+    background: color-mix(in srgb, var(--aig-color-surface) 78%, transparent);
+    backdrop-filter: blur(20px);
+    box-shadow:
+      inset 0 1px white,
+      0 12px 40px #3a323408;
+  }
+}
+[data-aig-material='solid'] .aig-card {
+  background: var(--aig-color-surface);
+  backdrop-filter: none;
+}
+[data-aig-density='compact'] .aig-card {
+  padding: var(--aig-space-4);
+}
+@media (forced-colors: active) {
+  .aig-card {
+    border-color: CanvasText;
+  }
+}

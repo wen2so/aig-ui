@@ -1,1 +1,22 @@
-.aig-input { box-sizing: border-box; width: 100%; min-inline-size: 0; min-height: 40px; padding: 9px 12px; background: var(--aig-color-surface); color: var(--aig-color-text); border: 1px solid var(--aig-color-border-control); border-radius: var(--aig-radius-control); font: inherit; line-height: 1.5; }.aig-input:disabled { opacity: .55; }.aig-input[aria-invalid=true] { border-color: var(--aig-color-danger); }.aig-input::placeholder { color: var(--aig-color-text-muted); }
+.aig-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-inline-size: 0;
+  min-height: 40px;
+  padding: 9px 12px;
+  background: var(--aig-color-surface);
+  color: var(--aig-color-text);
+  border: 1px solid var(--aig-color-border-control);
+  border-radius: var(--aig-radius-control);
+  font: inherit;
+  line-height: 1.5;
+}
+.aig-input:disabled {
+  opacity: 0.55;
+}
+.aig-input[aria-invalid='true'] {
+  border-color: var(--aig-color-danger);
+}
+.aig-input::placeholder {
+  color: var(--aig-color-text-muted);
+}

@@ -1,1 +1,9 @@
-import{it,expect}from'vitest';import{render,screen}from'@testing-library/react';import{Result}from'./result.js';it('区分未找到和登录过期',()=>{const{rerender}=render(<Result status="not-found"/>);expect(screen.getByRole('heading')).toHaveTextContent('页面未找到');rerender(<Result status="session-expired"/>);expect(screen.getByRole('heading')).toHaveTextContent('登录已过期');});
+import { it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { Result } from './result.js';
+it('区分未找到和登录过期', () => {
+  const { rerender } = render(<Result status="not-found" />);
+  expect(screen.getByRole('heading')).toHaveTextContent('页面未找到');
+  rerender(<Result status="session-expired" />);
+  expect(screen.getByRole('heading')).toHaveTextContent('登录已过期');
+});

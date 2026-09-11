@@ -1,1 +1,12 @@
-.aig-task-status { display: grid; gap: 12px; color: var(--aig-color-text); }.aig-task-status ol { margin: 0; padding-inline-start: 24px; color: var(--aig-color-text-muted); font-size: 13px; line-height: 1.8; }
+.aig-task-status {
+  display: grid;
+  gap: 12px;
+  color: var(--aig-color-text);
+}
+.aig-task-status ol {
+  margin: 0;
+  padding-inline-start: 24px;
+  color: var(--aig-color-text-muted);
+  font-size: 13px;
+  line-height: 1.8;
+}

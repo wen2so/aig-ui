@@ -1,1 +1,14 @@
-.aig-tooltip-positioner { z-index: 1250; }.aig-tooltip { max-width: min(280px,calc(100vw - 24px)); padding: 8px 12px; color: var(--aig-color-surface); background: var(--aig-color-text); border-radius: 8px; font: 12px/1.5 system-ui,sans-serif; overflow-wrap: anywhere; }
+.aig-tooltip-positioner {
+  z-index: 1250;
+}
+.aig-tooltip {
+  max-width: min(280px, calc(100vw - 24px));
+  padding: 8px 12px;
+  color: var(--aig-color-surface);
+  background: var(--aig-color-text);
+  border-radius: 8px;
+  font:
+    12px/1.5 system-ui,
+    sans-serif;
+  overflow-wrap: anywhere;
+}

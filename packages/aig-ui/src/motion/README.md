@@ -11,4 +11,3 @@ LoadingMark 使用参考页的三角、横线和双环。`phase` 默认为 drawi
 LoadingSequence 接收 taskId、loading/ready/error 和任务说明。新任务与重试使用新 taskId；minimumVisibleMs 默认 0，品牌启动显式设置 1600。inline 只隔离组件内容，fullscreen 通过 Base UI Dialog 的 Portal 隔离页面焦点。actions 提供宿主取消入口，errorContent 提供恢复操作。progress 只展示 0–100 有限数值，其余采用未定进度。
 
 反向擦除与解构完成后恢复内容交互；内容入场完成后 onExited 恰好调用一次。初始 ready 直接显示内容。完整模糊、缩放和 SVG 编排保留，系统减少动态效果及主动 reduced 是无障碍设置，不依据设备性能自动缩减动画。
-

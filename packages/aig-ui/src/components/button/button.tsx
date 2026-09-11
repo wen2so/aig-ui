@@ -11,8 +11,29 @@ export interface ButtonProps extends ComponentPropsWithRef<'button'> {
 }
 
 /** 保留表单、键盘、ref 和可访问名称的按钮。 */
-export function Button({ variant = 'primary', size = 'md', loading = false, disabled, type = 'button', className = '', children, ...props }: ButtonProps) {
-  return <button {...props} type={type} disabled={disabled || loading} aria-busy={loading || undefined} data-aig-component="button" data-variant={variant} data-size={size} className={`aig-button ${className}`}>
-    {loading && <span className="aig-button-busy" aria-hidden="true" />}{children}
-  </button>;
+export function Button({
+  variant = 'primary',
+  size = 'md',
+  loading = false,
+  disabled,
+  type = 'button',
+  className = '',
+  children,
+  ...props
+}: ButtonProps) {
+  return (
+    <button
+      {...props}
+      type={type}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
+      data-aig-component="button"
+      data-variant={variant}
+      data-size={size}
+      className={`aig-button ${className}`}
+    >
+      {loading && <span className="aig-button-busy" aria-hidden="true" />}
+      {children}
+    </button>
+  );
 }

@@ -1,1 +1,16 @@
-import{it,expect,vi}from'vitest';import{render,screen,fireEvent,waitFor}from'@testing-library/react';import{PromptInput}from'./prompt-input.js';it('合成输入期间保持草稿，提交失败后保留文本',async()=>{const submit=vi.fn().mockRejectedValue(Error('服务暂不可用'));render(<PromptInput defaultValue="中文草稿" onSubmit={submit}/>);const input=screen.getByRole('textbox');fireEvent.compositionStart(input);fireEvent.keyDown(input,{key:'Enter'});expect(submit).not.toHaveBeenCalled();fireEvent.compositionEnd(input);fireEvent.keyDown(input,{key:'Enter'});await waitFor(()=>expect(screen.getByRole('alert')).toHaveTextContent('服务暂不可用'));expect(input).toHaveValue('中文草稿');expect(submit).toHaveBeenCalledOnce();});
+import { it, expect, vi } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { PromptInput } from './prompt-input.js';
+it('合成输入期间保持草稿，提交失败后保留文本', async () => {
+  const submit = vi.fn().mockRejectedValue(Error('服务暂不可用'));
+  render(<PromptInput defaultValue="中文草稿" onSubmit={submit} />);
+  const input = screen.getByRole('textbox');
+  fireEvent.compositionStart(input);
+  fireEvent.keyDown(input, { key: 'Enter' });
+  expect(submit).not.toHaveBeenCalled();
+  fireEvent.compositionEnd(input);
+  fireEvent.keyDown(input, { key: 'Enter' });
+  await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('服务暂不可用'));
+  expect(input).toHaveValue('中文草稿');
+  expect(submit).toHaveBeenCalledOnce();
+});

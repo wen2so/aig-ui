@@ -1,1 +1,19 @@
-.aig-empty-state { padding: 40px 24px; text-align: center; color: var(--aig-color-text-muted); overflow-wrap: anywhere; }.aig-empty-state h3 { margin: 12px 0; color: var(--aig-color-text); font-size: 18px; font-weight: 600; }.aig-empty-actions { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
+.aig-empty-state {
+  padding: 40px 24px;
+  text-align: center;
+  color: var(--aig-color-text-muted);
+  overflow-wrap: anywhere;
+}
+.aig-empty-state h3 {
+  margin: 12px 0;
+  color: var(--aig-color-text);
+  font-size: 18px;
+  font-weight: 600;
+}
+.aig-empty-actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}

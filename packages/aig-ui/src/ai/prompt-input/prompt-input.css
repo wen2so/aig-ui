@@ -1,1 +1,19 @@
-.aig-prompt-input { min-inline-size: 0; }.aig-prompt-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 12px; }.aig-prompt-actions > span { font-size: 11px; color: var(--aig-color-text-muted); }.aig-prompt-input [role=alert] { font-size: 13px; color: var(--aig-color-danger); }
+.aig-prompt-input {
+  min-inline-size: 0;
+}
+.aig-prompt-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.aig-prompt-actions > span {
+  font-size: 11px;
+  color: var(--aig-color-text-muted);
+}
+.aig-prompt-input [role='alert'] {
+  font-size: 13px;
+  color: var(--aig-color-danger);
+}

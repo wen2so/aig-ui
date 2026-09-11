@@ -1,6 +1,52 @@
-import{useState}from'react';import{Button}from'../button/button.js';import{Checkbox}from'../checkbox/checkbox.js';
+import { useState } from 'react';
+import { Button } from '../button/button.js';
+import { Checkbox } from '../checkbox/checkbox.js';
 import { Table } from './table.js';
 export default { title: '通用/Table', component: Table };
-export const preview = {"name":"Table","label":"表格","description":"原生表格部件，排序与选中由宿主管理，横向滚动限制在表格区域。"};
+export const preview = {
+  name: 'Table',
+  label: '表格',
+  description: '原生表格部件，排序与选中由宿主管理，横向滚动限制在表格区域。',
+};
 /** 展示可复用组件的代表性状态。 */
-export function Preview() { const[descending,setDescending]=useState(false);const[selected,setSelected]=useState<string[]>([]);const rows=[{id:'alpha',name:'方案资料',count:12},{id:'beta',name:'参考文件',count:4}].sort((a,b)=>descending?b.count-a.count:a.count-b.count);return <Table><Table.Caption>本地演示资料，共两项</Table.Caption><Table.Head><Table.Row><Table.HeaderCell>选择</Table.HeaderCell><Table.HeaderCell>资料名称</Table.HeaderCell><Table.HeaderCell aria-sort={descending?'descending':'ascending'}><Button variant="ghost" size="sm" onClick={()=>setDescending(!descending)}>按文件数排序</Button></Table.HeaderCell></Table.Row></Table.Head><Table.Body>{rows.map(row=><Table.Row key={row.id} aria-selected={selected.includes(row.id)}><Table.Cell><Checkbox aria-label={`选择${row.name}`} checked={selected.includes(row.id)} onCheckedChange={checked=>setSelected(checked?[...selected,row.id]:selected.filter(id=>id!==row.id))}/></Table.Cell><Table.Cell>{row.name}</Table.Cell><Table.Cell>{row.count}</Table.Cell></Table.Row>)}</Table.Body></Table>; }
+export function Preview() {
+  const [descending, setDescending] = useState(false);
+  const [selected, setSelected] = useState<string[]>([]);
+  const rows = [
+    { id: 'alpha', name: '方案资料', count: 12 },
+    { id: 'beta', name: '参考文件', count: 4 },
+  ].sort((a, b) => (descending ? b.count - a.count : a.count - b.count));
+  return (
+    <Table>
+      <Table.Caption>本地演示资料，共两项</Table.Caption>
+      <Table.Head>
+        <Table.Row>
+          <Table.HeaderCell>选择</Table.HeaderCell>
+          <Table.HeaderCell>资料名称</Table.HeaderCell>
+          <Table.HeaderCell aria-sort={descending ? 'descending' : 'ascending'}>
+            <Button variant="ghost" size="sm" onClick={() => setDescending(!descending)}>
+              按文件数排序
+            </Button>
+          </Table.HeaderCell>
+        </Table.Row>
+      </Table.Head>
+      <Table.Body>
+        {rows.map((row) => (
+          <Table.Row key={row.id} aria-selected={selected.includes(row.id)}>
+            <Table.Cell>
+              <Checkbox
+                aria-label={`选择${row.name}`}
+                checked={selected.includes(row.id)}
+                onCheckedChange={(checked) =>
+                  setSelected(checked ? [...selected, row.id] : selected.filter((id) => id !== row.id))
+                }
+              />
+            </Table.Cell>
+            <Table.Cell>{row.name}</Table.Cell>
+            <Table.Cell>{row.count}</Table.Cell>
+          </Table.Row>
+        ))}
+      </Table.Body>
+    </Table>
+  );
+}

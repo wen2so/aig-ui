@@ -1,8 +1,69 @@
 'use client';
-import{Combobox as BaseCombobox}from'@base-ui/react/combobox';
-import type{ComponentPropsWithRef}from'react';
-import type{SelectOption}from'../select/select.js';
-import{useAigPortalContainer}from'../../theme/aig-provider.js';
-export interface ComboboxProps extends Omit<ComponentPropsWithRef<'input'>,'value'|'defaultValue'|'onChange'|'children'> {options:SelectOption[];label:string;value?:string|null;defaultValue?:string|null;onValueChange?:(value:string|null)=>void;}
+import { Combobox as BaseCombobox } from '@base-ui/react/combobox';
+import type { ComponentPropsWithRef } from 'react';
+import type { SelectOption } from '../select/select.js';
+import { useAigPortalContainer } from '../../theme/aig-provider.js';
+export interface ComboboxProps extends Omit<
+  ComponentPropsWithRef<'input'>,
+  'value' | 'defaultValue' | 'onChange' | 'children'
+> {
+  options: SelectOption[];
+  label: string;
+  value?: string | null;
+  defaultValue?: string | null;
+  onValueChange?: (value: string | null) => void;
+}
 /** 使用选项标签检索；选项获取和取消由宿主负责。 */
-export function Combobox({options,label,value,defaultValue,onValueChange,name,form,disabled,required,className='',...props}:ComboboxProps){const container=useAigPortalContainer();const labelOf=(value:string)=>options.find(option=>option.value===value)?.label??`${value}（已不可用）`;return <BaseCombobox.Root<string> items={options.map(option=>option.value)} value={value} defaultValue={defaultValue} onValueChange={onValueChange} itemToStringLabel={labelOf} filter={(item,query)=>labelOf(item).toLocaleLowerCase().includes(query.toLocaleLowerCase())} name={name} form={form} disabled={disabled} required={required}><BaseCombobox.Input {...props} aria-label={label} className={`aig-combobox-input ${className}`}/><BaseCombobox.Portal container={container}><BaseCombobox.Positioner sideOffset={6} className="aig-combobox-positioner"><BaseCombobox.Popup className="aig-combobox-popup"><BaseCombobox.Empty className="aig-combobox-empty">暂无匹配选项</BaseCombobox.Empty><BaseCombobox.List>{(item:string)=><BaseCombobox.Item key={item} value={item} disabled={options.find(option=>option.value===item)?.disabled} className="aig-combobox-item">{labelOf(item)}<BaseCombobox.ItemIndicator aria-hidden>✓</BaseCombobox.ItemIndicator></BaseCombobox.Item>}</BaseCombobox.List></BaseCombobox.Popup></BaseCombobox.Positioner></BaseCombobox.Portal></BaseCombobox.Root>;}
+export function Combobox({
+  options,
+  label,
+  value,
+  defaultValue,
+  onValueChange,
+  name,
+  form,
+  disabled,
+  required,
+  className = '',
+  ...props
+}: ComboboxProps) {
+  const container = useAigPortalContainer();
+  const labelOf = (value: string) =>
+    options.find((option) => option.value === value)?.label ?? `${value}（已不可用）`;
+  return (
+    <BaseCombobox.Root<string>
+      items={options.map((option) => option.value)}
+      value={value}
+      defaultValue={defaultValue}
+      onValueChange={onValueChange}
+      itemToStringLabel={labelOf}
+      filter={(item, query) => labelOf(item).toLocaleLowerCase().includes(query.toLocaleLowerCase())}
+      name={name}
+      form={form}
+      disabled={disabled}
+      required={required}
+    >
+      <BaseCombobox.Input {...props} aria-label={label} className={`aig-combobox-input ${className}`} />
+      <BaseCombobox.Portal container={container}>
+        <BaseCombobox.Positioner sideOffset={6} className="aig-combobox-positioner">
+          <BaseCombobox.Popup className="aig-combobox-popup">
+            <BaseCombobox.Empty className="aig-combobox-empty">暂无匹配选项</BaseCombobox.Empty>
+            <BaseCombobox.List>
+              {(item: string) => (
+                <BaseCombobox.Item
+                  key={item}
+                  value={item}
+                  disabled={options.find((option) => option.value === item)?.disabled}
+                  className="aig-combobox-item"
+                >
+                  {labelOf(item)}
+                  <BaseCombobox.ItemIndicator aria-hidden>✓</BaseCombobox.ItemIndicator>
+                </BaseCombobox.Item>
+              )}
+            </BaseCombobox.List>
+          </BaseCombobox.Popup>
+        </BaseCombobox.Positioner>
+      </BaseCombobox.Portal>
+    </BaseCombobox.Root>
+  );
+}

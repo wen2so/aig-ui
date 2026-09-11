@@ -10,6 +10,10 @@ function subscribe(listener: () => void) {
 }
 /** 跟随系统偏好，并保留一致的服务端初始快照。 */
 export function useReducedMotion(mode: 'system' | 'reduced' = 'system') {
-  const reduced = useSyncExternalStore(subscribe, () => window.matchMedia(query).matches, () => false);
+  const reduced = useSyncExternalStore(
+    subscribe,
+    () => window.matchMedia(query).matches,
+    () => false,
+  );
   return mode === 'reduced' || reduced;
 }

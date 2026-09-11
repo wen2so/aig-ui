@@ -1,1 +1,21 @@
-.aig-breadcrumb ol { display: flex; gap: 8px; flex-wrap: wrap; padding: 0; margin: 0; list-style: none; font-size: 13px; }.aig-breadcrumb li { display: inline-flex; gap: 8px; overflow-wrap: anywhere; }.aig-breadcrumb a { color: var(--aig-color-text-muted); text-underline-offset: 3px; }.aig-breadcrumb [aria-current] { color: var(--aig-color-text); }
+.aig-breadcrumb ol {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  font-size: 13px;
+}
+.aig-breadcrumb li {
+  display: inline-flex;
+  gap: 8px;
+  overflow-wrap: anywhere;
+}
+.aig-breadcrumb a {
+  color: var(--aig-color-text-muted);
+  text-underline-offset: 3px;
+}
+.aig-breadcrumb [aria-current] {
+  color: var(--aig-color-text);
+}
