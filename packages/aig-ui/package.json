@@ -143,6 +143,10 @@
     "./combobox": {
       "types": "./dist/components/combobox/combobox.d.ts",
       "import": "./dist/components/combobox/combobox.js"
+    },
+    "./tabs": {
+      "types": "./dist/components/tabs/tabs.d.ts",
+      "import": "./dist/components/tabs/tabs.js"
     }
   },
   "peerDependencies": {
