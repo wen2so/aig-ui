@@ -31,6 +31,10 @@
     "./icon-button": {
       "types": "./dist/components/icon-button/icon-button.d.ts",
       "import": "./dist/components/icon-button/icon-button.js"
+    },
+    "./link": {
+      "types": "./dist/components/link/link.d.ts",
+      "import": "./dist/components/link/link.js"
     }
   },
   "peerDependencies": {
