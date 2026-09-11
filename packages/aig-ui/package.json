@@ -87,6 +87,10 @@
     "./copy-button": {
       "types": "./dist/components/copy-button/copy-button.d.ts",
       "import": "./dist/components/copy-button/copy-button.js"
+    },
+    "./toast": {
+      "types": "./dist/components/toast/toast.d.ts",
+      "import": "./dist/components/toast/toast.js"
     }
   },
   "peerDependencies": {
