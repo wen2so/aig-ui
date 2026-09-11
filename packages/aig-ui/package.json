@@ -167,6 +167,10 @@
     "./skeleton": {
       "types": "./dist/components/skeleton/skeleton.d.ts",
       "import": "./dist/components/skeleton/skeleton.js"
+    },
+    "./separator": {
+      "types": "./dist/components/separator/separator.d.ts",
+      "import": "./dist/components/separator/separator.js"
     }
   },
   "peerDependencies": {

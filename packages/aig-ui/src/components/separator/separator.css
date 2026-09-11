@@ -1,0 +1,1 @@
+.aig-separator { background: var(--aig-color-border-subtle); flex-shrink: 0; }.aig-separator[data-orientation=horizontal] { height: 1px; width: 100%; }.aig-separator[data-orientation=vertical] { width: 1px; align-self: stretch; min-height: 1em; }@media(forced-colors:active){.aig-separator{background:CanvasText;}}
