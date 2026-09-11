@@ -1,3 +1,4 @@
+@import './components/select/select.css';
 @import './components/dropdown-menu/dropdown-menu.css';
 @import './components/tooltip/tooltip.css';
 @import './components/popover/popover.css';

@@ -135,6 +135,10 @@
     "./dropdown-menu": {
       "types": "./dist/components/dropdown-menu/dropdown-menu.d.ts",
       "import": "./dist/components/dropdown-menu/dropdown-menu.js"
+    },
+    "./select": {
+      "types": "./dist/components/select/select.d.ts",
+      "import": "./dist/components/select/select.js"
     }
   },
   "peerDependencies": {
