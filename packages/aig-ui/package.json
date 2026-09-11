@@ -99,6 +99,10 @@
     "./input": {
       "types": "./dist/components/input/input.d.ts",
       "import": "./dist/components/input/input.js"
+    },
+    "./textarea": {
+      "types": "./dist/components/textarea/textarea.d.ts",
+      "import": "./dist/components/textarea/textarea.js"
     }
   },
   "peerDependencies": {
