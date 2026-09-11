@@ -95,6 +95,10 @@
     "./field": {
       "types": "./dist/components/field/field.d.ts",
       "import": "./dist/components/field/field.js"
+    },
+    "./input": {
+      "types": "./dist/components/input/input.d.ts",
+      "import": "./dist/components/input/input.js"
     }
   },
   "peerDependencies": {

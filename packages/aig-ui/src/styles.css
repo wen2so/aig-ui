@@ -1,3 +1,4 @@
+@import './components/input/input.css';
 @import './components/field/field.css';
 @import './components/toast/toast.css';
 @import './components/copy-button/copy-button.css';
