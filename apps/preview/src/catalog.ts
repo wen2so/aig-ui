@@ -16,7 +16,8 @@ import * as component13 from '../../../packages/aig-ui/src/components/progress/p
 import * as component14 from '../../../packages/aig-ui/src/components/result/result.stories.js';
 import * as component15 from '../../../packages/aig-ui/src/components/spinner/spinner.stories.js';
 import * as component16 from '../../../packages/aig-ui/src/components/status-indicator/status-indicator.stories.js';
-import * as component17 from '../../../packages/aig-ui/src/components/text/text.stories.js';
-import * as component18 from '../../../packages/aig-ui/src/components/textarea/textarea.stories.js';
-import * as component19 from '../../../packages/aig-ui/src/components/toast/toast.stories.js';
-export const componentStories = [component0, component1, component2, component3, component4, component5, component6, component7, component8, component9, component10, component11, component12, component13, component14, component15, component16, component17, component18, component19];
+import * as component17 from '../../../packages/aig-ui/src/components/switch/switch.stories.js';
+import * as component18 from '../../../packages/aig-ui/src/components/text/text.stories.js';
+import * as component19 from '../../../packages/aig-ui/src/components/textarea/textarea.stories.js';
+import * as component20 from '../../../packages/aig-ui/src/components/toast/toast.stories.js';
+export const componentStories = [component0, component1, component2, component3, component4, component5, component6, component7, component8, component9, component10, component11, component12, component13, component14, component15, component16, component17, component18, component19, component20];

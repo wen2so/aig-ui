@@ -107,6 +107,10 @@
     "./checkbox": {
       "types": "./dist/components/checkbox/checkbox.d.ts",
       "import": "./dist/components/checkbox/checkbox.js"
+    },
+    "./switch": {
+      "types": "./dist/components/switch/switch.d.ts",
+      "import": "./dist/components/switch/switch.js"
     }
   },
   "peerDependencies": {
