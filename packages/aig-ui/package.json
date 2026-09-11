@@ -208,6 +208,10 @@
     "./ai/prompt-input": {
       "types": "./dist/ai/prompt-input/prompt-input.d.ts",
       "import": "./dist/ai/prompt-input/prompt-input.js"
+    },
+    "./ai/conversation": {
+      "types": "./dist/ai/conversation/conversation.d.ts",
+      "import": "./dist/ai/conversation/conversation.js"
     }
   },
   "peerDependencies": {

@@ -1,3 +1,4 @@
+@import './conversation/conversation.css';
 @import './prompt-input/prompt-input.css';
 @import './tool-result/tool-result.css';
 @import './task-status/task-status.css';
