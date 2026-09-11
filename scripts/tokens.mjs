@@ -41,7 +41,7 @@ export function compileTokens(source) {
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   const tokens = compileTokens(JSON.parse(readFileSync('packages/aig-ui/src/tokens/source.json', 'utf8')));
-  writeFileSync('packages/aig-ui/src/tokens/tokens.css', `/* 由 scripts/tokens.mjs 生成。 */\n:root, [data-aig-theme] {\n${Object.entries(tokens).map(([key, value]) => `  --aig-${key.replaceAll('.', '-')}: ${value};`).join('\n')}\n}\n`);
+  writeFileSync('packages/aig-ui/src/tokens/tokens.css', `/* 由 scripts/tokens.mjs 生成。 */\n:root {\n${Object.entries(tokens).map(([key, value]) => `  --aig-${key.replaceAll('.', '-')}: ${value};`).join('\n')}\n}\n`);
   const motion = Object.fromEntries(Object.entries(tokens).filter(([key]) => key.startsWith('motion.')).map(([key, value]) => [key.slice(7), parseFloat(value)]));
   writeFileSync('packages/aig-ui/src/tokens/motion.ts', `/** 从同一 Token 源生成的动效时长，单位为毫秒。 */\nexport const motionTiming = ${JSON.stringify(motion, null, 2)} as const;\n`);
 }

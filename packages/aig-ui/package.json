@@ -115,6 +115,10 @@
     "./radio-group": {
       "types": "./dist/components/radio-group/radio-group.d.ts",
       "import": "./dist/components/radio-group/radio-group.js"
+    },
+    "./dialog": {
+      "types": "./dist/components/dialog/dialog.d.ts",
+      "import": "./dist/components/dialog/dialog.js"
     }
   },
   "peerDependencies": {

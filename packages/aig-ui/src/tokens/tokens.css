@@ -1,5 +1,5 @@
 /* 由 scripts/tokens.mjs 生成。 */
-:root, [data-aig-theme] {
+:root {
   --aig-color-bg: rgb(253 250 249);
   --aig-color-surface: rgb(255 255 255);
   --aig-color-surface-muted: rgb(246 241 241);
