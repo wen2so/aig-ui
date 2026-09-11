@@ -9,3 +9,5 @@ function css(file, stack = []) {
 mkdirSync('packages/aig-ui/dist', { recursive: true });
 writeFileSync('packages/aig-ui/dist/styles.css', css(resolve('packages/aig-ui/src/styles.css')));
 writeFileSync('packages/aig-ui/dist/tokens.css', readFileSync('packages/aig-ui/src/tokens/tokens.css'));
+mkdirSync('packages/aig-ui/dist/motion', { recursive: true });
+writeFileSync('packages/aig-ui/dist/motion/styles.css', css(resolve('packages/aig-ui/src/motion/styles.css')));

@@ -13,7 +13,11 @@
     "build": "pnpm tokens && tsc -p packages/aig-ui/tsconfig.json && node scripts/build.mjs",
     "dev": "storybook dev -p 6006 -c apps/docs/.storybook --no-open",
     "build:docs": "storybook build -c apps/docs/.storybook -o artifacts/storybook",
-    "check": "pnpm typecheck && pnpm test && pnpm build"
+    "check": "pnpm typecheck && pnpm test && pnpm build",
+    "preview": "pnpm --dir apps/preview dev",
+    "build:preview": "pnpm --dir apps/preview build",
+    "test:browser": "playwright test",
+    "test:motion": "playwright test tests/browser/motion.spec.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",

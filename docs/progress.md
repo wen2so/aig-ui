@@ -16,3 +16,4 @@ Windows、Node 24.9.0、pnpm 10.28.1。依赖以 pnpm-lock.yaml 为准。npm 查
 
 真实 Safari/iOS、NVDA/VoiceOver、两个业务试点、真实模型流、外部 AI 任务评估与正式发布仍按 delivery-plan.md 执行。自动测试记录与人工验收分别保存。
 
+| LoadingMark | 归一化 SVG、WAAPI 连续绘制与撤回、双环、减少动画、预览目录 | 类型和构建、Chromium 提前撤回/静态/减少动画、360px 搜索与无横向溢出检查通过 |

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import AxeBuilder from '@axe-core/playwright';
+import { AxeBuilder } from '@axe-core/playwright';
 
 test('tarball 按钮支持键盘操作、暖白主题和可访问名称', async ({ page }) => {
   await page.goto('http://127.0.0.1:4173');

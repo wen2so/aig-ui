@@ -63,6 +63,8 @@ importers:
         specifier: 5.0.0
         version: 5.0.0(@types/node@22.20.2)(jsdom@30.0.1)(vite@8.3.0(@types/node@22.20.2)(esbuild@0.28.2))
 
+  apps/preview: {}
+
   packages/aig-ui:
     dependencies:
       react:

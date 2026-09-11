@@ -3,13 +3,34 @@
   "version": "0.1.0-alpha.0",
   "type": "module",
   "license": "UNLICENSED",
-  "files": ["dist", "src", "README.md"],
-  "sideEffects": ["**/*.css"],
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
-    "./button": { "types": "./dist/components/button/button.d.ts", "import": "./dist/components/button/button.js" },
-    "./styles.css": "./dist/styles.css", "./tokens.css": "./dist/tokens.css"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./button": {
+      "types": "./dist/components/button/button.d.ts",
+      "import": "./dist/components/button/button.js"
+    },
+    "./styles.css": "./dist/styles.css",
+    "./tokens.css": "./dist/tokens.css",
+    "./motion": {
+      "types": "./dist/motion/index.d.ts",
+      "import": "./dist/motion/index.js"
+    },
+    "./motion/styles.css": "./dist/motion/styles.css"
   },
-  "peerDependencies": { "react": "19.3.0", "react-dom": "19.3.0" }
+  "peerDependencies": {
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  }
 }
