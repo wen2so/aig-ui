@@ -3,7 +3,8 @@
     "target": "ES2022", "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "NodeNext", "moduleResolution": "NodeNext", "jsx": "react-jsx",
     "strict": true, "noUncheckedIndexedAccess": true, "skipLibCheck": true,
-    "esModuleInterop": true, "types": ["node", "vitest/globals"]
+    "esModuleInterop": true, "types": ["node", "vitest/globals"],
+    "paths": { "aig-ui": ["./packages/aig-ui/src/index.ts"], "aig-ui/motion": ["./packages/aig-ui/src/motion/index.ts"], "aig-ui/ai": ["./packages/aig-ui/src/ai/index.ts"] }
   },
   "include": ["packages/**/*.ts", "packages/**/*.tsx", "apps/**/*.ts", "apps/**/*.tsx", "tests/**/*.ts", "tests/**/*.tsx", "registry/**/*.tsx", "vitest.config.ts"]
 }
