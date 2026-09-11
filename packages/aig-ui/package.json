@@ -39,6 +39,10 @@
     "./text": {
       "types": "./dist/components/text/text.d.ts",
       "import": "./dist/components/text/text.js"
+    },
+    "./heading": {
+      "types": "./dist/components/heading/heading.d.ts",
+      "import": "./dist/components/heading/heading.js"
     }
   },
   "peerDependencies": {

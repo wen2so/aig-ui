@@ -1,0 +1,1 @@
+.aig-heading { margin: 0; font-size: 24px; line-height: 1.35; font-weight: 600; color: var(--aig-color-text); overflow-wrap: anywhere; }.aig-heading[data-size=sm] { font-size: 20px; }.aig-heading[data-size=lg] { font-size: 32px; }
