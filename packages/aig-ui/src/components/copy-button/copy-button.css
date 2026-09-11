@@ -1,0 +1,1 @@
+.aig-copy-button { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; min-inline-size: 0; }.aig-copy-button [role=status] { color: var(--aig-color-text-muted); font-size: 13px; }.aig-copy-button code { display: block; flex-basis: 100%; overflow-wrap: anywhere; user-select: all; }

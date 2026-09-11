@@ -13,3 +13,4 @@ export * from './components/progress/progress.js';
 export * from './components/empty-state/empty-state.js';
 export * from './components/result/result.js';
 export * from './components/description-list/description-list.js';
+export * from './components/copy-button/copy-button.js';

@@ -83,6 +83,10 @@
     "./description-list": {
       "types": "./dist/components/description-list/description-list.d.ts",
       "import": "./dist/components/description-list/description-list.js"
+    },
+    "./copy-button": {
+      "types": "./dist/components/copy-button/copy-button.d.ts",
+      "import": "./dist/components/copy-button/copy-button.js"
     }
   },
   "peerDependencies": {

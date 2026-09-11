@@ -1,8 +1,6 @@
+@import './components/copy-button/copy-button.css';
 @import './tokens/tokens.css';
 @import './components/button/button.css';
-
-:where([data-aig-theme]) { color: var(--aig-color-text); font-family: system-ui, 'Microsoft YaHei', sans-serif; line-height: 1.5; }
-:where([class^='aig-'], [class*=' aig-']):focus-visible { outline: 2px solid var(--aig-color-focus); outline-offset: 3px; }
 @import './components/icon-button/icon-button.css';
 @import './components/link/link.css';
 @import './components/text/text.css';
@@ -17,3 +15,5 @@
 @import './components/empty-state/empty-state.css';
 @import './components/result/result.css';
 @import './components/description-list/description-list.css';
+:where([data-aig-theme]) { color: var(--aig-color-text); font-family: system-ui, 'Microsoft YaHei', sans-serif; line-height: 1.5; }
+:where([class^='aig-'], [class*=' aig-']):focus-visible { outline: 2px solid var(--aig-color-focus); outline-offset: 3px; }
