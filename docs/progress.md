@@ -18,3 +18,4 @@ Windows、Node 24.9.0、pnpm 10.28.1。依赖以 pnpm-lock.yaml 为准。npm 查
 
 | LoadingMark | 归一化 SVG、WAAPI 连续绘制与撤回、双环、减少动画、预览目录 | 类型和构建、Chromium 提前撤回/静态/减少动画、360px 搜索与无横向溢出检查通过 |
 | LoadingSequence | 真实任务状态、提前退出、反向解构、Portal、inert、回放/慢速/原版对照 | 类型、构建、3 项 Chromium 动效与预览回归通过 |
+| IconButton | 具有必需可访问名称的图标操作按钮。 | 类型、可编译预览与适用交互回归通过；视觉与浏览器集成持续补充 |

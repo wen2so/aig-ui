@@ -27,7 +27,11 @@
       "types": "./dist/motion/index.d.ts",
       "import": "./dist/motion/index.js"
     },
-    "./motion/styles.css": "./dist/motion/styles.css"
+    "./motion/styles.css": "./dist/motion/styles.css",
+    "./icon-button": {
+      "types": "./dist/components/icon-button/icon-button.d.ts",
+      "import": "./dist/components/icon-button/icon-button.js"
+    }
   },
   "peerDependencies": {
     "react": "19.3.0",
