@@ -111,6 +111,10 @@
     "./switch": {
       "types": "./dist/components/switch/switch.d.ts",
       "import": "./dist/components/switch/switch.js"
+    },
+    "./radio-group": {
+      "types": "./dist/components/radio-group/radio-group.d.ts",
+      "import": "./dist/components/radio-group/radio-group.js"
     }
   },
   "peerDependencies": {

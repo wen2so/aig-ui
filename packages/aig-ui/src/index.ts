@@ -20,3 +20,4 @@ export * from './components/input/input.js';
 export * from './components/textarea/textarea.js';
 export * from './components/checkbox/checkbox.js';
 export * from './components/switch/switch.js';
+export * from './components/radio-group/radio-group.js';
