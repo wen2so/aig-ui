@@ -1,1 +1,60 @@
-.aig-artifact-preview { border: 1px solid var(--aig-color-border-subtle); border-radius: 16px; padding: 24px; min-inline-size: 0; color: var(--aig-color-text); }.aig-artifact-preview > header { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }.aig-artifact-preview h3 { margin: 0; font-size: 18px; }.aig-artifact-preview label { font-size: 12px; color: var(--aig-color-text-muted); }.aig-artifact-preview select { min-height: 32px; padding: 4px 8px; border: 1px solid var(--aig-color-border-control); border-radius: 8px; color: var(--aig-color-text); background: var(--aig-color-surface); }.aig-artifact-content { max-height: 420px; overflow: auto; font-size: 14px; line-height: 1.8; overflow-wrap: anywhere; }.aig-artifact-content pre { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }.aig-artifact-content table { display: block; overflow-x: auto; }.aig-artifact-content a { color: var(--aig-color-accent); }.aig-artifact-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }.aig-artifact-preview [role=alert] { color: var(--aig-color-danger); font-size: 13px; }
+.aig-artifact-preview {
+  border: 1px solid var(--aig-color-border-subtle);
+  border-radius: 16px;
+  padding: 24px;
+  min-inline-size: 0;
+  color: var(--aig-color-text);
+}
+.aig-artifact-preview > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.aig-artifact-preview h3 {
+  margin: 0;
+  font-size: 18px;
+}
+.aig-artifact-preview label {
+  font-size: 12px;
+  color: var(--aig-color-text-muted);
+}
+.aig-artifact-preview select {
+  min-height: 32px;
+  padding: 4px 8px;
+  border: 1px solid var(--aig-color-border-control);
+  border-radius: 8px;
+  color: var(--aig-color-text);
+  background: var(--aig-color-surface);
+}
+.aig-artifact-content {
+  max-height: 420px;
+  overflow: auto;
+  font-size: 14px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.aig-artifact-content pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 0;
+}
+.aig-artifact-content table {
+  display: block;
+  overflow-x: auto;
+}
+.aig-artifact-content a {
+  color: var(--aig-color-accent);
+}
+.aig-artifact-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.aig-artifact-preview [role='alert'] {
+  color: var(--aig-color-danger);
+  font-size: 13px;
+}
