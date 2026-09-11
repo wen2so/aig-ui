@@ -9,3 +9,4 @@ export * from './components/panel/panel.js';
 export * from './components/badge/badge.js';
 export * from './components/spinner/spinner.js';
 export * from './components/status-indicator/status-indicator.js';
+export * from './components/progress/progress.js';

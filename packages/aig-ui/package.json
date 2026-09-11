@@ -67,6 +67,10 @@
     "./status-indicator": {
       "types": "./dist/components/status-indicator/status-indicator.d.ts",
       "import": "./dist/components/status-indicator/status-indicator.js"
+    },
+    "./progress": {
+      "types": "./dist/components/progress/progress.d.ts",
+      "import": "./dist/components/progress/progress.js"
     }
   },
   "peerDependencies": {
