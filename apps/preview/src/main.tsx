@@ -6,9 +6,7 @@ import { Interactive as SequenceDemo } from '../../../packages/aig-ui/src/motion
 import '../../../packages/aig-ui/src/styles.css';
 import '../../../packages/aig-ui/src/motion/styles.css';
 import './preview.css';
-import type { ComponentType } from 'react';
-
-const componentStories = import.meta.glob<{ preview: { name: string; label: string; description: string }; Preview: ComponentType }>('../../../packages/aig-ui/src/components/**/*.stories.tsx', { eager: true });
+import { componentStories } from './catalog.js';
 
 function MarkDemo() {
   const [phase, setPhase] = useState<'drawing' | 'holding' | 'erasing' | 'static'>('drawing');
