@@ -200,6 +200,10 @@
     "./ai/task-status": {
       "types": "./dist/ai/task-status/task-status.d.ts",
       "import": "./dist/ai/task-status/task-status.js"
+    },
+    "./ai/tool-result": {
+      "types": "./dist/ai/tool-result/tool-result.d.ts",
+      "import": "./dist/ai/tool-result/tool-result.js"
     }
   },
   "peerDependencies": {
