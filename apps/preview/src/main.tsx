@@ -5,6 +5,7 @@ import { LoadingMark } from '../../../packages/aig-ui/src/motion/loading-mark.js
 import { Interactive as SequenceDemo } from '../../../packages/aig-ui/src/motion/loading-sequence.stories.js';
 import '../../../packages/aig-ui/src/styles.css';
 import '../../../packages/aig-ui/src/motion/styles.css';
+import '../../../packages/aig-ui/src/ai/styles.css';
 import './preview.css';
 import { componentStories } from './catalog.js';
 

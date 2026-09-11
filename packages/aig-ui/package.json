@@ -183,6 +183,15 @@
     "./table": {
       "types": "./dist/components/table/table.d.ts",
       "import": "./dist/components/table/table.js"
+    },
+    "./ai": {
+      "types": "./dist/ai/index.d.ts",
+      "import": "./dist/ai/index.js"
+    },
+    "./ai/styles.css": "./dist/ai/styles.css",
+    "./ai/message": {
+      "types": "./dist/ai/message/message.d.ts",
+      "import": "./dist/ai/message/message.js"
     }
   },
   "peerDependencies": {

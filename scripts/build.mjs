@@ -11,3 +11,5 @@ writeFileSync('packages/aig-ui/dist/styles.css', css(resolve('packages/aig-ui/sr
 writeFileSync('packages/aig-ui/dist/tokens.css', readFileSync('packages/aig-ui/src/tokens/tokens.css'));
 mkdirSync('packages/aig-ui/dist/motion', { recursive: true });
 writeFileSync('packages/aig-ui/dist/motion/styles.css', css(resolve('packages/aig-ui/src/motion/styles.css')));
+mkdirSync('packages/aig-ui/dist/ai', { recursive: true });
+writeFileSync('packages/aig-ui/dist/ai/styles.css', css(resolve('packages/aig-ui/src/ai/styles.css')));
