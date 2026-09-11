@@ -51,6 +51,10 @@
     "./card": {
       "types": "./dist/components/card/card.d.ts",
       "import": "./dist/components/card/card.js"
+    },
+    "./panel": {
+      "types": "./dist/components/panel/panel.d.ts",
+      "import": "./dist/components/panel/panel.js"
     }
   },
   "peerDependencies": {
