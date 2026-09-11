@@ -71,6 +71,10 @@
     "./progress": {
       "types": "./dist/components/progress/progress.d.ts",
       "import": "./dist/components/progress/progress.js"
+    },
+    "./empty-state": {
+      "types": "./dist/components/empty-state/empty-state.d.ts",
+      "import": "./dist/components/empty-state/empty-state.js"
     }
   },
   "peerDependencies": {
