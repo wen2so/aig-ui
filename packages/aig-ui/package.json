@@ -131,6 +131,10 @@
     "./tooltip": {
       "types": "./dist/components/tooltip/tooltip.d.ts",
       "import": "./dist/components/tooltip/tooltip.js"
+    },
+    "./dropdown-menu": {
+      "types": "./dist/components/dropdown-menu/dropdown-menu.d.ts",
+      "import": "./dist/components/dropdown-menu/dropdown-menu.js"
     }
   },
   "peerDependencies": {
