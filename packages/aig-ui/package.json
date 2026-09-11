@@ -139,6 +139,10 @@
     "./select": {
       "types": "./dist/components/select/select.d.ts",
       "import": "./dist/components/select/select.js"
+    },
+    "./combobox": {
+      "types": "./dist/components/combobox/combobox.d.ts",
+      "import": "./dist/components/combobox/combobox.js"
     }
   },
   "peerDependencies": {

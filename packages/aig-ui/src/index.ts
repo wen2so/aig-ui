@@ -29,3 +29,4 @@ export * from './components/popover/popover.js';
 export * from './components/tooltip/tooltip.js';
 export * from './components/dropdown-menu/dropdown-menu.js';
 export * from './components/select/select.js';
+export * from './components/combobox/combobox.js';
