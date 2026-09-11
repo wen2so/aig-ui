@@ -216,6 +216,10 @@
     "./ai/confirmation": {
       "types": "./dist/ai/confirmation/confirmation.d.ts",
       "import": "./dist/ai/confirmation/confirmation.js"
+    },
+    "./ai/artifact-preview": {
+      "types": "./dist/ai/artifact-preview/artifact-preview.d.ts",
+      "import": "./dist/ai/artifact-preview/artifact-preview.js"
     }
   },
   "peerDependencies": {
