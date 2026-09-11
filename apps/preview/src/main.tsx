@@ -90,7 +90,7 @@ function Preview() {
     `${entry.name}${entry.label}${entry.group}`.toLowerCase().includes(search.toLowerCase()),
   );
   return (
-    <div className="preview-shell" data-aig-theme="warm">
+    <div className="preview-shell" data-aig-theme="warm" data-filtered={Boolean(search) || undefined}>
       <aside className="preview-sidebar">
         <a className="preview-brand" href="#top">
           aig<span>—</span>ui
@@ -118,7 +118,7 @@ function Preview() {
       <main id="top">
         <header className="preview-header">
           <span className="preview-eyebrow">AIG UI / COMPONENT LIBRARY</span>
-          <h1>平静的界面，清晰的交互。</h1>
+          <h1>{search ? '组件预览' : '平静的界面，清晰的交互。'}</h1>
           <p>暖白、柔和材质与精密动效。探索组件的外观、状态和实际操作。</p>
           <span className="preview-count">
             {entries.length - pageEntries.length} 个已实现组件 · {pageEntries.length} 个页面组合 · 实验性

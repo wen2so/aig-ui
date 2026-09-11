@@ -108,6 +108,23 @@ body {
   border-radius: 99px;
   margin-top: 14px;
 }
+/* 定位到组件时收起介绍，打开页面即可看到演示主体。 */
+.preview-shell[data-filtered] main {
+  padding-top: 24px;
+}
+.preview-shell[data-filtered] .preview-header {
+  margin-bottom: 24px;
+}
+.preview-shell[data-filtered] .preview-header :is(.preview-eyebrow, p) {
+  display: none;
+}
+.preview-shell[data-filtered] .preview-header h1 {
+  margin-block: 0 8px;
+  font-size: 24px;
+}
+.preview-shell[data-filtered] .preview-count {
+  margin-top: 0;
+}
 .preview-section {
   scroll-margin-top: 24px;
   margin-bottom: 52px;
