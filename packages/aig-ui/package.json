@@ -79,6 +79,10 @@
     "./result": {
       "types": "./dist/components/result/result.d.ts",
       "import": "./dist/components/result/result.js"
+    },
+    "./description-list": {
+      "types": "./dist/components/description-list/description-list.d.ts",
+      "import": "./dist/components/description-list/description-list.js"
     }
   },
   "peerDependencies": {
