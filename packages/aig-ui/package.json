@@ -192,6 +192,10 @@
     "./ai/message": {
       "types": "./dist/ai/message/message.d.ts",
       "import": "./dist/ai/message/message.js"
+    },
+    "./ai/source-list": {
+      "types": "./dist/ai/source-list/source-list.d.ts",
+      "import": "./dist/ai/source-list/source-list.js"
     }
   },
   "peerDependencies": {
