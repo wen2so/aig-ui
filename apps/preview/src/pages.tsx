@@ -4,12 +4,14 @@ import { SettingsForm } from '../../../registry/blocks/settings-form/settings-fo
 import { FilterableList } from '../../../registry/blocks/filterable-list/filterable-list.js';
 import { AiAssistant, type ChatMessage } from '../../../registry/blocks/ai-assistant/ai-assistant.js';
 import type { TaskState } from '../../../packages/aig-ui/src/ai/task-status/task-status.js';
+import { ArtifactReview } from '../../../registry/blocks/artifact-review/artifact-review.js';
 
 export const pageEntries = [
   { name:'access-state-page',label:'访问状态页',group:'页面组合',description:'根据真实访问状态组合结果、请求信息与恢复入口。',render:()=> <AccessDemo/> },
   { name:'settings-form',label:'设置表单',group:'页面组合',description:'编辑、字段校验、保存失败和草稿保留。本地演示数据。',render:()=> <SettingsDemo/> },
   { name:'filterable-list',label:'筛选列表',group:'页面组合',description:'筛选、分页、空状态、读取错误与详情抽屉。本地演示数据。',render:()=> <ListDemo/> },
   { name:'ai-assistant',label:'AI 助手页面',group:'页面组合',description:'本地模拟消息分段、停止、失败重试与来源展示。',render:()=> <AssistantDemo/> },
+  { name:'artifact-review',label:'产物审核页',group:'页面组合',description:'预览编辑、明确确认、执行失败与版本冲突。本地演示数据。',render:()=> <ReviewDemo/> },
 ];
 
 function SettingsDemo(){const[fail,setFail]=useState(true);return <><label><input type="checkbox" checked={fail} onChange={event=>setFail(event.target.checked)}/> 模拟保存失败</label><SettingsForm initialValues={{name:'演示项目',description:'用于预览组件组合。',visibility:'team',notifications:true}} onSave={async()=>{if(fail)throw Error('演示保存失败，修改内容已保留。');}}/></>;}
@@ -24,6 +26,8 @@ function AssistantDemo(){
   function stop(){clearInterval(timer.current);generation.current++;setStatus('cancelled');setMessages(previous=>previous.map(message=>message.status==='streaming'?{...message,status:'cancelled'}:message));}
   return <><label><input type="checkbox" checked={fail} onChange={event=>setFail(event.target.checked)}/> 模拟生成中断</label><AiAssistant messages={messages} status={status} draft={draft} onDraftChange={setDraft} onSend={start} onStop={stop} onRetry={()=>start(messages.filter(message=>message.role==='user').at(-1)?.content??draft)} sources={status==='succeeded'?[{id:'react',title:'React 官方文档（演示引用）',url:'https://react.dev'}]:[]}/></>;
 }
+
+function ReviewDemo(){const[versions,setVersions]=useState([{revision:'1',content:'初始项目摘要。'},{revision:'2',content:'## 项目摘要\n\n已完成资料核验，等待审阅后应用。'}]);const[mode,setMode]=useState<'success'|'failure'|'conflict'>('success');const[result,setResult]=useState('');return <><label>演示执行结果 <select value={mode} onChange={event=>setMode(event.target.value as typeof mode)}><option value="success">成功</option><option value="failure">失败</option><option value="conflict">版本冲突</option></select></label><ArtifactReview artifactId="demo-project" versions={versions} onSave={async change=>{setVersions(previous=>[...previous,{revision:String(previous.length+1),content:change.content}]);}} onExecute={async change=>{if(mode==='failure')throw Error('演示执行失败，请重试。');if(mode==='conflict'){setVersions(previous=>[...previous,{revision:String(previous.length+1),content:'其他编辑者更新了项目说明。'}]);throw Error('服务端检测到版本冲突。');}if(change.revision!==versions.at(-1)?.revision)throw Error('当前版本已更新。');setResult(`已应用版本 ${change.revision}。`);}}/><p role="status">{result}</p></>;}
 
 function AccessDemo() {
   const [state,setState]=useState<'not-found'|'session-expired'|'forbidden'>('session-expired');

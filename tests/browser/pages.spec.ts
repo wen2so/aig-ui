@@ -58,3 +58,21 @@ test('助手页面停止后保留文本，失败后可重新生成',async({page}
   await page.getByRole('button',{name:'重新生成'}).click();
   await expect(page.getByText('任务已完成',{exact:true})).toBeVisible();
 });
+
+test('产物审核显式确认，保留失败与版本冲突',async({page})=>{
+  await page.goto('http://127.0.0.1:5173/?component=artifact-review');
+  await page.getByRole('button',{name:'编辑内容'}).click();
+  await page.getByRole('textbox',{name:'编辑产物内容'}).fill('修改后的项目摘要');
+  await page.getByRole('button',{name:'保存修改'}).click();
+  await expect(page.getByText('修改后的项目摘要',{exact:true})).toBeVisible();
+  await page.getByLabel('演示执行结果').selectOption('failure');
+  await page.getByRole('button',{name:'审核并应用'}).click();
+  await page.getByRole('button',{name:'确认执行'}).click();
+  await expect(page.getByText('演示执行失败，请重试。')).toBeVisible();
+  await page.getByRole('button',{name:'关闭审核'}).click();
+  await page.getByLabel('演示执行结果').selectOption('conflict');
+  await page.getByRole('button',{name:'审核并应用'}).click();
+  await page.getByRole('button',{name:'确认执行'}).click();
+  await expect(page.getByText('内容版本已变化，请重新检查后确认。')).toBeVisible();
+  await expect(page.getByRole('button',{name:'确认执行'})).toBeDisabled();
+});
