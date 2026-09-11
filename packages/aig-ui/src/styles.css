@@ -1,3 +1,4 @@
+@import './components/navigation/navigation.css';
 @import './components/breadcrumb/breadcrumb.css';
 @import './components/tabs/tabs.css';
 @import './components/combobox/combobox.css';
