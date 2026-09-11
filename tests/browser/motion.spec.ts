@@ -29,3 +29,30 @@ test('预览目录支持搜索与窄屏自然滚动', async ({ page }) => {
   await page.getByLabel('查找组件').fill('');
   await page.screenshot({ path: 'artifacts/preview-mobile.png', fullPage: true });
 });
+
+test('加载序列完成一次交接，释放内容与动画，旧任务完成信号被隔离', async ({ page }) => {
+  await page.goto('http://127.0.0.1:5173');
+  const section = page.locator('#LoadingSequence');
+  const sequence = section.locator('[data-aig-component=loading-sequence]');
+  await expect(sequence.locator('.aig-sequence-content')).toHaveAttribute('inert', '');
+  await section.getByRole('button', { name: '任务就绪' }).click();
+  await expect(sequence).toHaveAttribute('data-phase', 'complete');
+  await expect(section.getByText('完成交接 1 次')).toBeVisible();
+  await expect(sequence.locator('.aig-sequence-content')).not.toHaveAttribute('inert');
+  expect(await sequence.evaluate(element => element.getAnimations({ subtree: true }).length)).toBe(0);
+  await section.getByRole('button', { name: '任务就绪' }).click();
+  await expect(section.getByText('完成交接 1 次')).toBeVisible();
+  await section.getByRole('button', { name: '重试', exact: true }).click();
+  await section.getByRole('button', { name: '任务就绪' }).click();
+  await section.getByRole('button', { name: '重试', exact: true }).click();
+  await page.waitForTimeout(1500);
+  await expect(sequence).toHaveAttribute('data-phase', 'loading');
+  await expect(section.getByText('完成交接 1 次')).toBeVisible();
+  await section.getByRole('button', { name: '模拟失败' }).click();
+  await expect(section.getByRole('alert')).toContainText('加载未完成');
+  await section.getByRole('button', { name: '重试', exact: true }).click();
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await section.getByRole('button', { name: '任务就绪' }).click();
+  await expect(sequence).toHaveAttribute('data-phase', 'complete');
+  await expect(section.getByText('完成交接 2 次')).toBeVisible();
+});

@@ -2,6 +2,7 @@ import { useState, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Button } from '../../../packages/aig-ui/src/components/button/button.js';
 import { LoadingMark } from '../../../packages/aig-ui/src/motion/loading-mark.js';
+import { Interactive as SequenceDemo } from '../../../packages/aig-ui/src/motion/loading-sequence.stories.js';
 import '../../../packages/aig-ui/src/styles.css';
 import '../../../packages/aig-ui/src/motion/styles.css';
 import './preview.css';
@@ -15,6 +16,7 @@ function MarkDemo() {
 const entries = [
   { name: 'Button', label: '按钮', group: '基础', description: '五种操作层级，保留原生键盘和表单行为。', render: () => <div className="preview-actions">{(['primary', 'secondary', 'outline', 'ghost', 'danger'] as const).map((variant, i) => <Button key={variant} variant={variant} onClick={event => { event.currentTarget.textContent = '操作已完成'; }}>{['主操作', '次操作', '描边按钮', '文字按钮', '危险操作'][i]}</Button>)}<Button loading>正在保存</Button><Button disabled>暂不可用</Button></div> },
   { name: 'LoadingMark', label: '加载标记', group: '动效', description: 'SVG 逐步建立，双环协同等待，从当前进度反向撤回。', render: () => <MarkDemo /> },
+  { name: 'LoadingSequence', label: '加载序列', group: '动效', description: '任务就绪后反向擦除、解构并交接内容，支持失败恢复。', render: () => <SequenceDemo /> },
 ];
 
 function Preview() {
