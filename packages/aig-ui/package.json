@@ -196,6 +196,10 @@
     "./ai/source-list": {
       "types": "./dist/ai/source-list/source-list.d.ts",
       "import": "./dist/ai/source-list/source-list.js"
+    },
+    "./ai/task-status": {
+      "types": "./dist/ai/task-status/task-status.d.ts",
+      "import": "./dist/ai/task-status/task-status.js"
     }
   },
   "peerDependencies": {

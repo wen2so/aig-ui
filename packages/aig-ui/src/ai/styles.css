@@ -1,3 +1,4 @@
+@import './task-status/task-status.css';
 @import './source-list/source-list.css';
 @import './message/message.css';
 /* AI 组件附加样式；宿主同时导入 aig-ui/styles.css。 */
