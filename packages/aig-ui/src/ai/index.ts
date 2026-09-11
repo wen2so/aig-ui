@@ -3,3 +3,4 @@ export * from './message/message.js';
 export * from './source-list/source-list.js';
 export * from './task-status/task-status.js';
 export * from './tool-result/tool-result.js';
+export * from './prompt-input/prompt-input.js';

@@ -204,6 +204,10 @@
     "./ai/tool-result": {
       "types": "./dist/ai/tool-result/tool-result.d.ts",
       "import": "./dist/ai/tool-result/tool-result.js"
+    },
+    "./ai/prompt-input": {
+      "types": "./dist/ai/prompt-input/prompt-input.d.ts",
+      "import": "./dist/ai/prompt-input/prompt-input.js"
     }
   },
   "peerDependencies": {
