@@ -175,6 +175,10 @@
     "./accordion": {
       "types": "./dist/components/accordion/accordion.d.ts",
       "import": "./dist/components/accordion/accordion.js"
+    },
+    "./page-header": {
+      "types": "./dist/components/page-header/page-header.d.ts",
+      "import": "./dist/components/page-header/page-header.js"
     }
   },
   "peerDependencies": {
