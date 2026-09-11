@@ -18,3 +18,4 @@ export * from './components/toast/toast.js';
 export * from './components/field/field.js';
 export * from './components/input/input.js';
 export * from './components/textarea/textarea.js';
+export * from './components/checkbox/checkbox.js';
