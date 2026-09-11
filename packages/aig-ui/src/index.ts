@@ -35,3 +35,4 @@ export * from './components/breadcrumb/breadcrumb.js';
 export * from './components/navigation/navigation.js';
 export * from './components/pagination/pagination.js';
 export * from './components/alert/alert.js';
+export * from './components/skeleton/skeleton.js';

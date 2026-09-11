@@ -163,6 +163,10 @@
     "./alert": {
       "types": "./dist/components/alert/alert.d.ts",
       "import": "./dist/components/alert/alert.js"
+    },
+    "./skeleton": {
+      "types": "./dist/components/skeleton/skeleton.d.ts",
+      "import": "./dist/components/skeleton/skeleton.js"
     }
   },
   "peerDependencies": {

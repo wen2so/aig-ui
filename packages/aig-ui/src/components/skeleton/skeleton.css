@@ -1,0 +1,1 @@
+.aig-skeleton { min-height: 16px; border-radius: 8px; background: var(--aig-color-surface-muted); animation: aig-skeleton-pulse 1.8s ease-in-out infinite; }@keyframes aig-skeleton-pulse { 50% { opacity: .45; } }@media(prefers-reduced-motion:reduce){.aig-skeleton {animation:none;}}@media(forced-colors:active){.aig-skeleton {border:1px solid CanvasText;}}
