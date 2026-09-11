@@ -119,6 +119,10 @@
     "./dialog": {
       "types": "./dist/components/dialog/dialog.d.ts",
       "import": "./dist/components/dialog/dialog.js"
+    },
+    "./drawer": {
+      "types": "./dist/components/drawer/drawer.d.ts",
+      "import": "./dist/components/drawer/drawer.js"
     }
   },
   "peerDependencies": {

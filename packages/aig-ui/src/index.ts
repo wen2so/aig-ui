@@ -24,3 +24,4 @@ export * from './components/radio-group/radio-group.js';
 export { AigProvider } from './theme/aig-provider.js';
 export type { AigProviderProps } from './theme/aig-provider.js';
 export * from './components/dialog/dialog.js';
+export * from './components/drawer/drawer.js';

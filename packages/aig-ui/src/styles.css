@@ -1,3 +1,4 @@
+@import './components/drawer/drawer.css';
 @import './components/dialog/dialog.css';
 @import './components/radio-group/radio-group.css';
 @import './components/switch/switch.css';
