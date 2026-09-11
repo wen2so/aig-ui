@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "ES2022", "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "NodeNext", "moduleResolution": "NodeNext", "jsx": "react-jsx",
+    "strict": true, "noUncheckedIndexedAccess": true, "skipLibCheck": true,
+    "esModuleInterop": true, "types": ["node", "vitest/globals"]
+  },
+  "include": ["packages/**/*.ts", "packages/**/*.tsx", "apps/**/*.ts", "apps/**/*.tsx", "tests/**/*.ts", "tests/**/*.tsx", "registry/**/*.tsx", "vitest.config.ts"]
+}

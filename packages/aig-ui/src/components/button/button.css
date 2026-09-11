@@ -1,0 +1,14 @@
+.aig-button { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: var(--aig-space-2); min-block-size: 40px; padding: 8px 16px; border: 1px solid transparent; border-radius: var(--aig-radius-control); background: var(--aig-color-accent); color: var(--aig-color-surface); font: inherit; font-weight: 600; line-height: 1.5; cursor: pointer; overflow-wrap: anywhere; transition: opacity 160ms, background 160ms; }
+.aig-button[data-size=sm] { min-block-size: 32px; padding: 4px 12px; }
+.aig-button[data-size=lg] { min-block-size: 48px; padding: 12px 20px; }
+.aig-button[data-variant=secondary] { background: var(--aig-color-accent-soft); color: var(--aig-color-accent); }
+.aig-button[data-variant=outline] { background: var(--aig-color-surface); color: var(--aig-color-text); border-color: var(--aig-color-border-control); }
+.aig-button[data-variant=ghost] { background: transparent; color: var(--aig-color-accent); }
+.aig-button[data-variant=danger] { background: var(--aig-color-danger); }
+.aig-button:hover:enabled { opacity: .85; }
+.aig-button:active:enabled { opacity: .7; }
+.aig-button:disabled { opacity: .55; cursor: default; }
+.aig-button-busy { inline-size: .85em; block-size: .85em; border: 2px solid currentColor; border-inline-end-color: transparent; border-radius: 50%; animation: aig-spin 1s linear infinite; }
+@keyframes aig-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .aig-button { transition: none; } .aig-button-busy { animation: none; } }
+@media (forced-colors: active) { .aig-button { border-color: ButtonText; } }

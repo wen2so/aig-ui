@@ -1,0 +1,45 @@
+/* 由 scripts/tokens.mjs 生成。 */
+:root, [data-aig-theme] {
+  --aig-color-bg: rgb(253 250 249);
+  --aig-color-surface: rgb(255 255 255);
+  --aig-color-surface-muted: rgb(246 241 241);
+  --aig-color-text: rgb(58 50 52);
+  --aig-color-text-muted: rgb(112 99 103);
+  --aig-color-accent: rgb(125 78 87);
+  --aig-color-accent-soft: rgb(243 231 233);
+  --aig-color-border-subtle: rgb(230 220 222);
+  --aig-color-border-control: rgb(140 125 129);
+  --aig-color-focus: rgb(125 78 87);
+  --aig-color-danger: rgb(160 68 58);
+  --aig-color-success: rgb(63 118 94);
+  --aig-color-warning: rgb(138 91 36);
+  --aig-color-mark: rgb(185 139 144);
+  --aig-space-1: 4px;
+  --aig-space-2: 8px;
+  --aig-space-3: 12px;
+  --aig-space-4: 16px;
+  --aig-space-5: 20px;
+  --aig-space-6: 24px;
+  --aig-space-7: 32px;
+  --aig-space-8: 40px;
+  --aig-space-9: 48px;
+  --aig-space-10: 64px;
+  --aig-radius-control: 12px;
+  --aig-radius-card: 20px;
+  --aig-radius-panel: 24px;
+  --aig-motion-draw-delay: 150ms;
+  --aig-motion-draw-duration: 1150ms;
+  --aig-motion-bar-delay: 950ms;
+  --aig-motion-bar-duration: 650ms;
+  --aig-motion-label-delay: 550ms;
+  --aig-motion-progress-delay: 750ms;
+  --aig-motion-support-duration: 850ms;
+  --aig-motion-outer-period: 14000ms;
+  --aig-motion-inner-period: 7000ms;
+  --aig-motion-sweep-period: 1700ms;
+  --aig-motion-erase-duration: 980ms;
+  --aig-motion-bar-erase-duration: 720ms;
+  --aig-motion-dissolve-delay: 180ms;
+  --aig-motion-dissolve-duration: 800ms;
+  --aig-motion-reveal-duration: 1150ms;
+}

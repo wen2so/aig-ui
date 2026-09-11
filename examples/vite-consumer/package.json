@@ -1,0 +1,6 @@
+{
+  "name": "aig-ui-vite-consumer", "private": true, "type": "module",
+  "scripts": { "build": "tsc --noEmit && vite build", "dev": "vite --host 127.0.0.1 --port 4173 --strictPort" },
+  "dependencies": { "aig-ui": "file:../../artifacts/aig-ui-0.1.0-alpha.0.tgz", "react": "19.3.0", "react-dom": "19.3.0" },
+  "devDependencies": { "typescript": "7.0.2", "vite": "8.3.0", "@types/react": "19.3.0", "@types/react-dom": "19.3.0" }
+}
