@@ -1,0 +1,25 @@
+/* 模拟宿主 reset，组件显式样式应保持可用。 */
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #fdfaf9;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+main {
+  max-width: 1100px;
+  margin: auto;
+}
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 24px;
+}

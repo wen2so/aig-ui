@@ -1,0 +1,23 @@
+{
+  "name": "aig-ui-next-consumer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "next build --webpack",
+    "dev": "next start --hostname 127.0.0.1 --port 4174"
+  },
+  "dependencies": {
+    "aig-ui": "file:../../artifacts/aig-ui-0.1.0-alpha.0.tgz",
+    "next": "16.3.4",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@types/node": "22.20.2",
+    "tailwindcss": "4.3.3",
+    "@tailwindcss/postcss": "4.3.3"
+  }
+}

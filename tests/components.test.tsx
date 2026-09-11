@@ -2,7 +2,10 @@ import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import type { ComponentType } from 'react';
 
-const stories = import.meta.glob<{ preview?: { name: string }; Preview?: ComponentType }>(['../packages/aig-ui/src/components/**/*.stories.tsx', '../packages/aig-ui/src/ai/**/*.stories.tsx'], { eager: true });
+const stories = import.meta.glob<{ preview?: { name: string }; Preview?: ComponentType }>(
+  ['../packages/aig-ui/src/components/**/*.stories.tsx', '../packages/aig-ui/src/ai/**/*.stories.tsx'],
+  { eager: true },
+);
 describe('公共组件的可编译预览', () => {
   for (const story of Object.values(stories)) {
     if (!story.preview || !story.Preview) continue;

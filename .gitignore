@@ -6,3 +6,7 @@ playwright-report/
 artifacts/
 *.tsbuildinfo
 .next/
+examples/vite-consumer/src/registry/
+examples/vite-consumer/src/pages.tsx
+examples/*/pnpm-lock.yaml
+examples/next-consumer/next-env.d.ts

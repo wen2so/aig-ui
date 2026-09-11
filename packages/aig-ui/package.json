@@ -6,6 +6,8 @@
   "files": [
     "dist",
     "src",
+    "!src/**/*.test.*",
+    "!src/**/*.stories.*",
     "README.md"
   ],
   "sideEffects": [
@@ -220,7 +222,10 @@
     "./ai/artifact-preview": {
       "types": "./dist/ai/artifact-preview/artifact-preview.d.ts",
       "import": "./dist/ai/artifact-preview/artifact-preview.js"
-    }
+    },
+    "./manifest.json": "./dist/manifest.json",
+    "./llms.txt": "./dist/llms.txt",
+    "./metadata/*": "./dist/*"
   },
   "peerDependencies": {
     "react": "19.3.0",

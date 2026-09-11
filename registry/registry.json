@@ -1,0 +1,37 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "aig-ui",
+  "homepage": "http://127.0.0.1:5173",
+  "items": [
+    {
+      "name": "access-state-page",
+      "type": "registry:block",
+      "title": "访问状态页",
+      "description": "加载、未找到、会话过期与权限不足的页面状态。"
+    },
+    {
+      "name": "settings-form",
+      "type": "registry:block",
+      "title": "设置表单",
+      "description": "表单校验、保存反馈与未保存草稿保护。"
+    },
+    {
+      "name": "filterable-list",
+      "type": "registry:block",
+      "title": "筛选列表",
+      "description": "筛选、分页、空态与详情抽屉。"
+    },
+    {
+      "name": "ai-assistant",
+      "type": "registry:block",
+      "title": "AI 助手",
+      "description": "消息、任务状态、停止生成与重试。"
+    },
+    {
+      "name": "artifact-review",
+      "type": "registry:block",
+      "title": "产物审核",
+      "description": "产物编辑、历史查看与绑定修订版的执行确认。"
+    }
+  ]
+}

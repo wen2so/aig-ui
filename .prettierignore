@@ -1,0 +1,13 @@
+node_modules
+dist
+artifacts
+reference
+pnpm-lock.yaml
+test-results
+examples/*/pnpm-lock.yaml
+packages/aig-ui/src/tokens/tokens.css
+packages/aig-ui/src/tokens/motion.ts
+apps/preview/src/catalog.ts
+examples/next-consumer/next-env.d.ts
+examples/vite-consumer/src/registry/
+examples/vite-consumer/src/pages.tsx
