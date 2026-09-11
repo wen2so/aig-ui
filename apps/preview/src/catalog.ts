@@ -24,4 +24,5 @@ import * as component21 from '../../../packages/aig-ui/src/components/switch/swi
 import * as component22 from '../../../packages/aig-ui/src/components/text/text.stories.js';
 import * as component23 from '../../../packages/aig-ui/src/components/textarea/textarea.stories.js';
 import * as component24 from '../../../packages/aig-ui/src/components/toast/toast.stories.js';
-export const componentStories = [component0, component1, component2, component3, component4, component5, component6, component7, component8, component9, component10, component11, component12, component13, component14, component15, component16, component17, component18, component19, component20, component21, component22, component23, component24];
+import * as component25 from '../../../packages/aig-ui/src/components/tooltip/tooltip.stories.js';
+export const componentStories = [component0, component1, component2, component3, component4, component5, component6, component7, component8, component9, component10, component11, component12, component13, component14, component15, component16, component17, component18, component19, component20, component21, component22, component23, component24, component25];
