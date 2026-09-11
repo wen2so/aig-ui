@@ -22,7 +22,7 @@ const entries = [
 ];
 
 function Preview() {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(() => new URLSearchParams(window.location.search).get('component') ?? '');
   const visible = entries.filter(entry => `${entry.name}${entry.label}${entry.group}`.toLowerCase().includes(search.toLowerCase()));
   return <div className="preview-shell" data-aig-theme="warm"><aside className="preview-sidebar"><a className="preview-brand" href="#top">aig<span>—</span>ui</a><p>组件与交互</p><label htmlFor="search">查找组件</label><input id="search" value={search} onChange={event => setSearch(event.target.value)} placeholder="名称或用途" /><nav aria-label="组件目录">{visible.map(entry => <a key={entry.name} href={`#${entry.name}`}><span>{entry.label}</span><small>{entry.name}</small></a>)}</nav><a className="preview-docs" href="http://localhost:6006">打开 Storybook ↗</a></aside><main id="top"><header className="preview-header"><span className="preview-eyebrow">AIG UI / COMPONENT LIBRARY</span><h1>平静的界面，清晰的交互。</h1><p>暖白、柔和材质与精密动效。探索组件的外观、状态和实际操作。</p><span className="preview-count">{entries.length} 个已实现组件 · 实验性 Alpha</span></header>{visible.map(entry => <section key={entry.name} id={entry.name} className="preview-section"><div className="preview-section-heading"><div><small>{entry.group}</small><h2>{entry.label} <span>{entry.name}</span></h2></div><code>可交互预览</code></div><p>{entry.description}</p><div className="preview-example">{entry.render()}</div></section>)}{visible.length === 0 && <p role="status">当前没有匹配的组件。</p>}</main></div>;
 }

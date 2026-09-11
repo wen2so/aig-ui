@@ -34,6 +34,7 @@ test('加载序列完成一次交接，释放内容与动画，旧任务完成�
   await page.goto('http://127.0.0.1:5173');
   const section = page.locator('#LoadingSequence');
   const sequence = section.locator('[data-aig-component=loading-sequence]');
+  await section.getByLabel('就绪时机').selectOption('manual');
   await expect(sequence.locator('.aig-sequence-content')).toHaveAttribute('inert', '');
   await section.getByRole('button', { name: '任务就绪' }).click();
   await expect(sequence).toHaveAttribute('data-phase', 'complete');
@@ -55,4 +56,23 @@ test('加载序列完成一次交接，释放内容与动画，旧任务完成�
   await section.getByRole('button', { name: '任务就绪' }).click();
   await expect(sequence).toHaveAttribute('data-phase', 'complete');
   await expect(section.getByText('完成交接 2 次')).toBeVisible();
+});
+
+test('标记保持镂空，回放呈现错峰描边与退出前的清晰线条', async ({ page }) => {
+  await page.goto('http://127.0.0.1:5173/?component=LoadingSequence');
+  const section = page.locator('#LoadingSequence');
+  await section.getByLabel('就绪时机').selectOption('manual');
+  const sequence = section.locator('[data-aig-component=loading-sequence]');
+  await expect.poll(() => sequence.locator('line').evaluate(element => parseFloat(getComputedStyle(element).strokeDashoffset))).toBe(0);
+  for (const part of await sequence.locator('svg circle, svg path, svg line').all()) await expect(part).toHaveCSS('fill', 'none');
+  await expect(sequence.locator('.aig-sequence-layer')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await sequence.screenshot({ path: 'artifacts/loading-hollow-holding.png' });
+  await section.getByRole('button', { name: '任务就绪' }).click();
+  await expect(sequence).toHaveAttribute('data-phase', 'exiting');
+  await expect.poll(() => sequence.locator('path').evaluate(element => element.getAnimations().length)).toBeGreaterThan(0);
+  await sequence.evaluate(element => element.getAnimations({ subtree: true }).filter(animation => Number.isFinite(animation.effect?.getTiming().iterations)).forEach(animation => { animation.pause(); animation.currentTime = 250; }));
+  expect(await sequence.locator('path').evaluate(element => parseFloat(getComputedStyle(element).strokeDashoffset))).toBeGreaterThan(0);
+  const opacity = await sequence.locator('.aig-sequence-layer').evaluate(element => Number(getComputedStyle(element).opacity));
+  expect(opacity).toBeGreaterThan(.9);
+  await sequence.screenshot({ path: 'artifacts/loading-hollow-erasing.png' });
 });

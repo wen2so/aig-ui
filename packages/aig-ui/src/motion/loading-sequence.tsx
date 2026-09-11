@@ -83,7 +83,8 @@ function Sequence({ status, label, description, progress, minimumVisibleMs = 0, 
       setErased(true); setDissolved(true); setRevealed(true);
       return;
     }
-    const dissolve = layer.current.animate([{ opacity: 1, transform: 'scale(1)', filter: 'blur(0px)' }, { opacity: 0, transform: 'scale(1.06)', filter: 'blur(10px)' }], { duration: timing['dissolve-duration'], delay: timing['dissolve-delay'], easing: 'cubic-bezier(.4,0,.2,1)', fill: 'both' });
+    // 先保留清晰描边，再加重解构，让撤回成为可辨认的独立动作。
+    const dissolve = layer.current.animate([{ opacity: 1, transform: 'scale(1)', filter: 'blur(0px)', offset: 0 }, { opacity: .92, transform: 'scale(1.008)', filter: 'blur(.3px)', offset: .45 }, { opacity: 0, transform: 'scale(1.06)', filter: 'blur(10px)', offset: 1 }], { duration: timing['dissolve-duration'], delay: timing['dissolve-delay'], easing: 'cubic-bezier(.4,0,.2,1)', fill: 'both' });
     const reveal = content.current.animate([{ opacity: 0, transform: 'scale(.975) translateY(14px)' }, { opacity: 1, transform: 'scale(1) translateY(0)' }], { duration: timing['reveal-duration'], delay: timing['dissolve-delay'], easing: 'cubic-bezier(.22,.61,.36,1)', fill: 'both' });
     dissolve.finished.then(() => { if (active) setDissolved(true); }).catch(() => {});
     reveal.finished.then(() => { if (active) setRevealed(true); }).catch(() => {});
