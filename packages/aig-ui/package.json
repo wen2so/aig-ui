@@ -212,6 +212,10 @@
     "./ai/conversation": {
       "types": "./dist/ai/conversation/conversation.d.ts",
       "import": "./dist/ai/conversation/conversation.js"
+    },
+    "./ai/confirmation": {
+      "types": "./dist/ai/confirmation/confirmation.d.ts",
+      "import": "./dist/ai/confirmation/confirmation.js"
     }
   },
   "peerDependencies": {

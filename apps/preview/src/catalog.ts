@@ -38,10 +38,11 @@ import * as component35 from '../../../packages/aig-ui/src/components/text/text.
 import * as component36 from '../../../packages/aig-ui/src/components/textarea/textarea.stories.js';
 import * as component37 from '../../../packages/aig-ui/src/components/toast/toast.stories.js';
 import * as component38 from '../../../packages/aig-ui/src/components/tooltip/tooltip.stories.js';
-import * as component39 from '../../../packages/aig-ui/src/ai/conversation/conversation.stories.js';
-import * as component40 from '../../../packages/aig-ui/src/ai/message/message.stories.js';
-import * as component41 from '../../../packages/aig-ui/src/ai/prompt-input/prompt-input.stories.js';
-import * as component42 from '../../../packages/aig-ui/src/ai/source-list/source-list.stories.js';
-import * as component43 from '../../../packages/aig-ui/src/ai/task-status/task-status.stories.js';
-import * as component44 from '../../../packages/aig-ui/src/ai/tool-result/tool-result.stories.js';
-export const componentStories = [component0, component1, component2, component3, component4, component5, component6, component7, component8, component9, component10, component11, component12, component13, component14, component15, component16, component17, component18, component19, component20, component21, component22, component23, component24, component25, component26, component27, component28, component29, component30, component31, component32, component33, component34, component35, component36, component37, component38, component39, component40, component41, component42, component43, component44];
+import * as component39 from '../../../packages/aig-ui/src/ai/confirmation/confirmation.stories.js';
+import * as component40 from '../../../packages/aig-ui/src/ai/conversation/conversation.stories.js';
+import * as component41 from '../../../packages/aig-ui/src/ai/message/message.stories.js';
+import * as component42 from '../../../packages/aig-ui/src/ai/prompt-input/prompt-input.stories.js';
+import * as component43 from '../../../packages/aig-ui/src/ai/source-list/source-list.stories.js';
+import * as component44 from '../../../packages/aig-ui/src/ai/task-status/task-status.stories.js';
+import * as component45 from '../../../packages/aig-ui/src/ai/tool-result/tool-result.stories.js';
+export const componentStories = [component0, component1, component2, component3, component4, component5, component6, component7, component8, component9, component10, component11, component12, component13, component14, component15, component16, component17, component18, component19, component20, component21, component22, component23, component24, component25, component26, component27, component28, component29, component30, component31, component32, component33, component34, component35, component36, component37, component38, component39, component40, component41, component42, component43, component44, component45];
