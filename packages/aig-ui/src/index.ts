@@ -25,3 +25,4 @@ export { AigProvider } from './theme/aig-provider.js';
 export type { AigProviderProps } from './theme/aig-provider.js';
 export * from './components/dialog/dialog.js';
 export * from './components/drawer/drawer.js';
+export * from './components/popover/popover.js';

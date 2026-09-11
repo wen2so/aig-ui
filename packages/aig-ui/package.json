@@ -123,6 +123,10 @@
     "./drawer": {
       "types": "./dist/components/drawer/drawer.d.ts",
       "import": "./dist/components/drawer/drawer.js"
+    },
+    "./popover": {
+      "types": "./dist/components/popover/popover.d.ts",
+      "import": "./dist/components/popover/popover.js"
     }
   },
   "peerDependencies": {
