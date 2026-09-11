@@ -31,3 +31,4 @@ export * from './components/dropdown-menu/dropdown-menu.js';
 export * from './components/select/select.js';
 export * from './components/combobox/combobox.js';
 export * from './components/tabs/tabs.js';
+export * from './components/breadcrumb/breadcrumb.js';

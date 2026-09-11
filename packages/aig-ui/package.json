@@ -147,6 +147,10 @@
     "./tabs": {
       "types": "./dist/components/tabs/tabs.d.ts",
       "import": "./dist/components/tabs/tabs.js"
+    },
+    "./breadcrumb": {
+      "types": "./dist/components/breadcrumb/breadcrumb.d.ts",
+      "import": "./dist/components/breadcrumb/breadcrumb.js"
     }
   },
   "peerDependencies": {
