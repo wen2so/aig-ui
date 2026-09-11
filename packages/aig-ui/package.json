@@ -59,6 +59,10 @@
     "./badge": {
       "types": "./dist/components/badge/badge.d.ts",
       "import": "./dist/components/badge/badge.js"
+    },
+    "./spinner": {
+      "types": "./dist/components/spinner/spinner.d.ts",
+      "import": "./dist/components/spinner/spinner.js"
     }
   },
   "peerDependencies": {
