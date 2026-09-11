@@ -25,23 +25,49 @@ export function compileTokens(source) {
     }
     switch (token.$type) {
       case 'color':
-        if (value.colorSpace !== 'srgb' || value.components?.length !== 3 || !value.components.every(n => Number.isFinite(n) && n >= 0 && n <= 1)) throw Error(`颜色无效：${name}`);
-        return `rgb(${value.components.map(n => Math.round(n * 255)).join(' ')})`;
-      case 'dimension': case 'duration':
-        if (!Number.isFinite(value.value) || value.value < 0 || !(token.$type === 'dimension' ? ['px', 'rem'] : ['ms', 's']).includes(value.unit)) throw Error(`数值或单位无效：${name}`);
-        return `${value.value}${value.unit}`;
+        if (
+          value.colorSpace !== 'srgb' ||
+          value.components?.length !== 3 ||
+          !value.components.every((n) => Number.isFinite(n) && n >= 0 && n <= 1)
+        )
+          throw Error(`颜色无效：${name}`);
+        return `rgb(${value.components.map((n) => Math.round(n * 255)).join(' ')})`;
+      case 'dimension':
+      case 'duration':
+        if (
+          !Number.isFinite(value.value) ||
+          value.value < 0 ||
+          !(token.$type === 'dimension' ? ['px', 'rem'] : ['ms', 's']).includes(value.unit)
+        )
+          throw Error(`数值或单位无效：${name}`);
+        return token.$type === 'duration' && value.unit === 's'
+          ? `${value.value * 1000}ms`
+          : `${value.value}${value.unit}`;
       case 'number':
         if (!Number.isFinite(value)) throw Error(`数值无效：${name}`);
         return String(value);
-      default: throw Error(`Token 类型尚未支持：${token.$type}`);
+      default:
+        throw Error(`Token 类型尚未支持：${token.$type}`);
     }
   }
-  return Object.fromEntries([...flat.keys()].map(name => [name, resolve(name)]));
+  return Object.fromEntries([...flat.keys()].map((name) => [name, resolve(name)]));
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   const tokens = compileTokens(JSON.parse(readFileSync('packages/aig-ui/src/tokens/source.json', 'utf8')));
-  writeFileSync('packages/aig-ui/src/tokens/tokens.css', `/* 由 scripts/tokens.mjs 生成。 */\n:root {\n${Object.entries(tokens).map(([key, value]) => `  --aig-${key.replaceAll('.', '-')}: ${value};`).join('\n')}\n}\n`);
-  const motion = Object.fromEntries(Object.entries(tokens).filter(([key]) => key.startsWith('motion.')).map(([key, value]) => [key.slice(7), parseFloat(value)]));
-  writeFileSync('packages/aig-ui/src/tokens/motion.ts', `/** 从同一 Token 源生成的动效时长，单位为毫秒。 */\nexport const motionTiming = ${JSON.stringify(motion, null, 2)} as const;\n`);
+  writeFileSync(
+    'packages/aig-ui/src/tokens/tokens.css',
+    `/* 由 scripts/tokens.mjs 生成。 */\n:root {\n${Object.entries(tokens)
+      .map(([key, value]) => `  --aig-${key.replaceAll('.', '-')}: ${value};`)
+      .join('\n')}\n}\n`,
+  );
+  const motion = Object.fromEntries(
+    Object.entries(tokens)
+      .filter(([key]) => key.startsWith('motion.'))
+      .map(([key, value]) => [key.slice(7), parseFloat(value)]),
+  );
+  writeFileSync(
+    'packages/aig-ui/src/tokens/motion.ts',
+    `/** 从同一 Token 源生成的动效时长，单位为毫秒。 */\nexport const motionTiming = ${JSON.stringify(motion, null, 2)} as const;\n`,
+  );
 }
