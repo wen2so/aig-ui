@@ -41,3 +41,20 @@ test('筛选列表覆盖空结果、分页、详情与读取失败',async({page}
   await page.getByRole('button',{name:'重试读取'}).click();
   await expect(page.getByRole('table')).toBeVisible();
 });
+
+test('助手页面停止后保留文本，失败后可重新生成',async({page})=>{
+  await page.goto('http://127.0.0.1:5173/?component=ai-assistant');
+  await page.getByRole('button',{name:'发送',exact:true}).click();
+  await expect(page.getByRole('article',{name:'助手消息'})).toContainText('演示');
+  await page.getByRole('button',{name:'停止生成'}).click();
+  const stopped=await page.getByRole('article',{name:'助手消息'}).textContent();
+  await page.waitForTimeout(250);
+  expect(await page.getByRole('article',{name:'助手消息'}).textContent()).toBe(stopped);
+  await expect(page.getByRole('textbox',{name:'输入任务'})).toHaveValue('整理演示资料中的重点');
+  await page.getByLabel('模拟生成中断').check();
+  await page.getByRole('button',{name:'重新生成'}).click();
+  await expect(page.getByText('任务未完成',{exact:true})).toBeVisible();
+  await page.getByLabel('模拟生成中断').uncheck();
+  await page.getByRole('button',{name:'重新生成'}).click();
+  await expect(page.getByText('任务已完成',{exact:true})).toBeVisible();
+});
