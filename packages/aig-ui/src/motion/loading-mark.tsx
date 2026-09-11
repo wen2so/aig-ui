@@ -16,7 +16,7 @@ export interface LoadingMarkProps extends ComponentPropsWithRef<'svg'> {
 }
 
 /** 以原生动画从实际描边位置连续绘制和擦除。 */
-export function LoadingMark({ phase = 'drawing', size = 104, motion = 'system', label, onErased, className = '', ...props }: LoadingMarkProps) {
+export function LoadingMark({ phase = 'drawing', size = 112, motion = 'system', label, onErased, className = '', ...props }: LoadingMarkProps) {
   const triangle = useRef<SVGPathElement>(null);
   const bar = useRef<SVGLineElement>(null);
   const callback = useRef(onErased); callback.current = onErased;
@@ -59,9 +59,9 @@ export function LoadingMark({ phase = 'drawing', size = 104, motion = 'system', 
   }, [phase, reduced]);
 
   return <svg {...props} viewBox="0 0 200 200" width={size} height={size} fill="none" stroke="currentColor" aria-hidden={label ? undefined : true} role={label ? 'img' : undefined} aria-label={label} data-aig-component="loading-mark" data-phase={phase} data-reduced={reduced || undefined} className={`aig-loading-mark ${className}`}>
-    <circle className="aig-ring-outer" cx="100" cy="100" r="92" strokeWidth="0.9" strokeDasharray="3 9" opacity=".3" />
-    <circle className="aig-ring-inner" cx="100" cy="100" r="84" strokeWidth="1.1" strokeDasharray="120 408" opacity=".55" />
-    <path ref={triangle} d="M100 38 L164 148 L36 148 Z" pathLength="1" strokeDasharray="1" strokeDashoffset={phase === 'drawing' ? 1 : 0} strokeWidth="2.2" strokeLinejoin="round" />
-    <line ref={bar} x1="60" y1="112" x2="140" y2="112" pathLength="1" strokeDasharray="1" strokeDashoffset={phase === 'drawing' ? 1 : 0} strokeWidth="2.2" strokeLinecap="round" />
+    <circle className="aig-ring-outer" fill="none" cx="100" cy="100" r="92" strokeWidth="0.9" strokeDasharray="3 9" opacity=".38" />
+    <circle className="aig-ring-inner" fill="none" cx="100" cy="100" r="84" strokeWidth="1.1" strokeDasharray="120 408" strokeLinecap="round" opacity=".68" />
+    <path ref={triangle} fill="none" d="M100 38 L164 148 L36 148 Z" pathLength="1" strokeDasharray="1" strokeDashoffset={phase === 'drawing' ? 1 : 0} strokeWidth="2.2" strokeLinejoin="round" />
+    <line ref={bar} fill="none" x1="60" y1="112" x2="140" y2="112" pathLength="1" strokeDasharray="1" strokeDashoffset={phase === 'drawing' ? 1 : 0} strokeWidth="2.2" strokeLinecap="round" />
   </svg>;
 }

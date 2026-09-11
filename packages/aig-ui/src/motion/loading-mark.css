@@ -1,4 +1,5 @@
-.aig-loading-mark { color: var(--aig-color-mark); overflow: visible; flex: none; }
+.aig-loading-mark { color: color-mix(in srgb, var(--aig-color-mark) 82%, var(--aig-color-accent)); overflow: visible; flex: none; }
+.aig-loading-mark :is(circle, path, line) { fill: none; }
 .aig-ring-outer, .aig-ring-inner { transform-origin: 100px 100px; }
 .aig-loading-mark:is([data-phase=drawing], [data-phase=holding], [data-phase=erasing]) .aig-ring-outer { animation: aig-ring-turn var(--aig-motion-outer-period) linear infinite; }
 .aig-loading-mark:is([data-phase=drawing], [data-phase=holding], [data-phase=erasing]) .aig-ring-inner { animation: aig-ring-turn var(--aig-motion-inner-period) linear infinite reverse; }
