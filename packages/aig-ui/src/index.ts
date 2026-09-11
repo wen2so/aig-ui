@@ -11,3 +11,4 @@ export * from './components/spinner/spinner.js';
 export * from './components/status-indicator/status-indicator.js';
 export * from './components/progress/progress.js';
 export * from './components/empty-state/empty-state.js';
+export * from './components/result/result.js';
