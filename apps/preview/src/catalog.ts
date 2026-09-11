@@ -32,9 +32,10 @@ import * as component29 from '../../../packages/aig-ui/src/components/skeleton/s
 import * as component30 from '../../../packages/aig-ui/src/components/spinner/spinner.stories.js';
 import * as component31 from '../../../packages/aig-ui/src/components/status-indicator/status-indicator.stories.js';
 import * as component32 from '../../../packages/aig-ui/src/components/switch/switch.stories.js';
-import * as component33 from '../../../packages/aig-ui/src/components/tabs/tabs.stories.js';
-import * as component34 from '../../../packages/aig-ui/src/components/text/text.stories.js';
-import * as component35 from '../../../packages/aig-ui/src/components/textarea/textarea.stories.js';
-import * as component36 from '../../../packages/aig-ui/src/components/toast/toast.stories.js';
-import * as component37 from '../../../packages/aig-ui/src/components/tooltip/tooltip.stories.js';
-export const componentStories = [component0, component1, component2, component3, component4, component5, component6, component7, component8, component9, component10, component11, component12, component13, component14, component15, component16, component17, component18, component19, component20, component21, component22, component23, component24, component25, component26, component27, component28, component29, component30, component31, component32, component33, component34, component35, component36, component37];
+import * as component33 from '../../../packages/aig-ui/src/components/table/table.stories.js';
+import * as component34 from '../../../packages/aig-ui/src/components/tabs/tabs.stories.js';
+import * as component35 from '../../../packages/aig-ui/src/components/text/text.stories.js';
+import * as component36 from '../../../packages/aig-ui/src/components/textarea/textarea.stories.js';
+import * as component37 from '../../../packages/aig-ui/src/components/toast/toast.stories.js';
+import * as component38 from '../../../packages/aig-ui/src/components/tooltip/tooltip.stories.js';
+export const componentStories = [component0, component1, component2, component3, component4, component5, component6, component7, component8, component9, component10, component11, component12, component13, component14, component15, component16, component17, component18, component19, component20, component21, component22, component23, component24, component25, component26, component27, component28, component29, component30, component31, component32, component33, component34, component35, component36, component37, component38];

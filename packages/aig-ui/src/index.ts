@@ -39,3 +39,4 @@ export * from './components/skeleton/skeleton.js';
 export * from './components/separator/separator.js';
 export * from './components/accordion/accordion.js';
 export * from './components/page-header/page-header.js';
+export * from './components/table/table.js';

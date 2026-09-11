@@ -179,6 +179,10 @@
     "./page-header": {
       "types": "./dist/components/page-header/page-header.d.ts",
       "import": "./dist/components/page-header/page-header.js"
+    },
+    "./table": {
+      "types": "./dist/components/table/table.d.ts",
+      "import": "./dist/components/table/table.js"
     }
   },
   "peerDependencies": {
