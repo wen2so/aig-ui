@@ -1,3 +1,4 @@
+@import './components/alert/alert.css';
 @import './components/pagination/pagination.css';
 @import './components/navigation/navigation.css';
 @import './components/breadcrumb/breadcrumb.css';

@@ -159,6 +159,10 @@
     "./pagination": {
       "types": "./dist/components/pagination/pagination.d.ts",
       "import": "./dist/components/pagination/pagination.js"
+    },
+    "./alert": {
+      "types": "./dist/components/alert/alert.d.ts",
+      "import": "./dist/components/alert/alert.js"
     }
   },
   "peerDependencies": {
