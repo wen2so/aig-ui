@@ -35,6 +35,10 @@
     "./link": {
       "types": "./dist/components/link/link.d.ts",
       "import": "./dist/components/link/link.js"
+    },
+    "./text": {
+      "types": "./dist/components/text/text.d.ts",
+      "import": "./dist/components/text/text.js"
     }
   },
   "peerDependencies": {

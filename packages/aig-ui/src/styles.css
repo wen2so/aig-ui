@@ -5,3 +5,4 @@
 :where([class^='aig-'], [class*=' aig-']):focus-visible { outline: 2px solid var(--aig-color-focus); outline-offset: 3px; }
 @import './components/icon-button/icon-button.css';
 @import './components/link/link.css';
+@import './components/text/text.css';
