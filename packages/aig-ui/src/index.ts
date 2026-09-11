@@ -33,3 +33,4 @@ export * from './components/combobox/combobox.js';
 export * from './components/tabs/tabs.js';
 export * from './components/breadcrumb/breadcrumb.js';
 export * from './components/navigation/navigation.js';
+export * from './components/pagination/pagination.js';

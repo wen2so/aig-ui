@@ -155,6 +155,10 @@
     "./navigation": {
       "types": "./dist/components/navigation/navigation.d.ts",
       "import": "./dist/components/navigation/navigation.js"
+    },
+    "./pagination": {
+      "types": "./dist/components/pagination/pagination.d.ts",
+      "import": "./dist/components/pagination/pagination.js"
     }
   },
   "peerDependencies": {
