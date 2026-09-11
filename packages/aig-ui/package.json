@@ -55,6 +55,10 @@
     "./panel": {
       "types": "./dist/components/panel/panel.d.ts",
       "import": "./dist/components/panel/panel.js"
+    },
+    "./badge": {
+      "types": "./dist/components/badge/badge.d.ts",
+      "import": "./dist/components/badge/badge.js"
     }
   },
   "peerDependencies": {

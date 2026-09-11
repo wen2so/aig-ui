@@ -6,3 +6,4 @@ export * from './components/heading/heading.js';
 export * from './components/icon/icon.js';
 export * from './components/card/card.js';
 export * from './components/panel/panel.js';
+export * from './components/badge/badge.js';
