@@ -171,6 +171,10 @@
     "./separator": {
       "types": "./dist/components/separator/separator.d.ts",
       "import": "./dist/components/separator/separator.js"
+    },
+    "./accordion": {
+      "types": "./dist/components/accordion/accordion.d.ts",
+      "import": "./dist/components/accordion/accordion.js"
     }
   },
   "peerDependencies": {
