@@ -3,9 +3,9 @@
   flex-direction: column;
   min-inline-size: 0;
   border: 1px solid var(--aig-color-border-subtle);
-  border-radius: var(--aig-radius-panel);
   background: var(--aig-color-surface);
   color: var(--aig-color-text);
+  border-radius: clamp(var(--aig-radius-panel), 4.2vw, 52px);
 }
 .aig-panel-header,
 .aig-panel-body,
@@ -19,9 +19,11 @@
 }
 .aig-panel-header {
   border-bottom: 1px solid var(--aig-color-border-subtle);
+  border-bottom-color: color-mix(in srgb, var(--aig-color-border-subtle) 65%, transparent);
 }
 .aig-panel-footer {
   border-top: 1px solid var(--aig-color-border-subtle);
+  border-top-color: color-mix(in srgb, var(--aig-color-border-subtle) 65%, transparent);
 }
 .aig-panel[data-scroll] > .aig-panel-body {
   overflow: auto;

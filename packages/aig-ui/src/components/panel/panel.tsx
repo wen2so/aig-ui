@@ -1,8 +1,20 @@
 import type { ComponentPropsWithRef } from 'react';
 type PartProps = ComponentPropsWithRef<'div'>;
 /** 面板支持自然伸展；scroll 时由宿主设置高度或最大高度。 */
-function Root({ scroll = false, className = '', ...props }: PartProps & { scroll?: boolean }) {
-  return <div {...props} data-scroll={scroll || undefined} className={`aig-panel ${className}`} />;
+function Root({
+  scroll = false,
+  material = 'glass',
+  className = '',
+  ...props
+}: PartProps & { scroll?: boolean; material?: 'glass' | 'solid' }) {
+  return (
+    <div
+      {...props}
+      data-material={material}
+      data-scroll={scroll || undefined}
+      className={`aig-panel ${className}`}
+    />
+  );
 }
 /** 面板标题与操作。 */
 function Header({ className = '', ...props }: PartProps) {

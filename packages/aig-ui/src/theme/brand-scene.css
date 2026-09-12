@@ -1,0 +1,60 @@
+/* 页面配方复用环境层，伪元素仅作装饰并避开操作区域。 */
+.aig-brand-scene {
+  position: relative;
+  isolation: isolate;
+  min-inline-size: 0;
+  background:
+    radial-gradient(ellipse at 15% 15%, #f3e7e980, transparent 50%),
+    radial-gradient(ellipse at 85% 60%, #ffffff, transparent 65%), var(--aig-color-bg);
+  border-radius: var(--aig-radius-panel);
+}
+.aig-brand-scene::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background-image:
+    linear-gradient(#b98b9009 1px, transparent 1px), linear-gradient(90deg, #b98b9009 1px, transparent 1px);
+  background-size: 44px 44px;
+  background-position: var(--aig-scene-x, 0px) var(--aig-scene-y, 0px);
+  transition: background-position 400ms;
+}
+.aig-brand-scene::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(transparent 40%, #ebdfe030 50%, transparent 60%);
+  background-size: 100% 250%;
+  animation: aig-ambient-scan 12s linear infinite;
+}
+@keyframes aig-ambient-scan {
+  from {
+    background-position: 0 150%;
+  }
+  to {
+    background-position: 0 -50%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .aig-brand-scene::before {
+    transition: none;
+    background-position: 0 0;
+  }
+  .aig-brand-scene::after {
+    animation: none;
+  }
+}
+@media (forced-colors: active) {
+  .aig-brand-scene {
+    background: Canvas;
+  }
+  .aig-brand-scene::before,
+  .aig-brand-scene::after {
+    display: none;
+  }
+}

@@ -11,4 +11,7 @@
     12px/1.5 system-ui,
     sans-serif;
   overflow-wrap: anywhere;
+  border: 1px solid color-mix(in srgb, var(--aig-color-surface) 30%, transparent);
+  box-shadow: 0 6px 20px rgb(58 50 52 / 12%);
+  border-inline-start: 2px solid var(--aig-color-signal);
 }

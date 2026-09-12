@@ -1,0 +1,201 @@
+/* 仿生界面的边缘坐标、分段轨迹与一次性构建反馈。 */
+:is(.aig-dialog, .aig-popover, .aig-menu, .aig-select-popup, .aig-combobox-popup, .aig-tooltip, .aig-toast) {
+  transition:
+    opacity 200ms,
+    translate 240ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+:is(
+  .aig-dialog,
+  .aig-popover,
+  .aig-menu,
+  .aig-select-popup,
+  .aig-combobox-popup,
+  .aig-tooltip,
+  .aig-toast
+):is([data-starting-style], [data-ending-style]) {
+  opacity: 0;
+  translate: 0 6px;
+}
+:is(.aig-card, .aig-panel, .aig-popover, .aig-menu, .aig-select-popup, .aig-combobox-popup, .aig-toast) {
+  position: relative;
+}
+:is(
+  .aig-card,
+  .aig-panel,
+  .aig-dialog,
+  .aig-popover,
+  .aig-menu,
+  .aig-select-popup,
+  .aig-combobox-popup,
+  .aig-toast
+)::before {
+  content: '';
+  position: absolute;
+  inset: 16px;
+  pointer-events: none;
+  border-radius: 3px;
+  background:
+    linear-gradient(var(--aig-color-signal), var(--aig-color-signal)) left top / 30px 1px no-repeat,
+    linear-gradient(var(--aig-color-signal), var(--aig-color-signal)) left top / 1px 18px no-repeat,
+    linear-gradient(var(--aig-color-mark), var(--aig-color-mark)) right bottom / 30px 1px no-repeat,
+    linear-gradient(var(--aig-color-mark), var(--aig-color-mark)) right bottom / 1px 18px no-repeat;
+  opacity: 0.55;
+  animation: aig-frame-establish var(--aig-motion-frame-duration) cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+:is(.aig-card, .aig-panel, .aig-dialog) {
+  isolation: isolate;
+}
+:is(.aig-menu, .aig-select-popup, .aig-combobox-popup, .aig-toast)::before {
+  inset: 4px;
+  background-size:
+    12px 1px,
+    1px 8px,
+    12px 1px,
+    1px 8px;
+  opacity: 0.35;
+}
+:is(.aig-card, .aig-panel, .aig-dialog)::after {
+  content: '';
+  position: absolute;
+  inset-block-start: 18px;
+  inset-inline-end: 18px;
+  width: 38px;
+  height: 38px;
+  border: 1px dashed var(--aig-color-signal);
+  border-radius: 50%;
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: -1;
+  animation: aig-orbit-establish 1200ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+.aig-page-header::before {
+  content: '';
+  width: 11px;
+  height: 11px;
+  flex: none;
+  border: 1px solid var(--aig-color-signal);
+  transform: rotate(45deg);
+  box-shadow:
+    3px -3px 0 -1px var(--aig-color-bg),
+    3px -3px 0 0 var(--aig-color-mark);
+}
+.aig-page-header > div:first-of-type {
+  flex: 1;
+}
+.aig-heading {
+  border-inline-start: 2px solid var(--aig-color-signal);
+  padding-inline-start: 12px;
+}
+.aig-description-list dt::before {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 1px;
+  background: var(--aig-color-signal);
+  margin-inline-end: 7px;
+  vertical-align: middle;
+}
+.aig-separator[data-orientation='horizontal'] {
+  background: linear-gradient(
+    90deg,
+    var(--aig-color-signal) 0 24px,
+    transparent 24px 29px,
+    var(--aig-color-border-subtle) 29px
+  );
+}
+.aig-status-glyph {
+  display: inline-block;
+  width: 112px;
+  height: 112px;
+  overflow: visible;
+  color: var(--aig-color-mark);
+}
+.aig-status-glyph-orbit {
+  opacity: 0.45;
+  transform-origin: 60px 60px;
+  animation: aig-orbit-establish 1200ms ease-out both;
+}
+.aig-status-glyph-arc {
+  color: var(--aig-color-signal);
+  opacity: 0.7;
+}
+.aig-status-glyph-frame,
+.aig-status-glyph-detail {
+  stroke-dasharray: 1;
+  animation: aig-glyph-draw 850ms cubic-bezier(0.45, 0, 0.2, 1) both;
+}
+.aig-status-glyph-detail {
+  animation-delay: 200ms;
+}
+.aig-result-symbol .aig-status-glyph {
+  color: inherit;
+}
+@keyframes aig-frame-establish {
+  from {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    opacity: 0.55;
+    clip-path: inset(0);
+  }
+}
+@keyframes aig-orbit-establish {
+  from {
+    transform: rotate(-65deg);
+    opacity: 0;
+  }
+}
+@keyframes aig-glyph-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(
+    .aig-dialog,
+    .aig-popover,
+    .aig-menu,
+    .aig-select-popup,
+    .aig-combobox-popup,
+    .aig-tooltip,
+    .aig-toast
+  ) {
+    transition: none;
+  }
+  :is(
+    .aig-card,
+    .aig-panel,
+    .aig-dialog,
+    .aig-popover,
+    .aig-menu,
+    .aig-select-popup,
+    .aig-combobox-popup,
+    .aig-toast
+  )::before,
+  :is(.aig-card, .aig-panel, .aig-dialog)::after,
+  .aig-status-glyph :is(circle, path) {
+    animation: none;
+  }
+}
+@media (forced-colors: active) {
+  .aig-status-glyph {
+    color: CanvasText;
+  }
+  :is(
+    .aig-card,
+    .aig-panel,
+    .aig-dialog,
+    .aig-popover,
+    .aig-menu,
+    .aig-select-popup,
+    .aig-combobox-popup,
+    .aig-toast
+  )::before,
+  :is(.aig-card, .aig-panel, .aig-dialog)::after {
+    display: none;
+  }
+}

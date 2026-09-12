@@ -14,7 +14,7 @@ export interface AigProviderProps extends ComponentPropsWithRef<'div'> {
 export function AigProvider({
   theme = 'warm',
   density = 'comfortable',
-  material = 'solid',
+  material = 'glass',
   children,
   ...props
 }: AigProviderProps) {

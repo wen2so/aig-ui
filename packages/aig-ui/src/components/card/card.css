@@ -7,19 +7,6 @@
   color: var(--aig-color-text);
   overflow-wrap: anywhere;
 }
-@supports (backdrop-filter: blur(20px)) {
-  .aig-card[data-material='glass'] {
-    background: color-mix(in srgb, var(--aig-color-surface) 78%, transparent);
-    backdrop-filter: blur(20px);
-    box-shadow:
-      inset 0 1px white,
-      0 12px 40px #3a323408;
-  }
-}
-[data-aig-material='solid'] .aig-card {
-  background: var(--aig-color-surface);
-  backdrop-filter: none;
-}
 [data-aig-density='compact'] .aig-card {
   padding: var(--aig-space-4);
 }

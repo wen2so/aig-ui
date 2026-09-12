@@ -6,10 +6,10 @@
   transform: none;
   width: min(440px, calc(100vw - 24px));
   max-height: 100dvh;
-  border-radius: 24px 0 0 24px;
+  border-radius: var(--aig-radius-panel) 0 0 var(--aig-radius-panel);
 }
 .aig-drawer[data-side='left'] {
   left: 0;
   right: auto;
-  border-radius: 0 24px 24px 0;
+  border-radius: 0 var(--aig-radius-panel) var(--aig-radius-panel) 0;
 }

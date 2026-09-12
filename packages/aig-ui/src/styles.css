@@ -39,6 +39,10 @@
 @import './components/empty-state/empty-state.css';
 @import './components/result/result.css';
 @import './components/description-list/description-list.css';
+@import './theme/material.css';
+@import './theme/controls.css';
+@import './theme/brand-scene.css';
+@import './theme/geometry.css';
 :where([data-aig-theme]) {
   color: var(--aig-color-text);
   font-family: system-ui, 'Microsoft YaHei', sans-serif;

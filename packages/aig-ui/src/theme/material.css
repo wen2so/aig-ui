@@ -1,0 +1,43 @@
+/* 共享主表面与浮层材料，由公共样式入口提供。 */
+@supports (backdrop-filter: blur(1px)) {
+  :is(.aig-card, .aig-panel, .aig-dialog)[data-material='glass'],
+  :is(.aig-popover, .aig-menu, .aig-select-popup, .aig-combobox-popup, .aig-toast) {
+    background: var(--aig-surface-background, linear-gradient(155deg, var(--aig-material-glass)));
+    border-color: var(--aig-surface-border, var(--aig-material-border));
+    backdrop-filter: var(
+      --aig-surface-filter,
+      blur(var(--aig-material-blur)) saturate(var(--aig-material-saturation))
+    );
+    box-shadow: var(--aig-surface-shadow, var(--aig-material-shadow));
+  }
+}
+[data-aig-material='solid'] {
+  --aig-surface-background: var(--aig-color-surface);
+  --aig-surface-border: var(--aig-color-border-subtle);
+  --aig-surface-filter: none;
+  --aig-surface-shadow: inset 0 1px var(--aig-color-surface);
+}
+[data-aig-material='glass'] {
+  --aig-surface-background: linear-gradient(155deg, var(--aig-material-glass));
+  --aig-surface-border: var(--aig-material-border);
+  --aig-surface-filter: blur(var(--aig-material-blur)) saturate(var(--aig-material-saturation));
+  --aig-surface-shadow: var(--aig-material-shadow);
+}
+@media (forced-colors: active) {
+  :is(
+    .aig-card,
+    .aig-panel,
+    .aig-dialog,
+    .aig-popover,
+    .aig-menu,
+    .aig-select-popup,
+    .aig-combobox-popup,
+    .aig-toast
+  ) {
+    background: Canvas !important;
+    color: CanvasText !important;
+    border-color: CanvasText !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+  }
+}

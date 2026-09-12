@@ -17,7 +17,7 @@
   background: var(--aig-color-surface);
   color: var(--aig-color-text);
   border: 1px solid var(--aig-color-border-control);
-  border-radius: 16px;
+  border-radius: var(--aig-radius-card);
   box-shadow: 0 8px 32px #3a323414;
   font-family: system-ui, sans-serif;
   overflow-wrap: anywhere;

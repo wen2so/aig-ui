@@ -4,12 +4,16 @@ import type { ComponentProps, ComponentPropsWithRef } from 'react';
 import { classNames } from '../../internal/class-name.js';
 import { useAigPortalContainer } from '../../theme/aig-provider.js';
 /** Content 包含 Portal 与背景，Title 用于提供可访问名称。 */
-function Content({ className, ...props }: ComponentProps<typeof BaseDialog.Popup>) {
+function Content({
+  material = 'glass',
+  className,
+  ...props
+}: ComponentProps<typeof BaseDialog.Popup> & { material?: 'glass' | 'solid' }) {
   const container = useAigPortalContainer();
   return (
     <BaseDialog.Portal container={container}>
       <BaseDialog.Backdrop className="aig-dialog-backdrop" />
-      <BaseDialog.Popup {...props} className={classNames('aig-dialog', className)} />
+      <BaseDialog.Popup {...props} data-material={material} className={classNames('aig-dialog', className)} />
     </BaseDialog.Portal>
   );
 }
