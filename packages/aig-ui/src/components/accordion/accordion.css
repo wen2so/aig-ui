@@ -17,10 +17,19 @@
   font: inherit;
   text-align: start;
   cursor: pointer;
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
 }
 .aig-accordion-trigger::after {
   content: '+';
   color: var(--aig-color-accent);
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--aig-color-border-subtle);
+  border-radius: 50%;
 }
 .aig-accordion-trigger[data-panel-open]::after {
   content: '−';
@@ -31,4 +40,10 @@
   font-size: 14px;
   line-height: 1.6;
   overflow-wrap: anywhere;
+}
+.aig-accordion-trigger[data-panel-open] {
+  color: var(--aig-color-accent);
+}
+.aig-accordion-item:has([data-panel-open]) {
+  border-bottom-color: var(--aig-color-signal);
 }

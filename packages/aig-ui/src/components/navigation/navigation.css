@@ -5,13 +5,30 @@
 }
 .aig-navigation-item {
   padding: 10px 14px;
-  border-radius: 10px;
   color: var(--aig-color-text-muted);
   text-decoration: none;
   overflow-wrap: anywhere;
+  border-radius: var(--aig-radius-control);
+  border-bottom: 2px solid transparent;
+  position: relative;
+  padding-inline-start: 22px;
 }
 .aig-navigation-item:hover,
 .aig-navigation-item[aria-current='page'] {
   color: var(--aig-color-accent);
   background: var(--aig-color-accent-soft);
+}
+.aig-navigation-item[aria-current='page'] {
+  border-bottom-color: var(--aig-color-accent);
+  background: transparent;
+}
+.aig-navigation-item[aria-current='page']::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 8px;
+  inset-block-start: calc(50% - 3px);
+  width: 5px;
+  height: 5px;
+  border: 1px solid var(--aig-color-signal);
+  transform: rotate(45deg);
 }

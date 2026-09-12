@@ -6,4 +6,7 @@
   gap: 16px;
   font-size: 13px;
   color: var(--aig-color-text-muted);
+  font-variant-numeric: tabular-nums;
+  border-block: 1px solid var(--aig-color-border-subtle);
+  padding-block: 12px;
 }

@@ -6,6 +6,8 @@
   flex-wrap: wrap;
   margin-bottom: 32px;
   min-inline-size: 0;
+  border-bottom: 1px solid var(--aig-color-border-subtle);
+  padding-block-end: 24px;
 }
 .aig-page-header > div {
   min-inline-size: 0;
@@ -17,6 +19,7 @@
   color: var(--aig-color-text);
   font-weight: 550;
   overflow-wrap: anywhere;
+  text-wrap: balance;
 }
 .aig-page-header p {
   color: var(--aig-color-text-muted);

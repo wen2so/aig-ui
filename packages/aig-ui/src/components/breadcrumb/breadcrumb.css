@@ -11,6 +11,7 @@
   display: inline-flex;
   gap: 8px;
   overflow-wrap: anywhere;
+  min-inline-size: 0;
 }
 .aig-breadcrumb a {
   color: var(--aig-color-text-muted);
@@ -18,4 +19,7 @@
 }
 .aig-breadcrumb [aria-current] {
   color: var(--aig-color-text);
+  font-weight: 500;
+  border-bottom: 1px solid var(--aig-color-signal);
+  padding-bottom: 3px;
 }

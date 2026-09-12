@@ -1,6 +1,7 @@
 .aig-separator {
   background: var(--aig-color-border-subtle);
   flex-shrink: 0;
+  opacity: 0.75;
 }
 .aig-separator[data-orientation='horizontal'] {
   height: 1px;

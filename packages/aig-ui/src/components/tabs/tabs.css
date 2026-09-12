@@ -12,6 +12,9 @@
   font: inherit;
   cursor: pointer;
   border-bottom: 2px solid transparent;
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+  position: relative;
 }
 .aig-tab[data-active] {
   color: var(--aig-color-accent);
@@ -23,4 +26,29 @@
 .aig-tab-panel {
   padding-block: 20px;
   min-inline-size: 0;
+  animation: aig-panel-enter 300ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.aig-tab:hover:enabled {
+  color: var(--aig-color-accent);
+  background: var(--aig-color-accent-soft);
+}
+.aig-tab[data-active]::before {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  inset: auto auto -3px calc(50% - 2px);
+  background: var(--aig-color-signal);
+  transform: rotate(45deg);
+}
+@keyframes aig-panel-enter {
+  from {
+    opacity: 0;
+    translate: 0 4px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .aig-tab-panel {
+    animation: none;
+  }
 }
