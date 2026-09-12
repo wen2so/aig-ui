@@ -225,7 +225,8 @@
     },
     "./manifest.json": "./dist/manifest.json",
     "./llms.txt": "./dist/llms.txt",
-    "./metadata/*": "./dist/*"
+    "./metadata/*": "./dist/*",
+    "./design.md": "./dist/design.md"
   },
   "peerDependencies": {
     "react": "19.3.0",

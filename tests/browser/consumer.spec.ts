@@ -1,5 +1,26 @@
 import { test, expect } from '@playwright/test';
 
+test('独立包与源码预览的玻璃和几何来自同一份公共样式', async ({ page, context }) => {
+  await page.goto('http://127.0.0.1:4173');
+  const preview = await context.newPage();
+  await preview.goto('http://127.0.0.1:5173/?component=Card');
+  const inspect = (element: Element) => {
+    const style = getComputedStyle(element);
+    const edge = getComputedStyle(element, '::before');
+    return {
+      background: style.backgroundImage,
+      filter: style.backdropFilter,
+      shadow: style.boxShadow,
+      edge: edge.backgroundImage,
+      inset: edge.inset,
+    };
+  };
+  expect(await page.locator('.aig-card').evaluate(inspect)).toEqual(
+    await preview.locator('.aig-card').evaluate(inspect),
+  );
+  await preview.close();
+});
+
 test('独立包的 Dialog、Toast 和全屏加载继承主题', async ({ page }) => {
   await page.goto('http://127.0.0.1:4173');
   await page.getByRole('button', { name: '打开主题浮层' }).click();

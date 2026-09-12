@@ -37,7 +37,7 @@ function App() {
         <Card material="glass">主题与材质共存</Card>
         <Dialog.Root>
           <Dialog.Trigger render={<Button />}>打开主题浮层</Dialog.Trigger>
-          <Dialog.Content>
+          <Dialog.Content material="solid">
             <Dialog.Title>主题浮层</Dialog.Title>
             <Dialog.Description>浮层继承当前作用域。</Dialog.Description>
             <Dialog.Close render={<Button />}>关闭</Dialog.Close>

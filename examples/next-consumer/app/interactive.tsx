@@ -18,7 +18,7 @@ export function Interactive() {
       </LoadingSequence>
       <Dialog.Root>
         <Dialog.Trigger render={<Button />}>打开对话框</Dialog.Trigger>
-        <Dialog.Content>
+        <Dialog.Content material="solid">
           <Dialog.Title>Next 浮层</Dialog.Title>
           <Dialog.Description>服务端与客户端样式保持一致。</Dialog.Description>
           <Dialog.Close render={<Button />}>关闭</Dialog.Close>

@@ -7,6 +7,7 @@ test('对话框锁定焦点，Escape 关闭后恢复触发按钮', async ({ page
   await trigger.click();
   const dialog = page.getByRole('dialog', { name: '保存当前设置' });
   await expect(dialog).toBeVisible();
+  await dialog.screenshot({ path: 'artifacts/design-review/Dialog-open.png' });
   await page.keyboard.press('Tab');
   expect(await dialog.evaluate((element) => element.contains(document.activeElement))).toBe(true);
   expect((await new AxeBuilder({ page }).include('[role=dialog]').analyze()).violations).toEqual([]);
@@ -18,23 +19,29 @@ test('对话框锁定焦点，Escape 关闭后恢复触发按钮', async ({ page
 test('单选检索、菜单与抽屉保持真实键盘和状态行为', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Select');
   await page.getByRole('combobox', { name: '项目状态' }).click();
+  await page.locator('.aig-select-popup').screenshot({ path: 'artifacts/design-review/Select-open.png' });
   await page.getByRole('option', { name: '已完成' }).click();
   await expect(page.getByRole('combobox', { name: '项目状态' })).toContainText('已完成');
   await page.goto('http://127.0.0.1:5173/?component=Combobox');
   const search = page.getByRole('combobox', { name: '查找项目成员' });
   await search.fill('不存在');
   await expect(page.getByText('暂无匹配选项')).toBeVisible();
+  await page
+    .locator('.aig-combobox-popup')
+    .screenshot({ path: 'artifacts/design-review/Combobox-empty.png' });
   await search.fill('周');
   await page.keyboard.press('ArrowDown');
   await page.keyboard.press('Enter');
   await expect(search).toHaveValue('周明');
   await page.goto('http://127.0.0.1:5173/?component=DropdownMenu');
   await page.getByRole('button', { name: '更多操作' }).click();
+  await page.getByRole('menu').screenshot({ path: 'artifacts/design-review/DropdownMenu-open.png' });
   await page.getByRole('menuitem', { name: '创建副本' }).click();
   await expect(page.getByRole('status')).toHaveText('已创建副本');
   await page.goto('http://127.0.0.1:5173/?component=Drawer');
   await page.getByRole('button', { name: '查看资料详情' }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
+  await page.getByRole('dialog').screenshot({ path: 'artifacts/design-review/Drawer-open.png' });
   await page.keyboard.press('Escape');
   await expect(page.getByRole('button', { name: '查看资料详情' })).toBeFocused();
 });

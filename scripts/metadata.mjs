@@ -162,7 +162,12 @@ write(configuration.propsRef, {
   declarationRef: 'theme/aig-provider.d.ts',
   signatures: apiFor(resolve(source, 'theme/aig-provider.tsx'), 'AigProvider'),
 });
-const manifest = { ...provenance, status: 'experimental', configuration, components };
+write(
+  'design.md',
+  readFileSync('docs/component-design.md', 'utf8') +
+    `\n包版本：${pkg.version}。源码提交：${provenance.sourceCommit}。\n`,
+);
+const manifest = { ...provenance, status: 'experimental', designRef: 'design.md', configuration, components };
 write('manifest.json', manifest);
 if (Buffer.byteLength(JSON.stringify(manifest, null, 2)) > 100 * 1024)
   throw Error('manifest 超出 100 KB 预算');
@@ -170,6 +175,7 @@ const intro = `# aig-ui ${pkg.version}\n\n实验性 React 组件库。先导入 
 write(
   'llms.txt',
   intro +
+    '- [组件视觉用法](design.md): 方案 2.0 的材料、几何、加载与 AI 组合。\n' +
     components.map((item) => `- [${item.name}](${item.documentationRef}): ${item.summary}`).join('\n') +
     '\n',
 );
