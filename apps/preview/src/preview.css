@@ -160,8 +160,8 @@ body {
   border: 1px solid var(--aig-color-border-subtle);
   border-radius: 20px;
   padding: clamp(18px, 3vw, 32px);
-  background: var(--aig-color-surface);
-  box-shadow: 0 8px 32px #3a323405;
+  background: radial-gradient(ellipse at 10% 20%, #f3e7e960, transparent 60%);
+  box-shadow: none;
 }
 .preview-actions {
   display: flex;

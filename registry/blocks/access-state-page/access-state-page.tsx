@@ -1,3 +1,5 @@
+'use client';
+
 import {
   AigProvider,
   PageHeader,
@@ -35,7 +37,26 @@ export function AccessStatePage({
     forbidden: '当前账户尚未获得此内容的访问权限，请联系项目管理员。',
   };
   return (
-    <AigProvider>
+    <AigProvider
+      className="aig-brand-scene"
+      onPointerMove={(event) => {
+        if (event.pointerType !== 'mouse' || window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+          return;
+        const bounds = event.currentTarget.getBoundingClientRect();
+        event.currentTarget.style.setProperty(
+          '--aig-scene-x',
+          `${(event.clientX - bounds.left - bounds.width / 2) * 0.015}px`,
+        );
+        event.currentTarget.style.setProperty(
+          '--aig-scene-y',
+          `${(event.clientY - bounds.top - bounds.height / 2) * 0.015}px`,
+        );
+      }}
+      onPointerLeave={(event) => {
+        event.currentTarget.style.removeProperty('--aig-scene-x');
+        event.currentTarget.style.removeProperty('--aig-scene-y');
+      }}
+    >
       <div style={{ maxWidth: 960, margin: '0 auto', padding: 24 }}>
         <LoadingSequence
           taskId={taskId}

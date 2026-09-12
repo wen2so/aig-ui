@@ -22,7 +22,7 @@ export function ArtifactReview({ artifactId, versions, onSave, onExecute }: Arti
   const [review, setReview] = useState<ArtifactChange | null>(null);
   const [executing, setExecuting] = useState(false);
   return (
-    <AigProvider>
+    <AigProvider className="aig-brand-scene">
       <div style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
         <PageHeader title="生成结果审核" description="预览、修改并确认要应用的内容。" />
         <div style={{ display: 'grid', gap: 24 }}>

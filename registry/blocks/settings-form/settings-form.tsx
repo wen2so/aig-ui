@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   AigProvider,
   PageHeader,
+  Card,
   Field,
   Input,
   Textarea,
@@ -29,7 +30,7 @@ export interface SettingsFormProps {
 /** 宿主提供保存服务，表单保留失败后的草稿。 */
 export function SettingsForm(props: SettingsFormProps) {
   return (
-    <AigProvider>
+    <AigProvider className="aig-brand-scene">
       <Toast.Provider>
         <Form {...props} />
       </Toast.Provider>
@@ -85,76 +86,78 @@ function Form({ initialValues, onSave }: SettingsFormProps) {
   return (
     <div style={{ maxWidth: 760, margin: '0 auto', padding: 24 }}>
       <PageHeader title="项目设置" description="设置名称、可见范围与通知偏好。" />
-      <form
-        noValidate
-        onSubmit={(event) => {
-          event.preventDefault();
-          void submit();
-        }}
-      >
-        <Tabs.Root value={tab} onValueChange={setTab}>
-          <Tabs.List aria-label="设置类别">
-            <Tabs.Tab value="basic">基本信息</Tabs.Tab>
-            <Tabs.Tab value="notifications">通知偏好</Tabs.Tab>
-          </Tabs.List>
-          <Tabs.Panel value="basic" keepMounted>
-            <div style={{ display: 'grid', gap: 24 }}>
-              <Field label="项目名称" required error={nameError}>
-                {(props) => (
-                  <Input
-                    {...props}
-                    ref={nameRef}
-                    disabled={busy}
-                    value={values.name}
-                    onChange={(event) => setValues({ ...values, name: event.target.value })}
-                  />
-                )}
-              </Field>
-              <Field label="项目说明">
-                {(props) => (
-                  <Textarea
-                    {...props}
-                    disabled={busy}
-                    value={values.description}
-                    onChange={(event) => setValues({ ...values, description: event.target.value })}
-                  />
-                )}
-              </Field>
-              <Select
-                label="可见范围"
-                disabled={busy}
-                value={values.visibility}
-                onValueChange={(value) => setValues({ ...values, visibility: value ?? 'private' })}
-                options={[
-                  { value: 'private', label: '仅自己' },
-                  { value: 'team', label: '项目成员' },
-                ]}
-              />
-            </div>
-          </Tabs.Panel>
-          <Tabs.Panel value="notifications" keepMounted>
-            <label>
-              <Switch
-                disabled={busy}
-                checked={values.notifications}
-                onCheckedChange={(notifications) => setValues({ ...values, notifications })}
-              />{' '}
-              接收处理结果通知
-            </label>
-          </Tabs.Panel>
-        </Tabs.Root>
-        {error && (
-          <Alert tone="danger" title="保存未完成">
-            {error}
-          </Alert>
-        )}
-        <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap', marginTop: 24 }}>
-          <Button type="submit" loading={busy}>
-            保存设置
-          </Button>
-          <span role="status">{dirty ? '有尚未保存的修改' : '当前设置已同步'}</span>
-        </div>
-      </form>
+      <Card>
+        <form
+          noValidate
+          onSubmit={(event) => {
+            event.preventDefault();
+            void submit();
+          }}
+        >
+          <Tabs.Root value={tab} onValueChange={setTab}>
+            <Tabs.List aria-label="设置类别">
+              <Tabs.Tab value="basic">基本信息</Tabs.Tab>
+              <Tabs.Tab value="notifications">通知偏好</Tabs.Tab>
+            </Tabs.List>
+            <Tabs.Panel value="basic" keepMounted>
+              <div style={{ display: 'grid', gap: 24 }}>
+                <Field label="项目名称" required error={nameError}>
+                  {(props) => (
+                    <Input
+                      {...props}
+                      ref={nameRef}
+                      disabled={busy}
+                      value={values.name}
+                      onChange={(event) => setValues({ ...values, name: event.target.value })}
+                    />
+                  )}
+                </Field>
+                <Field label="项目说明">
+                  {(props) => (
+                    <Textarea
+                      {...props}
+                      disabled={busy}
+                      value={values.description}
+                      onChange={(event) => setValues({ ...values, description: event.target.value })}
+                    />
+                  )}
+                </Field>
+                <Select
+                  label="可见范围"
+                  disabled={busy}
+                  value={values.visibility}
+                  onValueChange={(value) => setValues({ ...values, visibility: value ?? 'private' })}
+                  options={[
+                    { value: 'private', label: '仅自己' },
+                    { value: 'team', label: '项目成员' },
+                  ]}
+                />
+              </div>
+            </Tabs.Panel>
+            <Tabs.Panel value="notifications" keepMounted>
+              <label>
+                <Switch
+                  disabled={busy}
+                  checked={values.notifications}
+                  onCheckedChange={(notifications) => setValues({ ...values, notifications })}
+                />{' '}
+                接收处理结果通知
+              </label>
+            </Tabs.Panel>
+          </Tabs.Root>
+          {error && (
+            <Alert tone="danger" title="保存未完成">
+              {error}
+            </Alert>
+          )}
+          <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap', marginTop: 24 }}>
+            <Button type="submit" loading={busy}>
+              保存设置
+            </Button>
+            <span role="status">{dirty ? '有尚未保存的修改' : '当前设置已同步'}</span>
+          </div>
+        </form>
+      </Card>
     </div>
   );
 }

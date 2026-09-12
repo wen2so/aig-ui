@@ -41,7 +41,7 @@ export function AiAssistant({
 }: AiAssistantProps) {
   const running = status === 'running' || status === 'streaming' || status === 'queued';
   return (
-    <AigProvider>
+    <AigProvider className="aig-brand-scene">
       <div style={{ maxWidth: 860, margin: '0 auto', padding: 24 }}>
         <PageHeader title="AI 助手" description="整理资料、查看来源并审阅结果。" />
         <Conversation

@@ -48,7 +48,7 @@ export function FilterableList({
 }: FilterableListProps) {
   const [selected, setSelected] = useState<ListItem | null>(null);
   return (
-    <AigProvider>
+    <AigProvider className="aig-brand-scene">
       <div style={{ maxWidth: 960, margin: '0 auto', padding: 24 }}>
         <PageHeader title="项目资料" description="筛选资料并查看处理状态。" />
         <div style={{ marginBottom: 24 }}>
