@@ -1,5 +1,22 @@
 # 实施进度
 
+## 2026-09-12 本轮重构交付
+
+50 个组件与 5 个页面组合已完成代码迁移，落实暖白玻璃、冰蓝信号线、几何坐标、SVG 状态图形与更丰富的动效。源码切片为 34d3c3f 至 ef47f0a，共 10 个 GPG 签名提交。逐项范围和视觉待确认项见[组件迁移记录](./component-migration.md)，公共接入规则见[组件视觉用法](./component-design.md)。
+
+| 检查 | 本轮结果 |
+| --- | --- |
+| ESLint、TypeScript | 通过 |
+| Vitest | 22 个文件、70 项通过；默认并发遇到 worker 启动超时后，以 maxWorkers=2 完成全量检查 |
+| Chromium | 23 项通过，含 55 个样张、320–1920px 重排、退出 450ms 无重影、慢速暂停、浮层焦点、阅读位置与页面操作 |
+| 独立消费 | 最新 tarball 的 Vite/Next 类型、生产构建与浏览器检查通过；玻璃、阴影、边线与源码预览一致 |
+| 文档与机器资料 | Storybook、统一预览、50 项 API/示例、5 项 Registry schema 与 design.md 生成通过 |
+| 体积 | Button JS gzip 436 B；基础 CSS gzip 7698 B；完整 motion JS gzip 26738 B |
+
+产物位于 artifacts，日志统一使用 refactor- 前缀；样张位于 artifacts/design-review。本地包仍为实验性 0.1.0-alpha.0。原有 docs 方案修改保持在工作树中，产物的 sourceDirty 如实记录为 true。此次完成本地代码与工程验收，用户视觉确认、真实 Safari/iOS、NVDA/VoiceOver、业务试点、模型评估和公开发布仍分别待验收。
+
+## 方案编制时的历史记录
+
 更新日期：2026-09-12。当前版本为本地实验性 `0.1.0-alpha.0`，已实现 50 个组件和 5 个页面组合。每个组件与页面组合均有独立提交；首个 Button 提交因当时签名服务故障使用普通提交，服务恢复后的提交均使用 GPG 签名。
 
 ## 预览入口
