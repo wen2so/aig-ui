@@ -4,6 +4,7 @@
   line-height: 1.5;
   color: var(--aig-color-text);
   overflow-wrap: anywhere;
+  text-wrap: pretty;
 }
 .aig-text[data-size='sm'] {
   font-size: 14px;

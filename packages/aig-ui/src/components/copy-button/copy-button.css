@@ -14,4 +14,11 @@
   flex-basis: 100%;
   overflow-wrap: anywhere;
   user-select: all;
+  max-inline-size: 100%;
+  color: var(--aig-color-text);
+  background: var(--aig-color-surface);
+  border: 1px solid var(--aig-color-border-control);
+  border-radius: var(--aig-radius-control);
+  padding: 8px;
+  font-family: ui-monospace, monospace;
 }

@@ -2,10 +2,26 @@
   min-inline-size: 40px;
   padding: 8px;
   aspect-ratio: 1;
+  flex: none;
 }
 .aig-icon-button[data-size='sm'] {
   min-inline-size: 32px;
 }
 .aig-icon-button[data-size='lg'] {
   min-inline-size: 48px;
+}
+
+.aig-icon-button::after {
+  inset: 5px;
+  height: auto;
+  border: 1px solid currentColor;
+  background: transparent;
+  border-radius: 50%;
+  border-inline-start-color: transparent;
+  border-block-end-color: transparent;
+  transform: rotate(-45deg);
+  opacity: 0.2;
+}
+.aig-icon-button:hover:enabled::after {
+  transform: rotate(45deg);
 }
