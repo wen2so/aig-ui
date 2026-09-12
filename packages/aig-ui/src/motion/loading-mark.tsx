@@ -18,7 +18,7 @@ export interface LoadingMarkProps extends ComponentPropsWithRef<'svg'> {
 /** 以原生动画从实际描边位置连续绘制和擦除。 */
 export function LoadingMark({
   phase = 'drawing',
-  size = 112,
+  size = 'clamp(88px, 13vh, 118px)',
   motion = 'system',
   label,
   onErased,
@@ -60,7 +60,7 @@ export function LoadingMark({
       const animation = element.animate([{ strokeDashoffset: from }, { strokeDashoffset: to }], {
         duration,
         delay: phase === 'drawing' ? (index ? timing['bar-delay'] : timing['draw-delay']) : 0,
-        easing: 'cubic-bezier(0.45,0,0.2,1)',
+        easing: phase === 'erasing' ? 'cubic-bezier(0.4,0,0.2,1)' : 'cubic-bezier(0.45,0,0.2,1)',
         fill: 'both',
       });
       animations.push(animation);
@@ -109,9 +109,9 @@ export function LoadingMark({
         cx="100"
         cy="100"
         r="92"
-        strokeWidth="1.2"
+        strokeWidth="0.9"
         strokeDasharray="3 9"
-        opacity=".65"
+        opacity=".30"
       />
       <circle
         className="aig-ring-inner"
@@ -119,10 +119,10 @@ export function LoadingMark({
         cx="100"
         cy="100"
         r="84"
-        strokeWidth="1.6"
+        strokeWidth="1.1"
         strokeDasharray="120 408"
         strokeLinecap="round"
-        opacity=".85"
+        opacity=".55"
       />
       <path
         ref={triangle}

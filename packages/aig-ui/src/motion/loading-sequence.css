@@ -26,8 +26,9 @@
 }
 .aig-sequence-label strong {
   font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
+  font-weight: 600;
+  letter-spacing: 6px;
+  text-indent: 6px;
 }
 .aig-sequence-label span {
   font-size: 12px;
@@ -46,7 +47,7 @@
   height: 100%;
   width: 38%;
   background: linear-gradient(90deg, transparent, var(--aig-color-mark), transparent);
-  animation: aig-sequence-sweep var(--aig-motion-sweep-period) ease-in-out infinite;
+  animation: aig-sequence-sweep var(--aig-motion-sweep-period) cubic-bezier(0.5, 0, 0.5, 1) infinite;
 }
 .aig-sequence-progress > span[data-known] {
   background: var(--aig-color-mark);
@@ -77,10 +78,11 @@
   inset: 0;
   z-index: 1000;
   overflow-y: auto;
-  background: radial-gradient(ellipse at 50% 0%, var(--aig-color-surface), var(--aig-color-bg));
+  background: transparent;
   font-family: system-ui, 'Microsoft YaHei', sans-serif;
 }
 .aig-sequence-fullscreen > .aig-sequence-layer {
+  background: radial-gradient(ellipse at 50% 0%, var(--aig-color-surface), var(--aig-color-bg));
   position: relative;
   min-height: 100%;
 }

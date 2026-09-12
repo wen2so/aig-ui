@@ -106,3 +106,72 @@ test('标记保持镂空，回放呈现错峰描边与退出前的清晰线条',
   expect(opacity).toBeGreaterThan(0.9);
   await sequence.screenshot({ path: 'artifacts/loading-hollow-erasing.png' });
 });
+
+test('退出 450ms 旧文字消失且内容尚未出现，撤回仍可见', async ({ page }) => {
+  await page.goto('http://127.0.0.1:5173/?component=LoadingSequence');
+  await page.getByLabel('就绪时机').selectOption('manual');
+  const sequence = page.locator('[data-aig-component=loading-sequence]');
+  await expect
+    .poll(() => sequence.locator('line').evaluate((el) => parseFloat(getComputedStyle(el).strokeDashoffset)))
+    .toBe(0);
+  await page.getByRole('button', { name: '任务就绪' }).click();
+  await expect(sequence).toHaveAttribute('data-phase', 'exiting');
+  await sequence.evaluate((el) =>
+    el
+      .getAnimations({ subtree: true })
+      .filter((a) => a.effect?.getTiming().iterations !== Infinity)
+      .forEach((a) => {
+        a.pause();
+        a.currentTime = 450;
+      }),
+  );
+  await expect(sequence.locator('.aig-sequence-label')).toHaveCSS('opacity', '0');
+  await expect(sequence.locator('.aig-sequence-content')).toHaveCSS('opacity', '0');
+  await expect(sequence.locator('.aig-sequence-layer')).toHaveCSS('opacity', '1');
+  const offset = await sequence
+    .locator('path')
+    .evaluate((el) => parseFloat(getComputedStyle(el).strokeDashoffset));
+  expect(offset).toBeGreaterThan(0);
+  expect(offset).toBeLessThan(1);
+  await sequence.screenshot({ path: 'artifacts/design-review/exit-450.png' });
+});
+
+test('重放后全部轨道继承倍率，暂停同时冻结自动就绪', async ({ page }) => {
+  await page.goto('http://127.0.0.1:5173/?component=LoadingSequence');
+  await page.getByLabel('速度').selectOption('0.25');
+  await page.getByRole('button', { name: '重试', exact: true }).click();
+  const sequence = page.locator('[data-aig-component=loading-sequence]');
+  await expect
+    .poll(() =>
+      sequence.evaluate((el) => el.getAnimations({ subtree: true }).every((a) => a.playbackRate === 0.25)),
+    )
+    .toBe(true);
+  await page.getByRole('button', { name: '暂停', exact: true }).click();
+  await page.waitForTimeout(100);
+  const before = await sequence.evaluate((el) =>
+    el.getAnimations({ subtree: true }).map((a) => a.currentTime),
+  );
+  await page.waitForTimeout(2500);
+  await expect(sequence).toHaveAttribute('data-phase', 'loading');
+  expect(
+    await sequence.evaluate((el) => el.getAnimations({ subtree: true }).map((a) => a.currentTime)),
+  ).toEqual(before);
+  await page.getByRole('button', { name: '继续', exact: true }).click();
+  await page.getByRole('button', { name: '原版对照' }).click();
+  await expect
+    .poll(() =>
+      page
+        .locator('iframe')
+        .evaluate((el) =>
+          (el as HTMLIFrameElement).contentDocument?.getAnimations().every((a) => a.playbackRate === 0.25),
+        ),
+    )
+    .toBe(true);
+  await page.getByRole('button', { name: '暂停', exact: true }).click();
+  await page.waitForTimeout(2500);
+  expect(
+    await page
+      .locator('iframe')
+      .evaluate((el) => (el as HTMLIFrameElement).contentDocument?.body.classList.contains('is-ready')),
+  ).toBe(false);
+});

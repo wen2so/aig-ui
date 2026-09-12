@@ -14,19 +14,6 @@
 .aig-sequence-demo-stage .aig-loading-sequence {
   min-height: 420px;
 }
-.aig-sequence-demo-stage .aig-sequence-label strong {
-  font-size: 12px;
-  letter-spacing: 0.38em;
-  text-indent: 0.38em;
-  font-weight: 600;
-}
-.aig-sequence-demo-stage .aig-sequence-label span {
-  font-size: 11px;
-  letter-spacing: 0.12em;
-}
-.aig-sequence-demo-stage .aig-loading-mark {
-  filter: drop-shadow(0 0 22px #b98b9020);
-}
 .aig-sequence-demo-stage iframe {
   display: block;
   width: 100%;

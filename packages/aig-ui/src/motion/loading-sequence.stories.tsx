@@ -7,6 +7,17 @@ import './loading-sequence.demo.css';
 
 export default { title: '动效/LoadingSequence', component: LoadingSequence };
 
+// 原文件保持原样；对照去除业务脚本，由演示时钟接管退出和移除。
+const referenceSource = original.replace(/<script>[\s\S]*?<\/script>/g, '').replace(
+  '</head>',
+  `<style>
+.loader, .stage { animation: none; }
+body.is-ready .loader { animation: loaderExit .8s cubic-bezier(.4,0,.2,1) forwards; }
+body.is-ready .stage { animation: stageIn 1.15s cubic-bezier(.22,.61,.36,1) forwards; }
+.loader-mark { width: var(--aig-demo-mark-size, 93.6px); height: var(--aig-demo-mark-size, 93.6px); }
+</style></head>`,
+);
+
 /** 本地演示信号与调试控制；实际应用使用真实任务状态。 */
 export function Interactive() {
   const [task, setTask] = useState(0);
@@ -18,31 +29,56 @@ export function Interactive() {
   const [autoReady, setAutoReady] = useState<number | undefined>(2400);
   const [editing, setEditing] = useState(false);
   const host = useRef<HTMLDivElement>(null);
+  const frame = useRef<HTMLIFrameElement>(null);
+  const elapsed = useRef(0);
+  const controls = useRef({ rate, paused, autoReady, status });
+  controls.current = { rate, paused, autoReady, status };
 
   useEffect(() => {
-    const apply = () =>
-      host.current?.getAnimations({ subtree: true }).forEach((animation) => {
+    elapsed.current = 0;
+    let previous = performance.now();
+    let request = 0;
+    const held = new WeakSet<Animation>();
+    const apply = (now: number) => {
+      const { rate, paused, autoReady, status } = controls.current;
+      if (!paused) elapsed.current += (now - previous) * rate;
+      previous = now;
+      const document = frame.current?.contentDocument;
+      document?.documentElement?.style.setProperty(
+        '--aig-demo-mark-size',
+        `${Math.max(88, Math.min(118, innerHeight * 0.13))}px`,
+      );
+      const animations = document?.getAnimations() ?? host.current?.getAnimations({ subtree: true }) ?? [];
+      animations.forEach((animation) => {
         if (animation.playbackRate !== rate) animation.updatePlaybackRate(rate);
-        if (paused && animation.playState === 'running') animation.pause();
-        if (!paused && animation.playState === 'paused') animation.play();
+        if (paused && animation.playState === 'running') {
+          held.add(animation);
+          animation.pause();
+        }
+        if (!paused && held.has(animation)) {
+          held.delete(animation);
+          animation.play();
+        }
       });
-    apply();
-    const observer = new MutationObserver(apply);
-    if (host.current)
-      observer.observe(host.current, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['data-phase'],
-      });
-    return () => observer.disconnect();
-  }, [rate, paused, task, status, reference]);
-
-  useEffect(() => {
-    if (autoReady === undefined) return;
-    const timer = window.setTimeout(() => setStatus('ready'), autoReady);
-    return () => window.clearTimeout(timer);
-  }, [task, autoReady]);
+      if (status === 'loading' && autoReady !== undefined && elapsed.current >= autoReady) setStatus('ready');
+      if (document?.body && status === 'ready' && !document.body.classList.contains('is-ready')) {
+        document.body.classList.add('is-ready');
+        const loader = document.querySelector('.loader');
+        loader?.classList.add('is-exiting');
+        Promise.all(
+          loader
+            ?.getAnimations({ subtree: true })
+            .filter((a) => a.effect?.getTiming().iterations !== Infinity)
+            .map((a) => a.finished) ?? [],
+        )
+          .then(() => loader?.remove())
+          .catch(() => {});
+      }
+      request = requestAnimationFrame(apply);
+    };
+    request = requestAnimationFrame(apply);
+    return () => cancelAnimationFrame(request);
+  }, [task, reference]);
 
   function replay() {
     setTask(task + 1);
@@ -59,13 +95,19 @@ export function Interactive() {
       </div>
       <div className="aig-sequence-demo-stage">
         {reference ? (
-          <iframe key={task} title="原始加载动画参考" srcDoc={original} sandbox="allow-scripts" />
+          <iframe
+            ref={frame}
+            key={task}
+            title="原始加载动画参考"
+            srcDoc={referenceSource}
+            sandbox="allow-same-origin"
+          />
         ) : (
           <div ref={host}>
             <LoadingSequence
               taskId={String(task)}
               status={status}
-              minimumVisibleMs={autoReady === 2400 ? 1600 : 0}
+              minimumVisibleMs={0}
               label="AIG UI"
               description="工作空间正在准备"
               onExited={() => setExits((value) => value + 1)}
@@ -93,7 +135,7 @@ export function Interactive() {
           <Button variant="ghost" size="sm" onClick={() => setStatus('ready')}>
             任务就绪
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => setStatus('error')}>
+          <Button variant="ghost" size="sm" disabled={reference} onClick={() => setStatus('error')}>
             模拟失败
           </Button>
         </div>

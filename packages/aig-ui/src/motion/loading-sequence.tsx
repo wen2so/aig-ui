@@ -56,6 +56,7 @@ function Sequence({
   const content = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+  const actionsRef = useRef<HTMLDivElement>(null);
   const started = useRef(0);
   const notified = useRef(false);
   const callback = useRef(onExited);
@@ -111,6 +112,7 @@ function Sequence({
               {
                 duration: timing['support-duration'],
                 delay: index ? timing['progress-delay'] : timing['label-delay'],
+                easing: 'cubic-bezier(0.22,0.61,0.36,1)',
                 fill: 'both',
               },
             ),
@@ -134,7 +136,25 @@ function Sequence({
       setRevealed(true);
       return;
     }
-    // 先保留清晰描边，再加重解构，让撤回成为可辨认的独立动作。
+    // 子组件已从实际进度启动撤回；用其有限轨道计算交接延迟。
+    const eraseDuration = Math.max(
+      0,
+      ...Array.from(layer.current.querySelectorAll('path, line')).flatMap((part) =>
+        part.getAnimations().map((animation) => Number(animation.effect?.getComputedTiming().endTime) || 0),
+      ),
+    );
+    const labels = [labelRef.current, progressRef.current, actionsRef.current].flatMap((element) => {
+      if (!element) return [];
+      const opacity = Number(getComputedStyle(element).opacity);
+      if (opacity === 0) return [];
+      return [
+        element.animate([{ opacity }, { opacity: 0 }], {
+          duration: timing['label-exit-duration'],
+          fill: 'both',
+          easing: 'cubic-bezier(0.4,0,0.2,1)',
+        }),
+      ];
+    });
     const dissolve = layer.current.animate(
       [
         { opacity: 1, transform: 'scale(1)', filter: 'blur(0px)', offset: 0 },
@@ -143,7 +163,7 @@ function Sequence({
       ],
       {
         duration: timing['dissolve-duration'],
-        delay: timing['dissolve-delay'],
+        delay: Math.min(timing['dissolve-delay'], eraseDuration),
         easing: 'cubic-bezier(.4,0,.2,1)',
         fill: 'both',
       },
@@ -155,7 +175,7 @@ function Sequence({
       ],
       {
         duration: timing['reveal-duration'],
-        delay: timing['dissolve-delay'],
+        delay: Math.max(eraseDuration, labels.length ? timing['label-exit-duration'] : 0),
         easing: 'cubic-bezier(.22,.61,.36,1)',
         fill: 'both',
       },
@@ -174,6 +194,7 @@ function Sequence({
       active = false;
       dissolve.cancel();
       reveal.cancel();
+      labels.forEach((animation) => animation.cancel());
     };
   }, [phase, reduced]);
 
@@ -216,7 +237,11 @@ function Sequence({
           />
         </div>
       )}
-      {actions && <div className="aig-sequence-actions">{actions}</div>}
+      {actions && (
+        <div ref={actionsRef} className="aig-sequence-actions">
+          {actions}
+        </div>
+      )}
     </div>
   );
 
@@ -228,7 +253,11 @@ function Sequence({
       data-reduced={reduced || undefined}
     >
       <span className="aig-sr-only" role="status">
-        {phase === 'complete' ? '内容已就绪' : status === 'error' ? '加载未完成' : label}
+        {phase === 'complete' || phase === 'exiting'
+          ? '内容已就绪'
+          : status === 'error'
+            ? '加载未完成'
+            : label}
       </span>
       <div
         ref={content}

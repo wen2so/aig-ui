@@ -1,5 +1,6 @@
 .aig-loading-mark {
-  color: color-mix(in srgb, var(--aig-color-mark) 82%, var(--aig-color-accent));
+  color: var(--aig-color-mark);
+  filter: drop-shadow(0 0 22px rgb(185 139 144 / 26%));
   overflow: visible;
   flex: none;
 }
