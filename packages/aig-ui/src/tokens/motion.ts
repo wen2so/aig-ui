@@ -12,7 +12,9 @@ export const motionTiming = {
   "sweep-period": 1700,
   "erase-duration": 980,
   "bar-erase-duration": 720,
-  "dissolve-delay": 180,
+  "dissolve-delay": 720,
   "dissolve-duration": 800,
-  "reveal-duration": 1150
+  "reveal-duration": 1150,
+  "label-exit-duration": 180,
+  "frame-duration": 700
 } as const;

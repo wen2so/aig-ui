@@ -14,6 +14,7 @@
   --aig-color-success: rgb(63 118 94);
   --aig-color-warning: rgb(138 91 36);
   --aig-color-mark: rgb(185 139 144);
+  --aig-color-signal: rgb(86 139 155);
   --aig-space-1: 4px;
   --aig-space-2: 8px;
   --aig-space-3: 12px;
@@ -25,8 +26,8 @@
   --aig-space-9: 48px;
   --aig-space-10: 64px;
   --aig-radius-control: 12px;
-  --aig-radius-card: 20px;
-  --aig-radius-panel: 24px;
+  --aig-radius-card: 24px;
+  --aig-radius-panel: 32px;
   --aig-motion-draw-delay: 150ms;
   --aig-motion-draw-duration: 1150ms;
   --aig-motion-bar-delay: 950ms;
@@ -39,7 +40,14 @@
   --aig-motion-sweep-period: 1700ms;
   --aig-motion-erase-duration: 980ms;
   --aig-motion-bar-erase-duration: 720ms;
-  --aig-motion-dissolve-delay: 180ms;
+  --aig-motion-dissolve-delay: 720ms;
   --aig-motion-dissolve-duration: 800ms;
   --aig-motion-reveal-duration: 1150ms;
+  --aig-motion-label-exit-duration: 180ms;
+  --aig-motion-frame-duration: 700ms;
+  --aig-material-glass: rgb(255 255 255 / 0.92) 0%, rgb(255 254 254 / 0.7) 46%, rgb(254 252 251 / 0.76) 100%;
+  --aig-material-blur: 46px;
+  --aig-material-saturation: 1.55;
+  --aig-material-border: rgb(255 255 255 / 0.96);
+  --aig-material-shadow: inset 0px 1px 0px 0px rgb(255 255 255 / 0.99), inset 0px -1px 0px 0px rgb(255 255 255 / 0.55), 0px 0px 0px 1px rgb(243 233 233 / 0.55), 0px 26px 60px -34px rgb(140 118 118 / 0.07), 0px 60px 130px -70px rgb(165 135 136 / 0.13), 0px 0px 160px -34px rgb(255 236 238 / 0.36);
 }

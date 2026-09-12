@@ -31,7 +31,39 @@ export function compileTokens(source) {
           !value.components.every((n) => Number.isFinite(n) && n >= 0 && n <= 1)
         )
           throw Error(`颜色无效：${name}`);
-        return `rgb(${value.components.map((n) => Math.round(n * 255)).join(' ')})`;
+        if (
+          value.alpha !== undefined &&
+          (!Number.isFinite(value.alpha) || value.alpha < 0 || value.alpha > 1)
+        )
+          throw Error(`透明度无效：${name}`);
+        return `rgb(${value.components.map((n) => Math.round(n * 255)).join(' ')}${value.alpha === undefined ? '' : ` / ${value.alpha}`})`;
+      case 'gradient':
+        if (!Array.isArray(value) || value.length < 2) throw Error(`渐变无效：${name}`);
+        return value
+          .map((stop) => {
+            if (!Number.isFinite(stop.position) || stop.position < 0 || stop.position > 1)
+              throw Error(`渐变位置无效：${name}`);
+            const color = compileTokens({ stop: { $type: 'color', $value: stop.color } }).stop;
+            return `${color} ${stop.position * 100}%`;
+          })
+          .join(', ');
+      case 'shadow':
+        return (Array.isArray(value) ? value : [value])
+          .map((shadow) => {
+            const color = compileTokens({ color: { $type: 'color', $value: shadow.color } }).color;
+            const lengths = ['offsetX', 'offsetY', 'blur', 'spread'].map((key) => {
+              const length = shadow[key];
+              if (
+                !Number.isFinite(length?.value) ||
+                length.unit !== 'px' ||
+                (key === 'blur' && length.value < 0)
+              )
+                throw Error(`阴影无效：${name}`);
+              return `${length.value}px`;
+            });
+            return `${shadow.inset ? 'inset ' : ''}${lengths.join(' ')} ${color}`;
+          })
+          .join(', ');
       case 'dimension':
       case 'duration':
         if (
