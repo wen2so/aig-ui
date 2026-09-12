@@ -5,7 +5,7 @@
   background: var(--aig-color-surface);
   color: var(--aig-color-text);
   border: 1px solid var(--aig-color-border-control);
-  border-radius: 12px;
+  border-radius: var(--aig-radius-control);
   font: inherit;
   box-sizing: border-box;
 }
@@ -21,7 +21,7 @@
   max-height: min(320px, var(--available-height));
   overflow-y: auto;
   border: 1px solid var(--aig-color-border-control);
-  border-radius: 12px;
+  border-radius: var(--aig-radius-control);
   padding: 6px;
   background: var(--aig-color-surface);
   color: var(--aig-color-text);

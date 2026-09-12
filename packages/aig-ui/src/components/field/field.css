@@ -7,6 +7,10 @@
   color: var(--aig-color-text);
   font-size: 14px;
   font-weight: 500;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  gap: 7px;
 }
 .aig-field-description {
   font-size: 13px;
@@ -17,4 +21,14 @@
   font-size: 13px;
   color: var(--aig-color-danger);
   overflow-wrap: anywhere;
+  border-inline-start: 2px solid currentColor;
+  padding-inline-start: 8px;
+}
+.aig-field > label::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  flex: none;
+  border: 1px solid var(--aig-color-signal);
+  transform: rotate(45deg);
 }

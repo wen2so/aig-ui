@@ -15,9 +15,19 @@
   display: inline-flex;
   gap: 8px;
   align-items: center;
+  min-block-size: 32px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--aig-color-border-subtle);
+  padding-block: 4px;
 }
 .aig-radio-group input {
   accent-color: var(--aig-color-accent);
   width: 18px;
   height: 18px;
+}
+.aig-radio-group input:disabled {
+  opacity: 0.55;
+}
+.aig-radio-group label:has(:checked) {
+  border-bottom-color: var(--aig-color-signal);
 }

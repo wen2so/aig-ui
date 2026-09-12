@@ -9,6 +9,9 @@
   cursor: pointer;
   flex-shrink: 0;
   vertical-align: middle;
+  box-shadow: inset 0 1px 3px rgb(58 50 52 / 8%);
+  outline: 1px solid var(--aig-color-border-subtle);
+  outline-offset: 3px;
 }
 .aig-switch::before {
   content: '';
@@ -20,6 +23,7 @@
   border-radius: 50%;
   background: var(--aig-color-text-muted);
   transition: transform 160ms;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--aig-color-signal) 25%, transparent);
 }
 .aig-switch:checked {
   background: var(--aig-color-accent);
