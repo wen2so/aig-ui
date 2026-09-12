@@ -3,6 +3,7 @@
   padding-inline-start: 24px;
   color: var(--aig-color-text);
   font-size: 14px;
+  border-inline-start: 1px solid var(--aig-color-border-subtle);
 }
 .aig-source-list li {
   padding: 8px 0;
@@ -19,4 +20,14 @@
 }
 .aig-source-list small {
   color: var(--aig-color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.aig-source-list li::marker {
+  color: var(--aig-color-accent);
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+}
+.aig-source-list li + li {
+  border-top: 1px solid var(--aig-color-border-subtle);
 }

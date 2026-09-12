@@ -1,9 +1,11 @@
 .aig-tool-result {
   padding: 20px;
   border: 1px solid var(--aig-color-border-subtle);
-  border-radius: 16px;
   color: var(--aig-color-text);
   min-inline-size: 0;
+  border-radius: var(--aig-radius-card);
+  background: var(--aig-color-surface);
+  box-shadow: var(--aig-material-shadow);
 }
 .aig-tool-result h3 {
   margin: 0 0 8px;
@@ -20,6 +22,7 @@
 .aig-tool-result summary {
   cursor: pointer;
   font-size: 13px;
+  min-block-size: 32px;
 }
 .aig-tool-result pre {
   max-height: 300px;

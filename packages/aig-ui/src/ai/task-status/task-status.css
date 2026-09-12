@@ -2,11 +2,32 @@
   display: grid;
   gap: 12px;
   color: var(--aig-color-text);
+  border-inline-start: 1px solid var(--aig-color-border-subtle);
+  padding-inline-start: 16px;
 }
 .aig-task-status ol {
   margin: 0;
-  padding-inline-start: 24px;
   color: var(--aig-color-text-muted);
   font-size: 13px;
   line-height: 1.8;
+  font-variant-numeric: tabular-nums;
+  list-style: none;
+  padding-inline-start: 3px;
+}
+.aig-task-status li {
+  position: relative;
+  border-inline-start: 1px solid var(--aig-color-signal);
+  padding-inline-start: 16px;
+  padding-block: 4px;
+}
+.aig-task-status li::before {
+  content: '';
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  inset-inline-start: -3px;
+  inset-block-start: 12px;
+  background: var(--aig-color-surface);
+  border: 1px solid var(--aig-color-signal);
+  transform: rotate(45deg);
 }

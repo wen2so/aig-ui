@@ -9,6 +9,11 @@
   overflow-anchor: none;
   scroll-behavior: auto;
   min-inline-size: 0;
+  border-radius: var(--aig-radius-card);
+  padding: 8px;
+  background: color-mix(in srgb, var(--aig-color-surface-muted) 55%, transparent);
+  scrollbar-gutter: stable;
+  border-block: 1px solid var(--aig-color-border-subtle);
 }
 .aig-conversation > button {
   justify-self: center;

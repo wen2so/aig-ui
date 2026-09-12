@@ -7,3 +7,23 @@
 @import './source-list/source-list.css';
 @import './message/message.css';
 /* AI 组件附加样式；宿主同时导入 aig-ui/styles.css。 */
+:is(.aig-prompt-input, .aig-tool-result, .aig-artifact-preview, .aig-confirmation) {
+  position: relative;
+}
+:is(.aig-prompt-input, .aig-tool-result, .aig-artifact-preview, .aig-confirmation)::before {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--aig-color-signal), var(--aig-color-signal)) left top / 20px 1px no-repeat,
+    linear-gradient(var(--aig-color-signal), var(--aig-color-signal)) left top / 1px 12px no-repeat,
+    linear-gradient(var(--aig-color-mark), var(--aig-color-mark)) right bottom / 20px 1px no-repeat;
+  opacity: 0.5;
+  animation: aig-frame-establish var(--aig-motion-frame-duration) cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.aig-prompt-input, .aig-tool-result, .aig-artifact-preview, .aig-confirmation)::before {
+    animation: none;
+  }
+}

@@ -25,6 +25,7 @@ export function Message({
       {...props}
       aria-label={author === 'user' ? '用户消息' : '助手消息'}
       data-author={author}
+      data-state={status}
       className={`aig-message ${className}`}
     >
       <header>

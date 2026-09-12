@@ -1,8 +1,10 @@
 .aig-message {
   padding: 20px 24px;
-  border-radius: 18px;
   color: var(--aig-color-text);
   min-inline-size: 0;
+  border-radius: var(--aig-radius-card);
+  margin-block: 8px;
+  background: var(--aig-color-surface);
 }
 .aig-message[data-author='user'] {
   background: var(--aig-color-surface-muted);
@@ -15,6 +17,7 @@
   font-weight: 600;
   color: var(--aig-color-text-muted);
   margin-bottom: 12px;
+  font-variant-numeric: tabular-nums;
 }
 .aig-message header span {
   font-weight: 400;
@@ -48,4 +51,23 @@
   gap: 8px;
   flex-wrap: wrap;
   margin-top: 16px;
+}
+.aig-message[data-author='assistant'] {
+  border-inline-start: 2px solid var(--aig-color-mark);
+}
+
+.aig-message header::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--aig-color-signal);
+  transform: rotate(45deg);
+}
+.aig-message[data-state='streaming'] header::before {
+  animation: aig-status-pulse 1.8s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .aig-message[data-state='streaming'] header::before {
+    animation: none;
+  }
 }

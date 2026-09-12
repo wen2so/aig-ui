@@ -1,5 +1,10 @@
 .aig-prompt-input {
   min-inline-size: 0;
+  padding: 16px;
+  border: 1px solid var(--aig-color-border-subtle);
+  border-radius: var(--aig-radius-card);
+  background: var(--aig-color-surface);
+  box-shadow: var(--aig-material-shadow);
 }
 .aig-prompt-actions {
   display: flex;
@@ -16,4 +21,7 @@
 .aig-prompt-input [role='alert'] {
   font-size: 13px;
   color: var(--aig-color-danger);
+}
+.aig-prompt-input:focus-within {
+  border-color: var(--aig-color-focus);
 }
