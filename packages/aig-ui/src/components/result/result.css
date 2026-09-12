@@ -3,6 +3,11 @@
   text-align: center;
   color: var(--aig-color-text-muted);
   overflow-wrap: anywhere;
+  background: radial-gradient(
+    ellipse at 50% 20%,
+    color-mix(in srgb, var(--aig-color-accent-soft) 45%, transparent),
+    transparent 65%
+  );
 }
 .aig-result h2 {
   font-size: 28px;
@@ -13,12 +18,14 @@
 .aig-result-symbol {
   display: inline-grid;
   place-items: center;
-  width: 56px;
-  height: 56px;
-  border: 1px solid currentColor;
+  width: 112px;
+  height: 112px;
+  border: 0;
   border-radius: 50%;
   font-size: 28px;
   color: var(--aig-color-warning);
+  position: relative;
+  background: radial-gradient(circle, var(--aig-color-surface), transparent);
 }
 .aig-result[data-status='success'] .aig-result-symbol {
   color: var(--aig-color-success);

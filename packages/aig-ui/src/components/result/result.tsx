@@ -1,4 +1,5 @@
 import type { ComponentPropsWithRef, ReactNode } from 'react';
+import { StatusGlyph } from '../../internal/status-glyph.js';
 /** 结果仅表示业务状态，HTTP 状态由宿主路由或服务端设置。 */
 export interface ResultProps extends Omit<ComponentPropsWithRef<'section'>, 'title'> {
   status: 'success' | 'error' | 'not-found' | 'session-expired' | 'forbidden';
@@ -25,7 +26,7 @@ export function Result({
   return (
     <section {...props} data-status={status} className={`aig-result ${className}`}>
       <span className="aig-result-symbol" aria-hidden>
-        {status === 'success' ? '✓' : '!'}
+        <StatusGlyph success={status === 'success'} />
       </span>
       <h2>{title}</h2>
       {description && <div>{description}</div>}

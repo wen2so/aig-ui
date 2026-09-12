@@ -5,6 +5,10 @@
   border-radius: 50%;
   flex-shrink: 0;
   animation: aig-spin 1s linear infinite;
+  border-width: 1.5px;
+  outline: 1px dashed color-mix(in srgb, var(--aig-color-signal) 40%, transparent);
+  outline-offset: 4px;
+  border-inline-start-color: var(--aig-color-signal);
 }
 @media (prefers-reduced-motion: reduce) {
   .aig-spinner {

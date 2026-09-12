@@ -1,4 +1,5 @@
 import type { ComponentPropsWithRef, ReactNode } from 'react';
+import { StatusGlyph } from '../../internal/status-glyph.js';
 /** 空状态说明由调用方按实际场景提供。 */
 export interface EmptyStateProps extends Omit<ComponentPropsWithRef<'section'>, 'title'> {
   title: string;
@@ -10,7 +11,7 @@ export interface EmptyStateProps extends Omit<ComponentPropsWithRef<'section'>, 
 export function EmptyState({ title, description, actions, icon, className = '', ...props }: EmptyStateProps) {
   return (
     <section {...props} className={`aig-empty-state ${className}`}>
-      {icon && <div aria-hidden>{icon}</div>}
+      <div aria-hidden>{icon ?? <StatusGlyph empty />}</div>
       <h3>{title}</h3>
       {description && <div>{description}</div>}
       {actions && <div className="aig-empty-actions">{actions}</div>}

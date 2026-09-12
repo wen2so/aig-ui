@@ -2,13 +2,16 @@
   display: inline-flex;
   align-items: center;
   padding: 3px 9px;
-  border-radius: 99px;
   background: var(--aig-color-surface-muted);
   color: var(--aig-color-text);
   font-size: 12px;
   line-height: 1.5;
   overflow-wrap: anywhere;
   max-inline-size: 100%;
+  border: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  font-variant-numeric: tabular-nums;
+  gap: 6px;
+  border-radius: 6px;
 }
 .aig-badge[data-tone='info'] {
   background: var(--aig-color-accent-soft);
@@ -27,4 +30,13 @@
   .aig-badge {
     border: 1px solid CanvasText;
   }
+}
+.aig-badge::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border: 1px solid currentColor;
+  transform: rotate(45deg);
+  flex: none;
+  opacity: 0.65;
 }

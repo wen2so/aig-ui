@@ -1,9 +1,10 @@
 .aig-status-indicator {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
   color: var(--aig-color-text-muted);
   overflow-wrap: anywhere;
+  gap: 12px;
+  font-variant-numeric: tabular-nums;
 }
 .aig-status-dot {
   width: 6px;
@@ -11,6 +12,9 @@
   border-radius: 50%;
   background: currentColor;
   flex: none;
+  outline: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  outline-offset: 3px;
+  position: relative;
 }
 .aig-status-indicator[data-tone='info'] {
   color: var(--aig-color-accent);
@@ -25,7 +29,7 @@
   color: var(--aig-color-danger);
 }
 .aig-status-indicator[aria-busy='true'] .aig-status-dot {
-  animation: aig-status-pulse 1.5s ease-in-out infinite;
+  animation: none;
 }
 @keyframes aig-status-pulse {
   50% {
@@ -34,6 +38,24 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .aig-status-indicator[aria-busy='true'] .aig-status-dot {
+    animation: none;
+  }
+}
+.aig-status-dot::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border: 1px solid currentColor;
+  border-block-start-color: transparent;
+  border-inline-end-color: transparent;
+  border-radius: 50%;
+  opacity: 0.65;
+}
+.aig-status-indicator[aria-busy='true'] .aig-status-dot::after {
+  animation: aig-spin 2.4s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .aig-status-indicator[aria-busy='true'] .aig-status-dot::after {
     animation: none;
   }
 }

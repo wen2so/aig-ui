@@ -3,6 +3,8 @@
   text-align: center;
   color: var(--aig-color-text-muted);
   overflow-wrap: anywhere;
+  background: radial-gradient(ellipse at 50% 25%, var(--aig-color-accent-soft), transparent 65%);
+  border-radius: var(--aig-radius-card);
 }
 .aig-empty-state h3 {
   margin: 12px 0;
