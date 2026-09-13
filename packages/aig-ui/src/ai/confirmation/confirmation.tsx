@@ -72,7 +72,7 @@ function ConfirmationInstance({
     }
   }
   return (
-    <section {...props} className={`aig-confirmation ${className}`}>
+    <section {...props} data-state={state} className={`aig-confirmation ${className}`}>
       <h3>{target}</h3>
       <p>{summary}</p>
       <p>

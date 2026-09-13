@@ -19,14 +19,14 @@ it('连续激活只提交一次，绑定旧版本并拒绝失效确认', async (
     onConfirm: confirm,
   };
   const { rerender } = render(<Confirmation {...props} />);
-  fireEvent.click(screen.getByText('确认执行'));
-  fireEvent.click(screen.getByText('确认执行'));
+  fireEvent.click(screen.getByRole('button', { name: '确认执行' }));
+  fireEvent.click(screen.getByRole('button', { name: '确认执行' }));
   expect(confirm).toHaveBeenCalledOnce();
   expect(confirm).toHaveBeenCalledWith({ artifactId: 'doc', revision: '1' });
   rerender(<Confirmation {...props} currentRevision="2" />);
   resolve();
   await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('版本已变化'));
-  expect(screen.getByText('确认执行')).toBeDisabled();
+  expect(screen.getByRole('button', { name: '确认执行' })).toBeDisabled();
   expect(screen.getByRole('status')).not.toHaveTextContent('操作已完成');
 });
 it('失败后保留目标并可重试', async () => {
@@ -42,8 +42,8 @@ it('失败后保留目标并可重试', async () => {
       onConfirm={confirm}
     />,
   );
-  fireEvent.click(screen.getByText('确认执行'));
+  fireEvent.click(screen.getByRole('button', { name: '确认执行' }));
   await screen.findByText('保存失败');
-  fireEvent.click(screen.getByText('确认执行'));
+  fireEvent.click(screen.getByRole('button', { name: '确认执行' }));
   await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('操作已完成'));
 });

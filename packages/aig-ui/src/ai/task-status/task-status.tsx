@@ -34,7 +34,7 @@ export function TaskStatus({
   actions?: ReactNode;
 }) {
   return (
-    <div {...props} className={`aig-task-status ${className}`}>
+    <div {...props} data-state={status} className={`aig-task-status ${className}`}>
       <StatusIndicator
         label={summary ?? labels[status]}
         tone={

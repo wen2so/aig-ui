@@ -1,9 +1,9 @@
 .aig-message {
-  padding: 20px 24px;
+  padding: 12px 14px;
   color: var(--aig-color-text);
   min-inline-size: 0;
   border-radius: var(--aig-radius-card);
-  margin-block: 8px;
+  margin-block: 6px;
   background: var(--aig-color-surface);
 }
 .aig-message[data-author='user'] {
@@ -12,19 +12,20 @@
 .aig-message header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 12px;
+  gap: 10px;
+  font-size: 11px;
   font-weight: 600;
+  letter-spacing: 0.08em;
   color: var(--aig-color-text-muted);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   font-variant-numeric: tabular-nums;
 }
 .aig-message header span {
   font-weight: 400;
 }
 .aig-message-content {
-  font-size: 15px;
-  line-height: 1.8;
+  font-size: 14px;
+  line-height: 1.75;
   overflow-wrap: anywhere;
 }
 .aig-message-text {
@@ -36,9 +37,10 @@
   display: block;
 }
 .aig-message-content pre {
-  padding: 16px;
+  padding: 10px;
+  font-size: 12px;
   background: var(--aig-color-surface-muted);
-  border-radius: 10px;
+  border-radius: 4px;
 }
 .aig-message-content a {
   color: var(--aig-color-accent);
@@ -48,25 +50,56 @@
 }
 .aig-message footer {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
-  margin-top: 16px;
+  margin-top: 10px;
 }
+/* 作者节点：助手消息以一条缓慢下巡的光轨标识。 */
 .aig-message[data-author='assistant'] {
-  border-inline-start: 2px solid var(--aig-color-mark);
+  position: relative;
+  padding-inline-start: 16px;
+}
+.aig-message[data-author='assistant']::before {
+  content: '';
+  position: absolute;
+  inset: 10px auto 10px 0;
+  inline-size: 2px;
+  background-image:
+    linear-gradient(
+      180deg,
+      transparent,
+      color-mix(in srgb, var(--aig-color-mark) 90%, transparent),
+      transparent
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--aig-color-mark) 55%, transparent),
+      color-mix(in srgb, var(--aig-color-mark) 25%, transparent)
+    );
+  background-size:
+    100% 30%,
+    100% 100%;
+  background-repeat: no-repeat;
+  background-position:
+    0 var(--aig-glint-y),
+    0 0;
+  animation: aig-glint-y var(--aig-motion-glint-period) linear infinite;
 }
 
 .aig-message header::before {
   content: '';
-  width: 7px;
-  height: 7px;
-  border: 1px solid var(--aig-color-signal);
+  width: 6px;
+  height: 6px;
+  border: 1px solid var(--aig-color-mark);
   transform: rotate(45deg);
 }
+/* 生成中：节点持续自转，表示流仍在写入。 */
 .aig-message[data-state='streaming'] header::before {
-  animation: aig-status-pulse 1.8s ease-in-out infinite;
+  background: color-mix(in srgb, var(--aig-color-mark) 55%, transparent);
+  animation: aig-node-spin var(--aig-motion-inner-period) linear infinite;
 }
 @media (prefers-reduced-motion: reduce) {
+  .aig-message[data-author='assistant']::before,
   .aig-message[data-state='streaming'] header::before {
     animation: none;
   }

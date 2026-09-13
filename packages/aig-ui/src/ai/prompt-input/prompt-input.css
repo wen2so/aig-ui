@@ -1,27 +1,68 @@
+/* 输入仪器：四角括线 + 底线巡航（见 theme/geometry.css）；运行中节点自转。 */
 .aig-prompt-input {
   min-inline-size: 0;
-  padding: 16px;
+  padding: 12px;
   border: 1px solid var(--aig-color-border-subtle);
   border-radius: var(--aig-radius-card);
   background: var(--aig-color-surface);
   box-shadow: var(--aig-material-shadow);
 }
+.aig-prompt-input::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  background: var(--aig-frame-corner);
+  opacity: 0.7;
+  pointer-events: none;
+  transition: opacity 240ms linear;
+}
+.aig-prompt-input:focus-within::after {
+  opacity: 1;
+}
+.aig-prompt-input .aig-textarea {
+  min-height: 56px;
+}
 .aig-prompt-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
-  margin-top: 12px;
+  margin-top: 10px;
 }
 .aig-prompt-actions > span {
-  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
   color: var(--aig-color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.aig-prompt-actions > span::before {
+  content: '';
+  flex: none;
+  inline-size: 4px;
+  block-size: 4px;
+  border: 1px solid var(--aig-color-mark);
+  transform: rotate(45deg);
+}
+.aig-prompt-input[data-running] .aig-prompt-actions > span::before {
+  background: var(--aig-color-mark);
+  animation: aig-node-spin var(--aig-motion-inner-period) linear infinite;
 }
 .aig-prompt-input [role='alert'] {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--aig-color-danger);
 }
 .aig-prompt-input:focus-within {
   border-color: var(--aig-color-focus);
+}
+@media (prefers-reduced-motion: reduce) {
+  .aig-prompt-input::after {
+    transition: none;
+  }
+  .aig-prompt-input[data-running] .aig-prompt-actions > span::before {
+    animation: none;
+  }
 }

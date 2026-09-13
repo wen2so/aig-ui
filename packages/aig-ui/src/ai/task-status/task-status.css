@@ -1,33 +1,83 @@
+/* 任务轨迹：左侧光轨缓慢下巡，步骤节点菱形排布，末步节点自转表示进行中。 */
 .aig-task-status {
+  position: relative;
   display: grid;
-  gap: 12px;
+  gap: 10px;
   color: var(--aig-color-text);
   border-inline-start: 1px solid var(--aig-color-border-subtle);
-  padding-inline-start: 16px;
+  padding-inline-start: 14px;
+}
+.aig-task-status::before {
+  content: '';
+  position: absolute;
+  inset: 8px auto 8px -1px;
+  inline-size: 1px;
+  background-image:
+    linear-gradient(
+      180deg,
+      transparent,
+      color-mix(in srgb, var(--aig-color-mark) 85%, transparent),
+      transparent
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--aig-color-mark) 45%, transparent),
+      color-mix(in srgb, var(--aig-color-mark) 20%, transparent)
+    );
+  background-size:
+    100% 28%,
+    100% 100%;
+  background-repeat: no-repeat;
+  background-position:
+    0 var(--aig-glint-y),
+    0 0;
+  animation: aig-glint-y var(--aig-motion-glint-period) linear infinite;
+  pointer-events: none;
 }
 .aig-task-status ol {
   margin: 0;
   color: var(--aig-color-text-muted);
-  font-size: 13px;
-  line-height: 1.8;
+  font-size: 12px;
+  line-height: 1.7;
   font-variant-numeric: tabular-nums;
   list-style: none;
   padding-inline-start: 3px;
 }
 .aig-task-status li {
   position: relative;
-  border-inline-start: 1px solid var(--aig-color-signal);
-  padding-inline-start: 16px;
-  padding-block: 4px;
+  border-inline-start: 1px solid color-mix(in srgb, var(--aig-color-mark) 55%, transparent);
+  padding-inline-start: 14px;
+  padding-block: 3px;
 }
 .aig-task-status li::before {
   content: '';
   position: absolute;
-  width: 5px;
-  height: 5px;
-  inset-inline-start: -3px;
-  inset-block-start: 12px;
+  width: 4px;
+  height: 4px;
+  inset-inline-start: -2.5px;
+  inset-block-start: 10px;
   background: var(--aig-color-surface);
-  border: 1px solid var(--aig-color-signal);
+  border: 1px solid var(--aig-color-mark);
   transform: rotate(45deg);
+}
+.aig-task-status li:last-child::before {
+  background: var(--aig-color-mark);
+}
+.aig-task-status:is([data-state='running'], [data-state='streaming'], [data-state='queued'])
+  li:last-child::before {
+  animation: aig-node-spin var(--aig-motion-inner-period) linear infinite;
+}
+.aig-task-status[data-state='succeeded'] li::before {
+  background: var(--aig-color-success);
+  border-color: var(--aig-color-success);
+}
+.aig-task-status[data-state='failed'] li:last-child::before {
+  background: var(--aig-color-danger);
+  border-color: var(--aig-color-danger);
+}
+@media (prefers-reduced-motion: reduce) {
+  .aig-task-status::before,
+  .aig-task-status[data-state] li:last-child::before {
+    animation: none;
+  }
 }

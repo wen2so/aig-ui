@@ -19,7 +19,7 @@ export function ToolResult({
   error?: string;
 }) {
   return (
-    <section {...props} className={`aig-tool-result ${className}`}>
+    <section {...props} data-state={status} className={`aig-tool-result ${className}`}>
       <h3>{name}</h3>
       <p>{purpose}</p>
       <TaskStatus status={status} />

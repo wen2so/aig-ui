@@ -1,16 +1,16 @@
 .aig-conversation {
   display: grid;
-  gap: 12px;
+  gap: 10px;
   min-inline-size: 0;
 }
 .aig-conversation-viewport {
-  max-height: 480px;
+  max-height: 420px;
   overflow-y: auto;
   overflow-anchor: none;
   scroll-behavior: auto;
   min-inline-size: 0;
   border-radius: var(--aig-radius-card);
-  padding: 8px;
+  padding: 6px;
   background: color-mix(in srgb, var(--aig-color-surface-muted) 55%, transparent);
   scrollbar-gutter: stable;
   border-block: 1px solid var(--aig-color-border-subtle);

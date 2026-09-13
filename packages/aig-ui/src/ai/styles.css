@@ -6,24 +6,94 @@
 @import './task-status/task-status.css';
 @import './source-list/source-list.css';
 @import './message/message.css';
-/* AI 组件附加样式；宿主同时导入 aig-ui/styles.css。 */
-:is(.aig-prompt-input, .aig-tool-result, .aig-artifact-preview, .aig-confirmation) {
-  position: relative;
+/* AI 组件附加样式；宿主同时导入 aig-ui/styles.css。
+   容器底部刻线与状态侧轨由公共样式主题层提供，见 theme/geometry.css。 */
+
+/* 阅读动作保留稳定缩进，展开的摘要由侧轨和底线共同标识。 */
+.aig-tool-result summary {
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--aig-color-border-subtle);
+  border-radius: 2px;
+  transition:
+    background-color 200ms,
+    border-color 240ms,
+    box-shadow 240ms;
 }
-:is(.aig-prompt-input, .aig-tool-result, .aig-artifact-preview, .aig-confirmation)::before {
-  content: '';
-  position: absolute;
-  inset: 7px;
-  pointer-events: none;
-  background:
-    linear-gradient(var(--aig-color-signal), var(--aig-color-signal)) left top / 20px 1px no-repeat,
-    linear-gradient(var(--aig-color-signal), var(--aig-color-signal)) left top / 1px 12px no-repeat,
-    linear-gradient(var(--aig-color-mark), var(--aig-color-mark)) right bottom / 20px 1px no-repeat;
-  opacity: 0.5;
-  animation: aig-frame-establish var(--aig-motion-frame-duration) cubic-bezier(0.22, 0.61, 0.36, 1) both;
+.aig-tool-result summary:is(:hover, :focus-visible),
+.aig-tool-result details[open] > summary {
+  background-color: color-mix(in srgb, var(--aig-color-mark) 8%, transparent);
+  border-color: var(--aig-color-mark);
+  box-shadow: inset 2px 0 var(--aig-color-mark);
+}
+.aig-artifact-preview select {
+  transition:
+    border-color 200ms,
+    background-color 200ms,
+    box-shadow 240ms;
+}
+.aig-artifact-preview select:is(:hover, :focus-visible):enabled {
+  background-color: color-mix(in srgb, var(--aig-color-mark) 9%, transparent);
+  border-color: var(--aig-color-mark);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--aig-color-mark) 12%, transparent);
+}
+.aig-artifact-preview select:disabled {
+  opacity: 0.55;
+}
+.aig-prompt-input::after {
+  inset: 4px;
+  transition:
+    inset 360ms,
+    opacity 240ms;
+}
+.aig-prompt-input:focus-within::after {
+  inset: 2px;
+}
+.aig-message header {
+  flex-wrap: wrap;
+}
+.aig-message header::before {
+  flex: none;
+  transition:
+    background-color 220ms,
+    border-color 220ms,
+    scale 320ms;
+}
+.aig-message[data-state='streaming'] header::before {
+  scale: 1.2;
+}
+.aig-message[data-state='failed'] header::before {
+  border-color: var(--aig-color-danger);
+  background-color: var(--aig-color-danger);
+}
+.aig-confirmation[data-state='succeeded'],
+.aig-tool-result[data-state='succeeded'] {
+  border-inline-start: 2px solid var(--aig-color-success);
+}
+.aig-confirmation[data-state='failed'],
+.aig-tool-result[data-state='failed'] {
+  border-inline-start: 2px solid var(--aig-color-danger);
+}
+.aig-confirmation > [role='status']:empty {
+  margin: 0;
+}
+.aig-confirmation > [role='status']:not(:empty) {
+  padding: 8px 10px;
+  border-inline-start: 2px solid var(--aig-color-mark);
+  background-color: color-mix(in srgb, var(--aig-color-mark) 7%, transparent);
 }
 @media (prefers-reduced-motion: reduce) {
-  :is(.aig-prompt-input, .aig-tool-result, .aig-artifact-preview, .aig-confirmation)::before {
-    animation: none;
+  .aig-tool-result summary,
+  .aig-artifact-preview select,
+  .aig-prompt-input::after,
+  .aig-message header::before {
+    transition: none;
+  }
+}
+@media (forced-colors: active) {
+  .aig-prompt-input::after {
+    display: none;
+  }
+  .aig-tool-result details[open] > summary {
+    outline: 1px solid CanvasText;
   }
 }

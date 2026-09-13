@@ -48,7 +48,11 @@ export function PromptInput({
     }
   }
   return (
-    <div {...props} className={`aig-prompt-input ${className}`}>
+    <div
+      {...props}
+      data-running={running || sending || undefined}
+      className={`aig-prompt-input ${className}`}
+    >
       <Textarea
         aria-label={label}
         aria-describedby={error ? id : undefined}
