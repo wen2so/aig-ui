@@ -7,7 +7,50 @@
 }
 .aig-copy-button [role='status'] {
   color: var(--aig-color-text-muted);
-  font-size: 13px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+.aig-copy-button[data-state='success'] .aig-button {
+  --aig-button-trace: var(--aig-color-success);
+  --aig-button-edge: color-mix(in srgb, var(--aig-color-success) 78%, transparent);
+  color: var(--aig-color-success);
+}
+.aig-copy-button[data-state='error'] .aig-button {
+  --aig-button-trace: var(--aig-color-danger);
+  --aig-button-edge: var(--aig-color-danger);
+  color: var(--aig-color-danger);
+}
+/* 复制结果：基线用一次结果色的扫描确认，错误同样以失败色读一遍。 */
+@keyframes aig-copy-scan {
+  from {
+    --aig-glint-x: -30%;
+  }
+  to {
+    --aig-glint-x: 130%;
+  }
+}
+.aig-copy-button:is([data-state='success'], [data-state='error']) .aig-button:enabled .aig-button-frame {
+  animation: aig-copy-scan 520ms cubic-bezier(0.3, 0.55, 0.35, 1) 1;
+}
+.aig-copy-button[data-state='success'] [role='status'] {
+  color: var(--aig-color-success);
+}
+.aig-copy-button[data-state='error'] [role='status'] {
+  color: var(--aig-color-danger);
+}
+.aig-copy-check {
+  stroke-dasharray: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation: aig-copy-confirm 360ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+@keyframes aig-copy-confirm {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 .aig-copy-button textarea {
   display: block;
@@ -16,9 +59,28 @@
   user-select: all;
   max-inline-size: 100%;
   color: var(--aig-color-text);
-  background: var(--aig-color-surface);
-  border: 1px solid var(--aig-color-border-control);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--aig-color-border-control) 55%, transparent);
   border-radius: var(--aig-radius-control);
-  padding: 8px;
+  padding: 6px 8px;
   font-family: ui-monospace, monospace;
+  font-size: 12px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .aig-copy-check {
+    animation: none;
+  }
+}
+@media (forced-colors: active) {
+  .aig-copy-button:is([data-state='success'], [data-state='error']) .aig-button {
+    color: ButtonText;
+  }
+  .aig-copy-button:is([data-state='success'], [data-state='error']) [role='status'] {
+    color: CanvasText;
+  }
+  .aig-copy-button textarea {
+    border-color: FieldText;
+    color: FieldText;
+    background: Field;
+  }
 }

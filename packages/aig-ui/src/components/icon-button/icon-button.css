@@ -1,27 +1,40 @@
+/* 操作图标保持居中，外围方框与四角细线表达状态。 */
 .aig-icon-button {
-  min-inline-size: 40px;
-  padding: 8px;
+  min-inline-size: 32px;
+  padding: 6px;
   aspect-ratio: 1;
   flex: none;
 }
+.aig-icon-button .aig-button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.aig-icon-button .aig-button-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.aig-icon-button .aig-button-label > svg {
+  inline-size: 1.15em;
+  block-size: 1.15em;
+}
+.aig-icon-button[data-variant='primary'] .aig-button-frame::before {
+  inset: 2px;
+}
+/* 图标按钮的内容就是图形，不叠加三角标记。 */
+.aig-icon-button .aig-button-content::before {
+  display: none;
+}
+.aig-icon-button .aig-button-loading {
+  inset-inline-start: 50%;
+  translate: -50% -50%;
+}
 .aig-icon-button[data-size='sm'] {
-  min-inline-size: 32px;
+  min-inline-size: 26px;
+  padding: 4px;
 }
 .aig-icon-button[data-size='lg'] {
-  min-inline-size: 48px;
-}
-
-.aig-icon-button::after {
-  inset: 5px;
-  height: auto;
-  border: 1px solid currentColor;
-  background: transparent;
-  border-radius: 50%;
-  border-inline-start-color: transparent;
-  border-block-end-color: transparent;
-  transform: rotate(-45deg);
-  opacity: 0.2;
-}
-.aig-icon-button:hover:enabled::after {
-  transform: rotate(45deg);
+  min-inline-size: 40px;
+  padding: 8px;
 }

@@ -1,15 +1,16 @@
 .aig-heading {
   margin: 0;
-  font-size: 24px;
+  font-size: 20px;
   line-height: 1.35;
   color: var(--aig-color-text);
   overflow-wrap: anywhere;
   text-wrap: balance;
   font-weight: 550;
+  letter-spacing: 0.005em;
 }
 .aig-heading[data-size='sm'] {
-  font-size: 20px;
+  font-size: 17px;
 }
 .aig-heading[data-size='lg'] {
-  font-size: 32px;
+  font-size: 26px;
 }

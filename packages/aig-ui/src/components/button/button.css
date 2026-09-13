@@ -1,114 +1,475 @@
+/* 三角切片用于一次入场，稳定状态由矩形边界与基线表达。
+   切片共用顶点并覆盖完整衬底，硬切组装后收回；文字与图标始终位于上层。 */
 .aig-button {
+  --aig-button-edge: var(--aig-color-border-control);
+  --aig-button-trace: var(--aig-color-mark);
+  --aig-button-cap: 5px;
   box-sizing: border-box;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: 32px;
+  padding: 5px 24px;
+  border: 0;
+  border-radius: var(--aig-radius-control);
+  background: transparent;
+  color: var(--aig-color-text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  line-height: 1.5;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+  transition: color 140ms linear;
+}
+/* 内容左侧预留选择标记，实际选中或展开时点亮。 */
+.aig-button-content {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--aig-space-2);
-  min-block-size: 40px;
-  padding: 8px 16px;
-  border: 1px solid transparent;
-  border-radius: var(--aig-radius-control);
-  background: var(--aig-color-accent);
-  color: var(--aig-color-surface);
-  font: inherit;
-  font-weight: 600;
-  line-height: 1.5;
-  cursor: pointer;
-  overflow-wrap: anywhere;
-  box-shadow:
-    inset 0 1px rgb(255 255 255 / 18%),
-    0 4px 14px rgb(58 50 52 / 6%);
-  transition:
-    background 160ms,
-    box-shadow 160ms,
-    transform 160ms;
-  position: relative;
+  min-inline-size: 0;
+}
+.aig-button-content::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: -14px;
+  inset-block-start: 50%;
+  translate: 0 -50%;
+  inline-size: 7px;
+  block-size: 7px;
+  background: currentColor;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  opacity: 0;
+}
+.aig-button-label {
+  min-inline-size: 0;
+}
+.aig-button-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  inline-size: 1.15em;
+  block-size: 1.15em;
+}
+.aig-button-icon > svg {
+  inline-size: 100%;
+  block-size: 100%;
 }
 .aig-button[data-size='sm'] {
-  min-block-size: 32px;
-  padding: 4px 12px;
+  --aig-button-cap: 4px;
+  min-block-size: 26px;
+  padding: 3px 20px;
+  font-size: 12px;
+}
+.aig-button[data-size='sm'] .aig-button-content::before {
+  inset-inline-start: -12px;
+  inline-size: 6px;
+  block-size: 6px;
 }
 .aig-button[data-size='lg'] {
-  min-block-size: 48px;
-  padding: 12px 20px;
+  min-block-size: 40px;
+  padding: 8px 28px;
+  font-size: 14px;
 }
+/* 主操作：矩形框内保留端部刻线。 */
+.aig-button[data-variant='primary'] {
+  --aig-button-edge: color-mix(in srgb, var(--aig-color-border-control) 52%, var(--aig-color-accent) 48%);
+  color: var(--aig-color-accent);
+  font-weight: 600;
+}
+.aig-button[data-variant='primary'] .aig-button-frame::before {
+  --aig-button-fragment: color-mix(in srgb, var(--aig-button-edge) 55%, transparent);
+  background-image:
+    linear-gradient(var(--aig-button-fragment), var(--aig-button-fragment)),
+    linear-gradient(var(--aig-button-fragment), var(--aig-button-fragment));
+  background-size:
+    1px 42%,
+    1px 42%;
+  background-position:
+    left center,
+    right center;
+  background-repeat: no-repeat;
+}
+/* 次操作：上下双横轨。 */
 .aig-button[data-variant='secondary'] {
-  background: var(--aig-color-accent-soft);
-  color: var(--aig-color-accent);
+  --aig-button-edge: color-mix(in srgb, var(--aig-color-border-control) 45%, var(--aig-color-mark) 55%);
 }
-.aig-button[data-variant='outline'] {
-  background: var(--aig-color-surface);
-  color: var(--aig-color-text);
-  border-color: var(--aig-color-border-control);
+.aig-button[data-variant='secondary'] .aig-button-frame {
+  background-image:
+    linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--aig-button-trace) 72%, transparent),
+      transparent
+    ),
+    linear-gradient(var(--aig-button-edge), var(--aig-button-edge)),
+    linear-gradient(var(--aig-button-edge), var(--aig-button-edge));
+  background-size:
+    26% 1px,
+    100% 1px,
+    100% 1px;
+  background-position:
+    var(--aig-glint-x) calc(100% - 1px),
+    center top,
+    center bottom;
 }
+/* 普通操作：连续矩形细框。 */
+/* 幽灵操作：带端封的基线，端封随悬停立起。 */
 .aig-button[data-variant='ghost'] {
-  background: transparent;
+  --aig-button-edge: color-mix(in srgb, var(--aig-color-border-control) 62%, transparent);
+  --aig-button-trace: color-mix(in srgb, var(--aig-color-mark) 55%, transparent);
   color: var(--aig-color-accent);
-  box-shadow: none;
 }
+.aig-button[data-variant='ghost'] .aig-button-frame {
+  background-image:
+    linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--aig-button-trace) 72%, transparent),
+      transparent
+    ),
+    linear-gradient(var(--aig-button-edge), var(--aig-button-edge));
+  background-size:
+    26% 1px,
+    100% 1px;
+  background-position:
+    var(--aig-glint-x) calc(100% - 1px),
+    center bottom;
+}
+.aig-button[data-variant='ghost'] .aig-button-frame::before {
+  --aig-button-tick: color-mix(in srgb, var(--aig-color-border-control) 72%, transparent);
+  inset: 0 3px;
+  background:
+    linear-gradient(var(--aig-button-tick), var(--aig-button-tick)) left bottom / 1px var(--aig-button-cap),
+    linear-gradient(var(--aig-button-tick), var(--aig-button-tick)) right bottom / 1px var(--aig-button-cap);
+  background-repeat: no-repeat;
+}
+.aig-button[data-variant='ghost']:is(:hover, :focus-visible):enabled .aig-button-frame::before,
+.aig-button[data-variant='ghost']:is([aria-pressed='true'], [aria-expanded='true'])
+  .aig-button-frame::before {
+  --aig-button-cap: 11px;
+}
+/* 危险操作：危险色边界配合加厚的底线。 */
 .aig-button[data-variant='danger'] {
-  background: var(--aig-color-danger);
+  --aig-button-edge: color-mix(in srgb, var(--aig-color-danger) 80%, transparent);
+  --aig-button-trace: var(--aig-color-danger);
+  color: var(--aig-color-danger);
+  box-shadow: inset 0 -2px color-mix(in srgb, var(--aig-color-danger) 26%, transparent);
 }
-.aig-button:hover:enabled {
-  opacity: 1;
-  background-image: linear-gradient(rgb(255 255 255 / 8%), rgb(255 255 255 / 8%));
+/* 框线：完整矩形四边加一条停在基线上的扫描光带。 */
+.aig-button-frame {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--aig-button-trace) 72%, transparent),
+      transparent
+    ),
+    linear-gradient(var(--aig-button-edge), var(--aig-button-edge)),
+    linear-gradient(var(--aig-button-edge), var(--aig-button-edge)),
+    linear-gradient(var(--aig-button-edge), var(--aig-button-edge)),
+    linear-gradient(var(--aig-button-edge), var(--aig-button-edge));
+  background-size:
+    26% 1px,
+    100% 1px,
+    100% 1px,
+    1px 100%,
+    1px 100%;
+  background-position:
+    var(--aig-glint-x) calc(100% - 1px),
+    center top,
+    center bottom,
+    left center,
+    right center;
+  background-repeat: no-repeat;
+  animation: aig-button-glint var(--aig-motion-glint-period) linear infinite;
+  transition: inset 300ms cubic-bezier(0.34, 1.3, 0.64, 1);
 }
-.aig-button:active:enabled {
+/* 碎线与端封的承载层。 */
+.aig-button-frame::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  transition:
+    inset 280ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    background-size 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+/* 组件在入场和指针移入时随机选取部分切片，每块闪现一次。 */
+.aig-button-enter {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  fill: color-mix(in srgb, var(--aig-button-edge) 24%, transparent);
+}
+.aig-button-enter polygon {
+  opacity: 0;
+  animation: aig-button-enter 360ms steps(1, end) both;
+}
+/* 可见性独立于时间轴，加载结束或恢复可用时保留已完成的入场进度。 */
+.aig-button:disabled .aig-button-enter {
+  visibility: hidden;
+}
+.aig-button:is(:hover, :focus-visible):enabled {
+  color: var(--aig-color-accent);
+}
+/* 悬停与聚焦：外围打开 1px，光带沿基线读取一次。 */
+.aig-button:is(:hover, :focus-visible):enabled .aig-button-frame {
+  inset: -1px;
+  animation: aig-button-scan var(--aig-motion-scan-duration) cubic-bezier(0.3, 0.55, 0.35, 1) 1;
+}
+.aig-button:is(:hover, :focus-visible):enabled .aig-button-frame::before {
+  inset: 2px;
+}
+.aig-button:is([aria-pressed='true'], [aria-expanded='true']) .aig-button-content::before {
   opacity: 1;
-  transform: translateY(1px);
-  box-shadow: inset 0 1px 4px rgb(58 50 52 / 12%);
+}
+/* 持续选中：保留选择标记与加厚底线。 */
+.aig-button:is([aria-pressed='true'], [aria-expanded='true']) {
+  color: var(--aig-color-accent);
+  box-shadow: inset 0 -3px color-mix(in srgb, var(--aig-button-trace) 70%, transparent);
+}
+.aig-button:is([aria-pressed='true'], [aria-expanded='true']) .aig-button-frame::before {
+  inset: 2px;
+}
+.aig-button[data-variant='danger']:is(
+    :hover,
+    :focus-visible,
+    [aria-pressed='true'],
+    [aria-expanded='true']
+  ):enabled {
+  color: var(--aig-color-danger);
+}
+.aig-button:active:enabled .aig-button-frame {
+  inset: 1px;
+  transition-duration: 90ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
+}
+.aig-button:active:enabled .aig-button-frame::before {
+  inset: 1px;
+  transition-duration: 90ms;
 }
 .aig-button:disabled {
-  opacity: 0.55;
+  opacity: 0.4;
   cursor: default;
 }
-.aig-button-busy {
-  inline-size: 0.85em;
-  block-size: 0.85em;
-  border: 2px solid currentColor;
-  border-inline-end-color: transparent;
-  border-radius: 50%;
-  animation: aig-spin 1s linear infinite;
+.aig-button:disabled .aig-button-frame {
+  animation: none;
 }
-@keyframes aig-spin {
+.aig-button[aria-busy='true']:disabled {
+  opacity: 0.85;
+  cursor: progress;
+}
+/* 加载：扫描基线与加载图标表达任务状态，选择标记让出状态位。 */
+.aig-button[aria-busy='true'] .aig-button-frame {
+  animation: aig-button-scan var(--aig-motion-sweep-period) linear infinite;
+}
+.aig-button[aria-busy='true'] .aig-button-content::before {
+  opacity: 0;
+}
+.aig-button-loading {
+  position: absolute;
+  z-index: 1;
+  inset-inline-start: 5px;
+  inset-block-start: 50%;
+  translate: 0 -50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  inline-size: 14px;
+  block-size: 14px;
+}
+.aig-button-loading > svg {
+  inline-size: 100%;
+  block-size: 100%;
+}
+.aig-brand-mark {
+  inline-size: 2rem;
+  block-size: 2rem;
+  color: var(--aig-color-mark);
+}
+.aig-button .aig-brand-mark {
+  color: inherit;
+}
+/* 待机：光带驶过一遍后驻留，等待下一轮。 */
+@keyframes aig-button-glint {
+  0%,
+  8% {
+    --aig-glint-x: -30%;
+  }
+  55% {
+    --aig-glint-x: 130%;
+  }
+  100% {
+    --aig-glint-x: 130%;
+  }
+}
+/* 扫描：光带从基线的左端读到右端。 */
+@keyframes aig-button-scan {
+  from {
+    --aig-glint-x: -30%;
+  }
+  to {
+    --aig-glint-x: 130%;
+  }
+}
+/* 保留原生时间轴，由组件为抽中的切片写入单次闪切。 */
+@keyframes aig-button-enter {
+  from,
+  to {
+    opacity: 0;
+  }
+}
+.aig-button-mark {
+  inline-size: 1.15em;
+  block-size: 1.15em;
+  flex: none;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+}
+.aig-button-mark-ring {
+  stroke-width: 1;
+  stroke-dasharray: 1.5 4.5;
+  opacity: 0.3;
+  animation: aig-button-orbit var(--aig-motion-outer-period) linear infinite;
+}
+.aig-button-mark-arc {
+  stroke-width: 1.3;
+  stroke-dasharray: 13 50;
+  stroke-linecap: round;
+  opacity: 0.55;
+  animation: aig-button-orbit var(--aig-motion-inner-period) linear infinite reverse;
+}
+.aig-button-mark-ring,
+.aig-button-mark-arc {
+  transform-origin: 12px 12px;
+}
+.aig-button-mark-tri,
+.aig-button-mark-bar {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.aig-button-mark-tri {
+  stroke-width: 1.7;
+  stroke-linejoin: round;
+  animation: aig-button-draw 2200ms infinite;
+}
+.aig-button-mark-bar {
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  animation: aig-button-bar 2200ms 260ms infinite;
+}
+
+@keyframes aig-button-orbit {
   to {
     transform: rotate(360deg);
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .aig-button {
-    transition: none;
+
+/* 迷你标记 2.2s 循环：绘制 0–40%，保持至 68%，反向撤回 68–88%。 */
+@keyframes aig-button-draw {
+  0% {
+    stroke-dashoffset: 1;
+    animation-timing-function: cubic-bezier(0.45, 0, 0.2, 1);
   }
-  .aig-button-busy {
-    animation: none;
+  40% {
+    stroke-dashoffset: 0;
+  }
+  68% {
+    stroke-dashoffset: 0;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  88% {
+    stroke-dashoffset: 1;
+  }
+  100% {
+    stroke-dashoffset: 1;
+  }
+}
+/* 横线延迟 260ms 起笔，与三角在同一时刻撤回（相对 56–76%）。 */
+@keyframes aig-button-bar {
+  0% {
+    stroke-dashoffset: 1;
+    animation-timing-function: cubic-bezier(0.45, 0, 0.2, 1);
+  }
+  32% {
+    stroke-dashoffset: 0;
+  }
+  56% {
+    stroke-dashoffset: 0;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  76% {
+    stroke-dashoffset: 1;
+  }
+  100% {
+    stroke-dashoffset: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aig-button,
+  .aig-button-frame,
+  .aig-button-frame::before,
+  .aig-button-enter polygon,
+  .aig-button-content::before {
+    transition: none !important;
+    animation: none !important;
+  }
+  /* 光带依赖运动表达状态，静止时停在画面之外。 */
+  .aig-button-loading *,
+  .aig-button-loading *::before,
+  .aig-button-loading *::after {
+    animation: none !important;
   }
 }
 @media (forced-colors: active) {
   .aig-button {
+    color: ButtonText !important;
+    box-shadow: none !important;
+  }
+  .aig-button .aig-button-frame {
+    border: 1px solid ButtonText;
+    background-image: none;
+    animation: none;
+  }
+  .aig-button[data-variant='secondary'] .aig-button-frame,
+  .aig-button[data-variant='ghost'] .aig-button-frame {
     border-color: ButtonText;
   }
-}
-.aig-button::after {
-  content: '';
-  position: absolute;
-  inset: auto 10px 4px;
-  height: 1px;
-  background: currentColor;
-  opacity: 0.22;
-  transform: scaleX(0.35);
-  transform-origin: left;
-  transition: transform 240ms;
-  pointer-events: none;
-}
-.aig-button:hover:enabled::after,
-.aig-button:focus-visible::after {
-  transform: scaleX(1);
-}
-.aig-button[data-variant='ghost']::after {
-  inset-block-end: 2px;
-}
-@media (prefers-reduced-motion: reduce) {
-  .aig-button::after {
-    transition: none;
+  .aig-button-frame::before,
+  .aig-button-enter {
+    display: none;
+  }
+  .aig-button:is([aria-pressed='true'], [aria-expanded='true']) {
+    color: HighlightText !important;
+    background: Highlight;
+    box-shadow: none;
+  }
+  .aig-button:is([aria-pressed='true'], [aria-expanded='true']) .aig-button-content::before {
+    background: HighlightText;
+  }
+  .aig-button:disabled {
+    color: GrayText !important;
+  }
+  .aig-button:disabled .aig-button-frame {
+    border-color: GrayText;
   }
 }

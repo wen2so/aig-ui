@@ -9,9 +9,15 @@ it('复制成功与拒绝分别反馈', async () => {
   fireEvent.click(screen.getByRole('button'));
   await waitFor(() => expect(success).toHaveBeenCalledOnce());
   expect(screen.getByRole('status')).toHaveTextContent('已复制');
+  expect(screen.getByRole('button', { name: '复制' }).closest('.aig-copy-button')).toHaveAttribute(
+    'data-state',
+    'success',
+  );
+  expect(screen.getByRole('button').querySelector('.aig-copy-check')).toBeInTheDocument();
   writeText.mockRejectedValue(Error('denied'));
   fireEvent.click(screen.getByRole('button'));
   await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('请手动复制'));
   expect(screen.getByRole('textbox')).toHaveValue('原文');
+  expect(screen.getByRole('button').closest('.aig-copy-button')).toHaveAttribute('data-state', 'error');
   expect(success).toHaveBeenCalledOnce();
 });

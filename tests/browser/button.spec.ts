@@ -6,9 +6,10 @@ test('tarball 按钮支持键盘操作、暖白主题和可访问名称', async 
   await page.getByRole('button', { name: '保存设置' }).focus();
   await page.keyboard.press('Enter');
   await expect(page.getByRole('status').filter({ hasText: '设置已保存' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '保存设置' })).toHaveCSS('color', 'rgb(125, 78, 87)');
   await expect(page.getByRole('button', { name: '保存设置' })).toHaveCSS(
     'background-color',
-    'rgb(125, 78, 87)',
+    'rgba(0, 0, 0, 0)',
   );
   await page.getByRole('button', { name: '完成加载' }).click();
   await expect(page.locator('[data-aig-component=loading-sequence]')).toHaveAttribute(

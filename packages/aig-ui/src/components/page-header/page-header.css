@@ -2,34 +2,35 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: 16px;
   flex-wrap: wrap;
-  margin-bottom: 32px;
+  margin-bottom: 20px;
   min-inline-size: 0;
   border-bottom: 1px solid var(--aig-color-border-subtle);
-  padding-block-end: 24px;
+  padding-block-end: 16px;
 }
 .aig-page-header > div {
   min-inline-size: 0;
 }
 .aig-page-header h1 {
   margin: 0;
-  font-size: clamp(24px, 3vw, 32px);
+  font-size: clamp(20px, 2.4vw, 26px);
   line-height: 1.35;
   color: var(--aig-color-text);
   font-weight: 550;
+  letter-spacing: 0.005em;
   overflow-wrap: anywhere;
   text-wrap: balance;
 }
 .aig-page-header p {
   color: var(--aig-color-text-muted);
-  margin: 8px 0 0;
-  font-size: 14px;
+  margin: 6px 0 0;
+  font-size: 13px;
   line-height: 1.6;
   overflow-wrap: anywhere;
 }
 .aig-page-header-actions {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
 }

@@ -1,4 +1,5 @@
-import { Settings } from 'lucide-react';
+import { useState } from 'react';
+import { Star } from 'lucide-react';
 import { IconButton } from './icon-button.js';
 export default { title: '通用/IconButton', component: IconButton };
 export const preview = {
@@ -8,14 +9,13 @@ export const preview = {
 };
 /** 展示可复用组件的代表性状态。 */
 export function Preview() {
+  const [saved, setSaved] = useState(false);
   return (
-    <IconButton
-      aria-label="打开设置"
-      onClick={(event) => {
-        event.currentTarget.setAttribute('aria-label', '设置已打开');
-      }}
-    >
-      <Settings size={18} aria-hidden />
-    </IconButton>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <IconButton aria-label="收藏项目" aria-pressed={saved} onClick={() => setSaved(!saved)}>
+        <Star size={18} aria-hidden />
+      </IconButton>
+      <span role="status">{saved ? '项目已收藏' : '项目尚未收藏'}</span>
+    </div>
   );
 }

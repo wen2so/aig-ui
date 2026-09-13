@@ -1,16 +1,16 @@
 .aig-text {
   margin: 0;
-  font-size: 16px;
-  line-height: 1.5;
+  font-size: 14px;
+  line-height: 1.6;
   color: var(--aig-color-text);
   overflow-wrap: anywhere;
   text-wrap: pretty;
 }
 .aig-text[data-size='sm'] {
-  font-size: 14px;
+  font-size: 13px;
 }
 .aig-text[data-size='lg'] {
-  font-size: 18px;
+  font-size: 16px;
 }
 .aig-text[data-tone='muted'] {
   color: var(--aig-color-text-muted);
