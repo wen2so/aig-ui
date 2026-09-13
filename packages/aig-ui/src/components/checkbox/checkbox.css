@@ -1,14 +1,128 @@
+/*
+ * 选择族之复选框：四边发丝线框（四角留缺口），透明底；勾选时线框转
+ * 品牌色并绘制对勾，右上角定位节点随选择建立；中间态显示横线。
+ * --aig-check-line 注册为可过渡颜色。
+ */
+@property --aig-check-line {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: rgb(140 125 129 / 0.6);
+}
 .aig-checkbox {
+  appearance: none;
+  position: relative;
+  box-sizing: border-box;
+  margin: 0;
+  border: 0;
   width: 18px;
   height: 18px;
-  vertical-align: middle;
   flex-shrink: 0;
+  vertical-align: middle;
   cursor: pointer;
-  outline-offset: 4px;
-  accent-color: var(--aig-color-accent);
-  filter: drop-shadow(0 0 2px color-mix(in srgb, var(--aig-color-signal) 25%, transparent));
+  --aig-check-line: color-mix(in srgb, var(--aig-color-border-control) 60%, transparent);
+  background-color: transparent;
+  animation: aig-glint-x var(--aig-motion-glint-period) linear infinite;
+  background-image:
+    linear-gradient(90deg, transparent, var(--aig-color-mark), transparent),
+    linear-gradient(var(--aig-check-line), var(--aig-check-line)),
+    linear-gradient(var(--aig-check-line), var(--aig-check-line)),
+    linear-gradient(var(--aig-check-line), var(--aig-check-line)),
+    linear-gradient(var(--aig-check-line), var(--aig-check-line));
+  background-size:
+    30% 1px,
+    calc(100% - 6px) 1px,
+    calc(100% - 6px) 1px,
+    1px calc(100% - 6px),
+    1px calc(100% - 6px);
+  background-position:
+    var(--aig-glint-x) 0,
+    left 3px top 0,
+    right 3px bottom 0,
+    left 0 top 3px,
+    right 0 bottom 3px;
+  background-repeat: no-repeat;
+  transition:
+    --aig-check-line 200ms linear,
+    background-color 200ms,
+    box-shadow 260ms,
+    scale 180ms;
+}
+.aig-checkbox:is(:hover, :focus-visible):enabled {
+  --aig-check-line: color-mix(in srgb, var(--aig-color-mark) 70%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--aig-color-mark) 10%, transparent);
+}
+.aig-checkbox:is(:checked, :indeterminate) {
+  --aig-check-line: var(--aig-color-mark);
+  background-color: color-mix(in srgb, var(--aig-color-mark) 12%, transparent);
+  box-shadow: inset 0 0 0 1px var(--aig-check-line);
+}
+.aig-checkbox:active:enabled {
+  scale: 0.9;
+}
+.aig-checkbox::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 6px;
+  inset-inline-start: 5px;
+  width: 7px;
+  height: 3.5px;
+  border-block-end: 1.5px solid var(--aig-color-accent);
+  border-inline-start: 1.5px solid var(--aig-color-accent);
+  transform: rotate(-45deg) scale(0.5);
+  opacity: 0;
+  transition:
+    transform 220ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 160ms linear;
+}
+.aig-checkbox:checked::before {
+  opacity: 1;
+  transform: rotate(-45deg) scale(1);
+}
+/* 节点与右上缺角对齐，选中后补全轮廓。 */
+.aig-checkbox:not(:indeterminate)::after {
+  content: '';
+  position: absolute;
+  box-sizing: border-box;
+  inset: 0 0 auto auto;
+  width: 4px;
+  height: 4px;
+  border: 1px solid var(--aig-color-mark);
+  background: var(--aig-color-surface);
+  scale: 0.65;
+  transition:
+    scale 280ms,
+    background-color 200ms;
+}
+.aig-checkbox:checked::after {
+  background: var(--aig-color-mark);
+  scale: 1;
+}
+.aig-checkbox:indeterminate::after {
+  content: '';
+  position: absolute;
+  inset-inline: 3.5px;
+  inset-block-start: 8px;
+  border-block-start: 1.5px solid var(--aig-color-accent);
 }
 .aig-checkbox:disabled {
   cursor: default;
   opacity: 0.55;
+  animation-duration: var(--aig-motion-rest-period);
+}
+@media (prefers-reduced-motion: reduce) {
+  .aig-checkbox,
+  .aig-checkbox::before,
+  .aig-checkbox:not(:indeterminate)::after {
+    transition: none;
+    animation: none;
+  }
+}
+@media (forced-colors: active) {
+  .aig-checkbox {
+    appearance: auto;
+  }
+  .aig-checkbox::before,
+  .aig-checkbox::after {
+    display: none;
+  }
 }

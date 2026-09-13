@@ -37,7 +37,7 @@ test('单选检索、菜单与抽屉保持真实键盘和状态行为', async ({
   await page.getByRole('button', { name: '更多操作' }).click();
   await page.getByRole('menu').screenshot({ path: 'artifacts/design-review/DropdownMenu-open.png' });
   await page.getByRole('menuitem', { name: '创建副本' }).click();
-  await expect(page.getByRole('status')).toHaveText('已创建副本');
+  await expect(page.getByRole('status').filter({ hasText: '已创建副本' })).toHaveText('已创建副本');
   await page.goto('http://127.0.0.1:5173/?component=Drawer');
   await page.getByRole('button', { name: '查看资料详情' }).click();
   await expect(page.getByRole('dialog')).toBeVisible();

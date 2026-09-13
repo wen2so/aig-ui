@@ -1,25 +1,36 @@
+/* 面包屑：当前项用玫瑰发丝下划线标记。 */
 .aig-breadcrumb ol {
   display: flex;
-  gap: 8px;
+  gap: 7px;
   flex-wrap: wrap;
   padding: 0;
   margin: 0;
   list-style: none;
-  font-size: 13px;
+  font-size: 12px;
+  letter-spacing: 0.03em;
 }
 .aig-breadcrumb li {
   display: inline-flex;
-  gap: 8px;
+  gap: 7px;
   overflow-wrap: anywhere;
   min-inline-size: 0;
 }
 .aig-breadcrumb a {
   color: var(--aig-color-text-muted);
   text-underline-offset: 3px;
+  transition: color 200ms linear;
+}
+.aig-breadcrumb a:hover {
+  color: var(--aig-color-accent);
 }
 .aig-breadcrumb [aria-current] {
   color: var(--aig-color-text);
   font-weight: 500;
-  border-bottom: 1px solid var(--aig-color-signal);
-  padding-bottom: 3px;
+  border-bottom: 1px solid color-mix(in srgb, var(--aig-color-mark) 75%, transparent);
+  padding-bottom: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .aig-breadcrumb a {
+    transition: none;
+  }
 }

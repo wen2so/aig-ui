@@ -1,22 +1,22 @@
+/* 基线尺见 theme/controls.css；此处只保留尺寸与排版。 */
 .aig-input {
   box-sizing: border-box;
   width: 100%;
   min-inline-size: 0;
-  min-height: 40px;
-  padding: 9px 12px;
-  background: var(--aig-color-surface);
+  min-block-size: 32px;
+  padding: 5px 12px 6px;
   color: var(--aig-color-text);
-  border: 1px solid var(--aig-color-border-control);
-  border-radius: var(--aig-radius-control);
   font: inherit;
+  font-size: 13px;
   line-height: 1.5;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
 }
 .aig-input:disabled {
   opacity: 0.55;
 }
-.aig-input[aria-invalid='true'] {
-  border-color: var(--aig-color-danger);
-}
 .aig-input::placeholder {
   color: var(--aig-color-text-muted);
+  font-size: 12px;
+  letter-spacing: 0.1em;
 }

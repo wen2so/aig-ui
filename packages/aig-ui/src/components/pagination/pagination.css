@@ -3,10 +3,31 @@
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 16px;
-  font-size: 13px;
+  gap: 10px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
   color: var(--aig-color-text-muted);
   font-variant-numeric: tabular-nums;
   border-block: 1px solid var(--aig-color-border-subtle);
-  padding-block: 12px;
+  padding-block: 8px;
+}
+.aig-pagination [aria-current='page'] {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--aig-color-accent);
+  font-variant-numeric: tabular-nums;
+}
+.aig-pagination [aria-current='page']::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  background: var(--aig-color-mark);
+  transform: rotate(45deg);
+  animation: aig-node-spin var(--aig-motion-outer-period) linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .aig-pagination [aria-current='page']::before {
+    animation: none;
+  }
 }

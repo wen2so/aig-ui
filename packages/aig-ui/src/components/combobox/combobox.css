@@ -1,16 +1,21 @@
+/* 缺角括线见 theme/controls.css；浮层保持玻璃仪器面板。 */
 .aig-combobox-input {
   width: 100%;
-  min-height: 40px;
-  padding: 8px 12px;
-  background: var(--aig-color-surface);
+  min-height: 32px;
+  padding: 5px 11px;
   color: var(--aig-color-text);
-  border: 1px solid var(--aig-color-border-control);
-  border-radius: var(--aig-radius-control);
   font: inherit;
+  font-size: 13px;
+  letter-spacing: 0.02em;
   box-sizing: border-box;
 }
 .aig-combobox-input:disabled {
   opacity: 0.55;
+}
+.aig-combobox-input::placeholder {
+  color: var(--aig-color-text-muted);
+  font-size: 12px;
+  letter-spacing: 0.1em;
 }
 .aig-combobox-positioner {
   z-index: 1200;
@@ -18,33 +23,40 @@
   max-width: calc(100vw - 24px);
 }
 .aig-combobox-popup {
-  max-height: min(320px, var(--available-height));
+  max-height: min(300px, var(--available-height));
   overflow-y: auto;
-  border: 1px solid var(--aig-color-border-control);
-  border-radius: var(--aig-radius-control);
-  padding: 6px;
+  border: 1px solid var(--aig-color-border-subtle);
+  border-radius: 4px;
+  padding: 5px;
   background: var(--aig-color-surface);
   color: var(--aig-color-text);
   font:
-    14px/1.5 system-ui,
+    13px/1.5 system-ui,
     sans-serif;
   box-shadow: 0 12px 40px #3a323414;
 }
 .aig-combobox-item {
   display: flex;
   justify-content: space-between;
-  padding: 9px 12px;
-  border-radius: 8px;
+  gap: 10px;
+  padding: 6px 9px;
+  border-radius: 2px;
   cursor: pointer;
   overflow-wrap: anywhere;
+  transition:
+    background-color 160ms linear,
+    box-shadow 160ms linear;
 }
 .aig-combobox-item[data-highlighted] {
-  background: var(--aig-color-accent-soft);
+  background: color-mix(in srgb, var(--aig-color-accent-soft) 70%, transparent);
+  box-shadow: inset 2px 0 var(--aig-color-mark);
 }
 .aig-combobox-item[data-disabled] {
   opacity: 0.5;
 }
 .aig-combobox-empty {
-  padding: 12px;
+  padding: 9px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
   color: var(--aig-color-text-muted);
 }

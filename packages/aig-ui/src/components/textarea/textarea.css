@@ -1,21 +1,23 @@
+/* 页边线与横格见 theme/controls.css；行高对齐 24px 格线。 */
 .aig-textarea {
   box-sizing: border-box;
   display: block;
   width: 100%;
   min-inline-size: 0;
-  min-height: 80px;
-  padding: 10px 12px;
-  border: 1px solid var(--aig-color-border-control);
-  border-radius: var(--aig-radius-control);
+  min-height: 64px;
+  padding: 8px 12px;
   color: var(--aig-color-text);
-  background: var(--aig-color-surface);
   font: inherit;
-  line-height: 1.6;
+  font-size: 13px;
+  line-height: 24px;
+  letter-spacing: 0.02em;
   resize: vertical;
 }
 .aig-textarea:disabled {
   opacity: 0.55;
 }
-.aig-textarea[aria-invalid='true'] {
-  border-color: var(--aig-color-danger);
+.aig-textarea::placeholder {
+  color: var(--aig-color-text-muted);
+  font-size: 12px;
+  letter-spacing: 0.1em;
 }

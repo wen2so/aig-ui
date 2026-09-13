@@ -1,49 +1,114 @@
+/*
+ * 开关采用胶囊轨道与菱形内核：轨道内刻线缓慢滑行，开闭以平移表达；
+ * 开启后内核外浮起缓慢自转的虚线轨道。
+ */
 .aig-switch {
   appearance: none;
-  width: 38px;
-  height: 22px;
-  border: 1px solid var(--aig-color-border-control);
-  border-radius: 99px;
-  background: var(--aig-color-surface-muted);
+  box-sizing: border-box;
+  margin: 0;
   position: relative;
-  cursor: pointer;
+  width: 34px;
+  height: 18px;
   flex-shrink: 0;
   vertical-align: middle;
-  box-shadow: inset 0 1px 3px rgb(58 50 52 / 8%);
-  outline: 1px solid var(--aig-color-border-subtle);
-  outline-offset: 3px;
+  cursor: pointer;
+  border: 1px solid color-mix(in srgb, var(--aig-color-border-control) 60%, transparent);
+  border-radius: 99px;
+  background-color: transparent;
+  background-image: repeating-linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--aig-color-border-control) 45%, transparent) 0 1px,
+    transparent 1px 9px
+  );
+  background-size: 100% 4px;
+  background-position: 0 50%;
+  background-repeat: no-repeat;
+  animation: aig-switch-tick 3.6s linear infinite;
+  transition:
+    border-color 220ms linear,
+    background-color 220ms,
+    box-shadow 240ms,
+    scale 180ms;
+}
+@keyframes aig-switch-tick {
+  from {
+    background-position: 0 50%;
+  }
+  to {
+    background-position: 9px 50%;
+  }
 }
 .aig-switch::before {
   content: '';
   position: absolute;
-  width: 14px;
-  height: 14px;
-  top: 3px;
-  left: 3px;
+  inset-block-start: 50%;
+  inset-inline-start: 3px;
+  width: 7px;
+  height: 7px;
+  background: color-mix(in srgb, var(--aig-color-text-muted) 65%, transparent);
+  transform: translateY(-50%) rotate(45deg);
+  transition:
+    transform 240ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    background-color 220ms linear;
+}
+.aig-switch::after {
+  content: '';
+  position: absolute;
+  inline-size: 11px;
+  block-size: 11px;
+  inset-block-start: calc(50% - 5.5px);
+  inset-inline-start: 1px;
+  border: 1px dashed color-mix(in srgb, var(--aig-color-mark) 60%, transparent);
   border-radius: 50%;
-  background: var(--aig-color-text-muted);
-  transition: transform 160ms;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--aig-color-signal) 25%, transparent);
+  opacity: 0.55;
+  translate: 0 0;
+  scale: 0.78;
+  transition:
+    translate 360ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    scale 320ms,
+    opacity 220ms;
+  animation: aig-ambient-orbit var(--aig-motion-outer-period) linear infinite;
+  pointer-events: none;
+}
+.aig-switch:is(:hover, :focus-visible):enabled {
+  border-color: color-mix(in srgb, var(--aig-color-mark) 65%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--aig-color-mark) 10%, transparent);
 }
 .aig-switch:checked {
-  background: var(--aig-color-accent);
-  border-color: var(--aig-color-accent);
+  border-color: var(--aig-color-mark);
+  background-color: color-mix(in srgb, var(--aig-color-mark) 14%, transparent);
+}
+.aig-switch:active:enabled {
+  scale: 0.94;
 }
 .aig-switch:checked::before {
-  transform: translateX(16px);
-  background: var(--aig-color-surface);
+  background: var(--aig-color-mark);
+  transform: translateY(-50%) translateX(19px) rotate(45deg);
+}
+.aig-switch:checked::after {
+  translate: 19px 0;
+  opacity: 1;
+  scale: 1;
 }
 .aig-switch:disabled {
   opacity: 0.55;
   cursor: default;
+  animation-duration: var(--aig-motion-rest-period);
 }
 @media (prefers-reduced-motion: reduce) {
-  .aig-switch::before {
+  .aig-switch,
+  .aig-switch::before,
+  .aig-switch::after {
     transition: none;
+    animation: none;
   }
 }
 @media (forced-colors: active) {
   .aig-switch {
     appearance: auto;
+  }
+  .aig-switch::before,
+  .aig-switch::after {
+    display: none;
   }
 }

@@ -55,7 +55,9 @@ export function Select({
               : (options.find((option) => option.value === selected)?.label ?? `${selected}（已不可用）`)
           }
         </BaseSelect.Value>
-        <BaseSelect.Icon aria-hidden>⌄</BaseSelect.Icon>
+        <BaseSelect.Icon aria-hidden className="aig-select-caret">
+          ⌄
+        </BaseSelect.Icon>
       </BaseSelect.Trigger>
       <BaseSelect.Portal container={container}>
         <BaseSelect.Positioner sideOffset={6} alignItemWithTrigger={false} className="aig-select-positioner">
