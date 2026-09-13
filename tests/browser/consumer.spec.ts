@@ -1,8 +1,11 @@
 import { test, expect } from '@playwright/test';
 
 test('独立包与源码预览的玻璃和几何来自同一份公共样式', async ({ page, context }) => {
+  // 固定呼吸阶段，比较两种接入方式的稳定外观。
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('http://127.0.0.1:4173');
   const preview = await context.newPage();
+  await preview.emulateMedia({ reducedMotion: 'reduce' });
   await preview.goto('http://127.0.0.1:5173/?component=Card');
   const inspect = (element: Element) => {
     const style = getComputedStyle(element);
@@ -12,11 +15,12 @@ test('独立包与源码预览的玻璃和几何来自同一份公共样式', as
       filter: style.backdropFilter,
       shadow: style.boxShadow,
       edge: edge.backgroundImage,
-      inset: edge.inset,
+      /* 刻线只比较与容器尺寸无关的起始定位与大小。 */
+      edgeStart: `${edge.insetBlockStart} ${edge.insetInlineStart} ${edge.inlineSize} ${edge.blockSize} ${edge.opacity}`,
     };
   };
   expect(await page.locator('.aig-card').evaluate(inspect)).toEqual(
-    await preview.locator('.aig-card').evaluate(inspect),
+    await preview.locator('.aig-card').first().evaluate(inspect),
   );
   await preview.close();
 });

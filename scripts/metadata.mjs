@@ -3,6 +3,7 @@ import { resolve, dirname, relative, posix } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import ts from 'typescript';
+import { createApiReader } from './component-api.mjs';
 
 const source = resolve('packages/aig-ui/src');
 const output = resolve('packages/aig-ui/dist');
@@ -10,8 +11,7 @@ const pkg = JSON.parse(readFileSync('packages/aig-ui/package.json', 'utf8'));
 const slash = (path) => path.replaceAll('\\', '/');
 const config = ts.readConfigFile('tsconfig.json', ts.sys.readFile).config;
 const parsed = ts.parseJsonConfigFileContent(config, ts.sys, process.cwd());
-const program = ts.createProgram(parsed.fileNames, parsed.options);
-const checker = program.getTypeChecker();
+const apiFor = createApiReader();
 const provenance = {
   schemaVersion: '1.0',
   library: pkg.name,
@@ -31,53 +31,6 @@ cpSync(source, resolve(output, 'source'), {
   filter: (path) => !/\.(test|stories)\.tsx?$/.test(path),
 });
 cpSync('reference/404.html', resolve(output, 'reference.html'));
-
-/** 读取公开调用签名，原生属性和基础库泛型保留准确声明引用。 */
-function apiFor(file, name) {
-  const node = program.getSourceFile(file);
-  const symbol = checker
-    .getExportsOfModule(checker.getSymbolAtLocation(node))
-    .find((item) => item.name === name);
-  if (!symbol) throw Error(`公共组件未导出：${name}`);
-  const type = checker.getTypeOfSymbolAtLocation(symbol, node);
-  const parts = [
-    { name, type },
-    ...type
-      .getProperties()
-      .map((part) => ({ name: part.name, type: checker.getTypeOfSymbolAtLocation(part, node) })),
-  ];
-  return parts.flatMap((part) =>
-    part.type.getCallSignatures().map((signature) => {
-      const parameter = signature.getParameters()[0];
-      const parameterType = parameter && checker.getTypeOfSymbolAtLocation(parameter, node);
-      const props =
-        parameterType
-          ?.getProperties()
-          .filter((prop) =>
-            prop.declarations?.some((declaration) =>
-              slash(declaration.getSourceFile().fileName).startsWith(slash(source) + '/'),
-            ),
-          )
-          .map((prop) => ({
-            name: prop.name,
-            required: !(prop.flags & ts.SymbolFlags.Optional),
-            type: checker.typeToString(
-              checker.getTypeOfSymbolAtLocation(prop, node),
-              node,
-              ts.TypeFormatFlags.NoTruncation,
-            ),
-            description: ts.displayPartsToString(prop.getDocumentationComment(checker)),
-          })) ?? [];
-      return {
-        part: part.name,
-        propsType: parameterType
-          ? checker.typeToString(parameterType, node, ts.TypeFormatFlags.NoTruncation)
-          : 'void',
-        props,
-      };
-    }),
-  );
-}
 
 for (const group of ['components', 'motion', 'ai']) {
   const ids =
@@ -175,7 +128,7 @@ const intro = `# aig-ui ${pkg.version}\n\n实验性 React 组件库。先导入 
 write(
   'llms.txt',
   intro +
-    '- [组件视觉用法](design.md): 方案 2.0 的材料、几何、加载与 AI 组合。\n' +
+    '- [组件视觉用法](design.md): 方案 2.2 的材料、几何、自主运动、加载与 AI 组合。\n' +
     components.map((item) => `- [${item.name}](${item.documentationRef}): ${item.summary}`).join('\n') +
     '\n',
 );

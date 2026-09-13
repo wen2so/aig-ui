@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('标记从实际进度撤回，静态和减少动画停止双环', async ({ page }) => {
-  await page.goto('http://127.0.0.1:5173');
+  await page.goto('http://127.0.0.1:5173/?component=LoadingMark');
   const svg = page.getByRole('img', { name: '加载标记' });
   await page.getByRole('button', { name: '重新绘制' }).click();
   await page.waitForTimeout(650);
@@ -32,7 +32,7 @@ test('预览目录支持搜索与窄屏自然滚动', async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
   await page.goto('http://127.0.0.1:5173');
   await page.getByLabel('查找组件').fill('LoadingMark');
-  await expect(page.getByRole('heading', { name: '加载标记 LoadingMark' })).toBeVisible();
+  await expect(page.getByRole('link', { name: '加载标记 LoadingMark', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: '按钮 Button' })).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.getByLabel('查找组件').fill('');
@@ -40,7 +40,7 @@ test('预览目录支持搜索与窄屏自然滚动', async ({ page }) => {
 });
 
 test('加载序列完成一次交接，释放内容与动画，旧任务完成信号被隔离', async ({ page }) => {
-  await page.goto('http://127.0.0.1:5173');
+  await page.goto('http://127.0.0.1:5173/?component=LoadingSequence');
   const section = page.locator('#LoadingSequence');
   const sequence = section.locator('[data-aig-component=loading-sequence]');
   await section.getByLabel('就绪时机').selectOption('manual');
@@ -49,7 +49,8 @@ test('加载序列完成一次交接，释放内容与动画，旧任务完成�
   await expect(sequence).toHaveAttribute('data-phase', 'complete');
   await expect(section.getByText('完成交接 1 次')).toBeVisible();
   await expect(sequence.locator('.aig-sequence-content')).not.toHaveAttribute('inert');
-  expect(await sequence.evaluate((element) => element.getAnimations({ subtree: true }).length)).toBe(0);
+  await expect(sequence.locator('.aig-sequence-layer')).toHaveCount(0);
+  expect(await sequence.evaluate((element) => element.getAnimations().length)).toBe(0);
   await section.getByRole('button', { name: '任务就绪' }).click();
   await expect(section.getByText('完成交接 1 次')).toBeVisible();
   await section.getByRole('button', { name: '重试', exact: true }).click();
