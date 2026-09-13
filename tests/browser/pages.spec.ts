@@ -16,15 +16,15 @@ test('设置表单校验、失败保留与重试保存', async ({ page }) => {
   const name = page.getByRole('textbox', { name: '项目名称' });
   await name.fill('');
   await page.getByRole('button', { name: '保存设置' }).click();
-  await expect(page.getByText('请填写项目名称。')).toBeVisible();
+  await expect(page.getByText('请填写项目名称。', { exact: true })).toBeVisible();
   await expect(name).toBeFocused();
   await name.fill('修改后的项目');
   await page.getByRole('button', { name: '保存设置' }).click();
-  await expect(page.getByText('演示保存失败，修改内容已保留。')).toBeVisible();
+  await expect(page.getByText('演示保存失败，修改内容已保留。', { exact: true })).toBeVisible();
   await expect(name).toHaveValue('修改后的项目');
   await page.getByLabel('模拟保存失败').uncheck();
   await page.getByRole('button', { name: '保存设置' }).click();
-  await expect(page.getByText('当前设置已同步')).toBeVisible();
+  await expect(page.getByText('当前设置已同步', { exact: true })).toBeVisible();
   await expect(page.getByRole('dialog', { name: '设置已保存' })).toBeVisible();
 });
 
@@ -39,7 +39,7 @@ test('筛选列表覆盖空结果、分页、详情与读取失败', async ({ pa
   await page.keyboard.press('Escape');
   await page.getByLabel('演示列表状态').selectOption('error');
   await page.getByRole('button', { name: '重试读取' }).click();
-  await expect(page.getByRole('table')).toBeVisible();
+  await expect(page.getByRole('table', { name: '项目资料列表' })).toBeVisible();
 });
 
 test('助手页面停止后保留文本，失败后可重新生成', async ({ page }) => {
@@ -66,13 +66,31 @@ test('产物审核显式确认，保留失败与版本冲突', async ({ page }) 
   await page.getByRole('button', { name: '保存修改' }).click();
   await expect(page.getByText('修改后的项目摘要', { exact: true })).toBeVisible();
   await page.getByLabel('演示执行结果').selectOption('failure');
+  // 正文说明与浮层重叠时，操作命中仍归属浮层。
+  await page
+    .locator('.example-caption')
+    .evaluate((el) =>
+      scrollTo({ top: el.getBoundingClientRect().top + scrollY - innerHeight * 0.72, behavior: 'instant' }),
+    );
   await page.getByRole('button', { name: '审核并应用' }).click();
   await page.getByRole('button', { name: '确认执行' }).click();
-  await expect(page.getByText('演示执行失败，请重试。')).toBeVisible();
+  await expect(page.getByText('演示执行失败，请重试。', { exact: true })).toBeVisible();
+  await expect
+    .poll(() =>
+      page.getByRole('dialog').evaluate((el) => {
+        const dialog = el.getBoundingClientRect();
+        const caption = document.querySelector('.example-caption')!.getBoundingClientRect();
+        const top = Math.max(dialog.top, caption.top);
+        const bottom = Math.min(dialog.bottom, caption.bottom);
+        const y = top < bottom ? (top + bottom) / 2 : dialog.top + dialog.height / 2;
+        return el.contains(document.elementFromPoint(dialog.left + dialog.width / 2, y));
+      }),
+    )
+    .toBe(true);
   await page.getByRole('button', { name: '关闭审核' }).click();
   await page.getByLabel('演示执行结果').selectOption('conflict');
   await page.getByRole('button', { name: '审核并应用' }).click();
   await page.getByRole('button', { name: '确认执行' }).click();
-  await expect(page.getByText('内容版本已变化，请重新检查后确认。')).toBeVisible();
+  await expect(page.getByText('内容版本已变化，请重新检查后确认。', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: '确认执行' })).toBeDisabled();
 });
