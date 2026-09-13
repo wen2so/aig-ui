@@ -1,14 +1,18 @@
+/* 状态指示：内核圆点外是一圈缺口轨道，静止时缓慢巡行，忙碌时加快；
+   内核颜色表达语气，文字保持稳定。 */
 .aig-status-indicator {
   display: inline-flex;
   align-items: center;
   color: var(--aig-color-text-muted);
   overflow-wrap: anywhere;
-  gap: 12px;
+  gap: 10px;
+  font-size: 13px;
+  letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums;
 }
 .aig-status-dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: currentColor;
   flex: none;
@@ -28,34 +32,22 @@
 .aig-status-indicator[data-tone='danger'] {
   color: var(--aig-color-danger);
 }
-.aig-status-indicator[aria-busy='true'] .aig-status-dot {
-  animation: none;
-}
-@keyframes aig-status-pulse {
-  50% {
-    opacity: 0.4;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .aig-status-indicator[aria-busy='true'] .aig-status-dot {
-    animation: none;
-  }
-}
 .aig-status-dot::after {
   content: '';
   position: absolute;
-  inset: -6px;
+  inset: -5px;
   border: 1px solid currentColor;
   border-block-start-color: transparent;
   border-inline-end-color: transparent;
   border-radius: 50%;
   opacity: 0.65;
+  animation: aig-ambient-orbit var(--aig-motion-outer-period) linear infinite;
 }
 .aig-status-indicator[aria-busy='true'] .aig-status-dot::after {
-  animation: aig-spin 2.4s linear infinite;
+  animation-duration: 2.4s;
 }
 @media (prefers-reduced-motion: reduce) {
-  .aig-status-indicator[aria-busy='true'] .aig-status-dot::after {
+  .aig-status-dot::after {
     animation: none;
   }
 }

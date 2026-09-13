@@ -1,49 +1,102 @@
+/* 手风琴：展开指示为发丝箭头，开合时旋转；打开项的下边线转为玫瑰。 */
 .aig-accordion-item {
   border-bottom: 1px solid var(--aig-color-border-subtle);
+  transition: border-color 240ms linear;
 }
 .aig-accordion-item h3 {
   margin: 0;
 }
 .aig-accordion-trigger {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
   gap: 16px;
-  padding: 16px 0;
+  padding: 12px 10px;
   background: transparent;
   border: 0;
   color: var(--aig-color-text);
   font: inherit;
+  font-size: 13px;
+  letter-spacing: 0.02em;
   text-align: start;
   cursor: pointer;
   min-inline-size: 0;
   overflow-wrap: anywhere;
+  transition:
+    color 200ms linear,
+    background-color 240ms;
+}
+/* 展开侧轨与右侧箭头共同指向内容，正文保留独立缩进。 */
+.aig-accordion-trigger::before {
+  content: '';
+  position: absolute;
+  inset: 10px auto 10px 0;
+  width: 2px;
+  background: var(--aig-color-mark);
+  scale: 1 0.2;
+  opacity: 0.45;
+  transition:
+    scale 360ms,
+    opacity 220ms;
+}
+.aig-accordion-trigger:is(:hover, :focus-visible):not([data-disabled]) {
+  background-color: color-mix(in srgb, var(--aig-color-mark) 5%, transparent);
+}
+.aig-accordion-trigger[data-panel-open]::before {
+  scale: 1 1;
+  opacity: 1;
 }
 .aig-accordion-trigger::after {
-  content: '+';
-  color: var(--aig-color-accent);
+  content: '';
   flex: none;
-  display: inline-grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  border: 1px solid var(--aig-color-border-subtle);
-  border-radius: 50%;
+  width: 6px;
+  height: 6px;
+  margin-inline-end: 4px;
+  border-block-end: 1px solid var(--aig-color-mark);
+  border-inline-end: 1px solid var(--aig-color-mark);
+  transform: rotate(45deg);
+  transition: transform 240ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 .aig-accordion-trigger[data-panel-open]::after {
-  content: '−';
-}
-.aig-accordion-panel {
-  padding-bottom: 20px;
-  color: var(--aig-color-text-muted);
-  font-size: 14px;
-  line-height: 1.6;
-  overflow-wrap: anywhere;
+  transform: rotate(-135deg);
 }
 .aig-accordion-trigger[data-panel-open] {
   color: var(--aig-color-accent);
+  background-color: color-mix(in srgb, var(--aig-color-mark) 9%, transparent);
+}
+.aig-accordion-trigger[data-disabled] {
+  opacity: 0.5;
+  cursor: default;
 }
 .aig-accordion-item:has([data-panel-open]) {
-  border-bottom-color: var(--aig-color-signal);
+  border-bottom-color: color-mix(in srgb, var(--aig-color-mark) 70%, transparent);
+}
+.aig-accordion-panel {
+  height: var(--accordion-panel-height);
+  overflow: hidden;
+  transition:
+    height 420ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 300ms;
+  color: var(--aig-color-text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.aig-accordion-panel:is([data-starting-style], [data-ending-style]) {
+  height: 0;
+  opacity: 0;
+}
+.aig-accordion-content {
+  padding: 10px 12px 16px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .aig-accordion-panel,
+  .aig-accordion-item,
+  .aig-accordion-trigger,
+  .aig-accordion-trigger::before,
+  .aig-accordion-trigger::after {
+    transition: none;
+  }
 }

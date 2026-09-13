@@ -1,51 +1,79 @@
+/* 数据表：透明底 + 发丝行线；表头底线为用户玫瑰并带巡航光点，
+   悬停与选中用极淡玫瑰底。 */
 .aig-table-scroll {
   width: 100%;
   overflow-x: auto;
   border: 1px solid var(--aig-color-border-subtle);
   min-inline-size: 0;
-  border-radius: var(--aig-radius-control);
+  border-radius: 4px;
 }
 .aig-table {
   width: 100%;
   border-collapse: collapse;
   color: var(--aig-color-text);
-  background: var(--aig-color-surface);
-  font-size: 14px;
+  background: transparent;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
 .aig-table caption {
   text-align: start;
-  padding: 14px 16px;
+  padding: 8px 10px;
   color: var(--aig-color-text-muted);
-  font-size: 13px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
 }
 .aig-table th,
 .aig-table td {
-  padding: 12px 16px;
+  padding: 7px 10px;
   text-align: start;
   border-top: 1px solid var(--aig-color-border-subtle);
   vertical-align: middle;
   overflow-wrap: anywhere;
-  min-width: 100px;
+  min-width: 72px;
 }
 .aig-table th {
-  background: var(--aig-color-surface-muted);
   font-weight: 500;
-  border-bottom: 1px solid var(--aig-color-signal);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid color-mix(in srgb, var(--aig-color-mark) 70%, transparent);
+  border-top-color: transparent;
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--aig-color-mark) 60%, transparent),
+    transparent
+  );
+  background-size: 42% 1px;
+  background-repeat: no-repeat;
+  background-position: var(--aig-glint-x) 100%;
+  animation: aig-glint-x var(--aig-motion-glint-period) linear infinite;
 }
-.aig-table tr[aria-selected='true'] {
-  background: var(--aig-color-accent-soft);
-}
-[data-aig-density='compact'] .aig-table :is(th, td) {
-  padding: 8px 12px;
+.aig-table tbody tr {
+  transition:
+    background-color 160ms linear,
+    box-shadow 160ms linear;
 }
 .aig-table tbody tr:hover {
-  background: color-mix(in srgb, var(--aig-color-accent-soft) 45%, var(--aig-color-surface));
+  background: color-mix(in srgb, var(--aig-color-mark) 7%, transparent);
+}
+.aig-table tr[aria-selected='true'] {
+  background: color-mix(in srgb, var(--aig-color-mark) 11%, transparent);
+}
+.aig-table tr[aria-selected='true'] td:first-child {
+  box-shadow: inset 2px 0 var(--aig-color-mark);
 }
 .aig-table th + th,
 .aig-table td + td {
   border-inline-start: 1px solid color-mix(in srgb, var(--aig-color-border-subtle) 45%, transparent);
 }
-.aig-table tr[aria-selected='true'] td:first-child {
-  box-shadow: inset 2px 0 var(--aig-color-signal);
+[data-aig-density='compact'] .aig-table :is(th, td) {
+  padding: 4px 8px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .aig-table tbody tr {
+    transition: none;
+  }
+  .aig-table th {
+    animation: none;
+  }
 }

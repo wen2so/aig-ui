@@ -4,14 +4,24 @@ test('全部组件与页面在品牌环境和窄屏保持可见，记录迁移�
   test.setTimeout(120000);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('http://127.0.0.1:5173/');
-  const sections = page.locator('.preview-section');
-  await expect(sections).toHaveCount(55);
-  const ids = await sections.evaluateAll((els) => els.map((el) => el.id));
-  for (const id of ids) {
-    const section = page.locator(`[id="${id}"]`);
-    await section.scrollIntoViewIfNeeded();
-    await section.screenshot({ path: `artifacts/design-review/${id}.png` });
+  const cards = page.locator('.catalog-card');
+  await expect(cards).toHaveCount(55);
+  const links = await cards.evaluateAll((els) =>
+    els.map((el) => el.querySelector('.catalog-card-caption')!.getAttribute('href')!),
+  );
+  for (const link of links) {
+    const url = new URL(link, 'http://127.0.0.1:5173/');
+    const component = url.searchParams.get('component')!;
+    await page.goto(url.href);
+    const section = page.locator('.preview-section');
+    await expect(section).toBeVisible();
+    await expect(section).toHaveAttribute('id', component);
+    await expect(page.locator('.example-card').first()).toBeVisible();
+    await section.screenshot({
+      path: `artifacts/design-review/${component}.png`,
+    });
   }
+  await page.goto('http://127.0.0.1:5173/');
   for (const width of [320, 360, 390, 667, 768, 1280, 1440, 1920]) {
     await page.setViewportSize({ width, height: width === 667 ? 375 : 900 });
     expect(

@@ -1,31 +1,28 @@
 .aig-result {
-  padding: 40px 24px;
+  padding: 28px 20px;
   text-align: center;
   color: var(--aig-color-text-muted);
+  font-size: 13px;
   overflow-wrap: anywhere;
-  background: radial-gradient(
-    ellipse at 50% 20%,
-    color-mix(in srgb, var(--aig-color-accent-soft) 45%, transparent),
-    transparent 65%
-  );
 }
 .aig-result h2 {
-  font-size: 28px;
+  font-size: 22px;
   color: var(--aig-color-text);
   font-weight: 500;
-  margin: 16px 0;
+  letter-spacing: 0.005em;
+  margin: 12px 0;
 }
 .aig-result-symbol {
   display: inline-grid;
   place-items: center;
-  width: 112px;
-  height: 112px;
+  width: 88px;
+  height: 88px;
   border: 0;
   border-radius: 50%;
-  font-size: 28px;
+  font-size: 22px;
   color: var(--aig-color-warning);
   position: relative;
-  background: radial-gradient(circle, var(--aig-color-surface), transparent);
+  background: none;
 }
 .aig-result[data-status='success'] .aig-result-symbol {
   color: var(--aig-color-success);
@@ -37,6 +34,6 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 24px;
+  gap: 10px;
+  margin-top: 16px;
 }

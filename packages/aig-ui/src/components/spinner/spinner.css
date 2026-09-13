@@ -1,23 +1,39 @@
+/* 加载环：与加载标记同源——发丝圆环 + 玫瑰弧线，外圈虚线轨道反向巡行。 */
 .aig-spinner {
   display: inline-block;
-  border: 2px solid var(--aig-color-accent-soft);
-  border-inline-end-color: var(--aig-color-accent);
-  border-radius: 50%;
+  position: relative;
   flex-shrink: 0;
-  animation: aig-spin 1s linear infinite;
-  border-width: 1.5px;
-  outline: 1px dashed color-mix(in srgb, var(--aig-color-signal) 40%, transparent);
-  outline-offset: 4px;
-  border-inline-start-color: var(--aig-color-signal);
+  border: 1.5px solid color-mix(in srgb, var(--aig-color-mark) 25%, transparent);
+  border-block-start-color: var(--aig-color-mark);
+  border-radius: 50%;
+  animation: aig-spin 1.1s linear infinite;
+}
+.aig-spinner::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 1px dashed color-mix(in srgb, var(--aig-color-mark) 35%, transparent);
+  border-radius: 50%;
+  animation: aig-spin 3.4s linear infinite reverse;
+}
+/* 由 Button 迁出，供 Spinner 与 StatusIndicator 共用。 */
+@keyframes aig-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .aig-spinner {
+  .aig-spinner,
+  .aig-spinner::before {
     animation: none;
   }
 }
 @media (forced-colors: active) {
   .aig-spinner {
     border-color: CanvasText;
-    border-inline-end-color: Highlight;
+    border-block-start-color: Highlight;
+  }
+  .aig-spinner::before {
+    display: none;
   }
 }

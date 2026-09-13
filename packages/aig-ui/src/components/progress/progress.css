@@ -1,3 +1,4 @@
+/* 进度：发丝轨道与玫瑰进度值；未定进度复用加载标记的扫光带。 */
 .aig-progress {
   appearance: none;
   display: block;
@@ -5,27 +6,44 @@
   border: 0;
   border-radius: 99px;
   overflow: hidden;
-  background: var(--aig-color-accent-soft);
-  color: var(--aig-color-accent);
-  height: 4px;
-  outline: 1px solid var(--aig-color-border-subtle);
+  height: 2px;
+  background: color-mix(in srgb, var(--aig-color-mark) 16%, transparent);
+  color: var(--aig-color-mark);
+  outline: 1px solid color-mix(in srgb, var(--aig-color-mark) 22%, transparent);
   outline-offset: 3px;
 }
 .aig-progress::-webkit-progress-bar {
-  background: var(--aig-color-accent-soft);
+  background: transparent;
   border-radius: 99px;
 }
 .aig-progress::-webkit-progress-value {
   border-radius: 99px;
-  background: linear-gradient(90deg, var(--aig-color-accent), var(--aig-color-signal));
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--aig-color-mark) 55%, transparent),
+    var(--aig-color-mark)
+  );
 }
 .aig-progress::-moz-progress-bar {
-  background: var(--aig-color-accent);
+  background: var(--aig-color-mark);
 }
 .aig-progress:indeterminate {
-  background: repeating-linear-gradient(
-    90deg,
-    var(--aig-color-accent-soft) 0 20%,
-    var(--aig-color-accent) 20% 40%
-  );
+  background-image: linear-gradient(90deg, transparent 0%, var(--aig-color-mark) 50%, transparent 100%);
+  background-size: 38% 100%;
+  background-repeat: no-repeat;
+  animation: aig-progress-slide 1.7s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+@keyframes aig-progress-slide {
+  from {
+    background-position: -38% 0;
+  }
+  to {
+    background-position: 100% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .aig-progress:indeterminate {
+    animation: none;
+    background-position: 30% 0;
+  }
 }

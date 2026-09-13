@@ -2,16 +2,17 @@
   z-index: 1250;
 }
 .aig-tooltip {
-  max-width: min(280px, calc(100vw - 24px));
-  padding: 8px 12px;
+  max-width: min(260px, calc(100vw - 24px));
+  padding: 5px 10px;
   color: var(--aig-color-surface);
   background: var(--aig-color-text);
-  border-radius: 8px;
+  border-radius: 3px;
   font:
     12px/1.5 system-ui,
     sans-serif;
+  letter-spacing: 0.03em;
   overflow-wrap: anywhere;
   border: 1px solid color-mix(in srgb, var(--aig-color-surface) 30%, transparent);
   box-shadow: 0 6px 20px rgb(58 50 52 / 12%);
-  border-inline-start: 2px solid var(--aig-color-signal);
+  border-inline-start: 2px solid var(--aig-color-mark);
 }

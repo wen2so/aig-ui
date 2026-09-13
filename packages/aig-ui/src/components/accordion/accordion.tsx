@@ -11,8 +11,12 @@ function Trigger({ className, ...props }: ComponentProps<typeof BaseAccordion.Tr
   return <BaseAccordion.Trigger {...props} className={classNames('aig-accordion-trigger', className)} />;
 }
 /** 展开的补充内容。 */
-function Panel({ className, ...props }: ComponentProps<typeof BaseAccordion.Panel>) {
-  return <BaseAccordion.Panel {...props} className={classNames('aig-accordion-panel', className)} />;
+function Panel({ className, children, ...props }: ComponentProps<typeof BaseAccordion.Panel>) {
+  return (
+    <BaseAccordion.Panel {...props} className={classNames('aig-accordion-panel', className)}>
+      <div className="aig-accordion-content">{children}</div>
+    </BaseAccordion.Panel>
+  );
 }
 /** Root 使用 value/defaultValue 数组控制已展开条目。 */
 export const Accordion = { Root: BaseAccordion.Root, Item, Header: BaseAccordion.Header, Trigger, Panel };
