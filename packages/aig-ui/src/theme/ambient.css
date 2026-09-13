@@ -1,0 +1,119 @@
+/* 正文保持稳定，链接以加粗下划线和背景建立明确的触达范围。 */
+:is(.aig-link, .aig-breadcrumb a, .aig-source-list a, .aig-message-content a, .aig-artifact-content a) {
+  border-radius: 2px;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition:
+    color 180ms,
+    background-color 180ms,
+    text-decoration-thickness 180ms,
+    text-underline-offset 180ms;
+}
+:is(.aig-link, .aig-breadcrumb a, .aig-source-list a, .aig-message-content a, .aig-artifact-content a):is(
+  :hover,
+  :focus-visible
+) {
+  background-color: color-mix(in srgb, var(--aig-color-mark) 10%, transparent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+}
+:is(
+  .aig-link,
+  .aig-breadcrumb a,
+  .aig-source-list a,
+  .aig-message-content a,
+  .aig-artifact-content a
+):focus-visible,
+.aig-tool-result summary:focus-visible,
+.aig-artifact-preview select:focus-visible,
+.aig-radio-group input:focus-visible {
+  outline: 2px solid var(--aig-color-focus);
+  outline-offset: 3px;
+}
+:is(
+  .aig-link,
+  .aig-breadcrumb a,
+  .aig-source-list a,
+  .aig-message-content a,
+  .aig-artifact-content a
+):active {
+  background-color: color-mix(in srgb, var(--aig-color-mark) 18%, transparent);
+}
+.aig-table tbody tr:focus-within {
+  background: color-mix(in srgb, var(--aig-color-mark) 10%, transparent);
+}
+.aig-table tbody tr:is(:focus-within, [aria-selected='true']) td:first-child {
+  box-shadow: inset 3px 0 var(--aig-color-mark);
+}
+.aig-toast-close {
+  flex: none;
+  align-self: start;
+  border-radius: 50%;
+  transition:
+    background-color 180ms,
+    box-shadow 180ms,
+    scale 180ms;
+}
+.aig-toast-close:is(:hover, :focus-visible) {
+  background-color: color-mix(in srgb, var(--aig-color-mark) 12%, transparent);
+  box-shadow: inset 0 0 0 1px var(--aig-color-mark);
+}
+.aig-toast-close:active {
+  scale: 0.9;
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(
+    .aig-link,
+    .aig-breadcrumb a,
+    .aig-source-list a,
+    .aig-message-content a,
+    .aig-artifact-content a,
+    .aig-toast-close
+  ) {
+    transition: none;
+  }
+}
+@media (forced-colors: active) {
+  :is(.aig-tab[data-active], .aig-navigation-item[aria-current='page']) {
+    outline: 1px solid Highlight;
+    outline-offset: -1px;
+    color: LinkText;
+  }
+  :is(.aig-tab, .aig-navigation-item)::before,
+  :is(.aig-tab, .aig-navigation-item)::after,
+  .aig-accordion-trigger::before {
+    display: none;
+  }
+  .aig-table tr[aria-selected='true'] {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+}
+/* 持续巡线属于可交互边界与分隔线，正文和图标保留稳定轮廓。 */
+@media (prefers-reduced-motion: no-preference) and (forced-colors: none) {
+  :is(.aig-accordion-item, .aig-tooltip) {
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--aig-color-mark) 55%, transparent),
+      transparent
+    );
+    background-size: 24% 1px;
+    background-repeat: no-repeat;
+    background-position: var(--aig-glint-x) 100%;
+    animation: aig-glint-x var(--aig-motion-glint-period) linear infinite;
+  }
+  .aig-separator {
+    background-image: linear-gradient(90deg, transparent, var(--aig-color-mark), transparent);
+    background-size: 24% 100%;
+    background-repeat: no-repeat;
+    background-position: var(--aig-glint-x) 0;
+    animation: aig-glint-x var(--aig-motion-glint-period) linear infinite;
+  }
+  .aig-separator[data-orientation='vertical'] {
+    background-image: linear-gradient(180deg, transparent, var(--aig-color-mark), transparent);
+    background-size: 100% 24%;
+    background-position: 0 var(--aig-glint-y);
+    animation-name: aig-glint-y;
+  }
+}

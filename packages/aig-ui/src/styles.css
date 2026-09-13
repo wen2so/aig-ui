@@ -43,6 +43,7 @@
 @import './theme/controls.css';
 @import './theme/brand-scene.css';
 @import './theme/geometry.css';
+@import './theme/ambient.css';
 :where([data-aig-theme]) {
   color: var(--aig-color-text);
   font-family: system-ui, 'Microsoft YaHei', sans-serif;

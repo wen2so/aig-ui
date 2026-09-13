@@ -1,6 +1,5 @@
 .aig-loading-mark {
   color: var(--aig-color-mark);
-  filter: drop-shadow(0 0 22px rgb(185 139 144 / 26%));
   overflow: visible;
   flex: none;
 }

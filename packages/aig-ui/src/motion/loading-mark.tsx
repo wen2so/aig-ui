@@ -3,6 +3,7 @@
 import { useEffect, useRef, type ComponentPropsWithRef } from 'react';
 import { motionTiming as timing } from '../tokens/motion.js';
 import { useReducedMotion } from './use-reduced-motion.js';
+import { BrandShape, useAigBrand } from '../theme/aig-provider.js';
 
 /** 品牌几何的绘制、等待和撤回。 */
 export interface LoadingMarkProps extends ComponentPropsWithRef<'svg'> {
@@ -11,7 +12,7 @@ export interface LoadingMarkProps extends ComponentPropsWithRef<'svg'> {
   motion?: 'system' | 'reduced';
   /** 独立使用时提供名称；与状态文本组合时保持装饰语义。 */
   label?: string;
-  /** 两条描边都完成撤回后触发。 */
+  /** 全部品牌描边完成撤回后触发。 */
   onErased?: () => void;
 }
 
@@ -25,8 +26,8 @@ export function LoadingMark({
   className = '',
   ...props
 }: LoadingMarkProps) {
-  const triangle = useRef<SVGPathElement>(null);
-  const bar = useRef<SVGLineElement>(null);
+  const shape = useRef<SVGGElement>(null);
+  const { mark } = useAigBrand();
   const callback = useRef(onErased);
   callback.current = onErased;
   const reduced = useReducedMotion(motion);
@@ -34,8 +35,14 @@ export function LoadingMark({
   useEffect(() => {
     let active = true;
     const animations: Animation[] = [];
-    const parts = [triangle.current!, bar.current!];
+    const parts = Array.from(
+      shape.current!.querySelectorAll<SVGGeometryElement>(
+        'path, line, circle, rect, ellipse, polyline, polygon',
+      ),
+    );
     parts.forEach((element, index) => {
+      element.setAttribute('pathLength', '1');
+      element.style.strokeDasharray = '1';
       const initial = element.style.strokeDashoffset;
       const from =
         phase === 'drawing'
@@ -43,7 +50,7 @@ export function LoadingMark({
           : phase === 'erasing'
             ? initial === ''
               ? 0
-              : Math.max(0, Math.min(1, parseFloat(initial)))
+              : Math.max(0, Math.min(1, parseFloat(initial) || 0))
             : 0;
       const to = phase === 'erasing' ? 1 : 0;
       element.style.strokeDashoffset = String(from);
@@ -85,7 +92,7 @@ export function LoadingMark({
       });
       animations.forEach((animation) => animation.cancel());
     };
-  }, [phase, reduced]);
+  }, [phase, reduced, mark]);
 
   return (
     <svg
@@ -124,29 +131,9 @@ export function LoadingMark({
         strokeLinecap="round"
         opacity=".55"
       />
-      <path
-        ref={triangle}
-        fill="none"
-        d="M100 38 L164 148 L36 148 Z"
-        pathLength="1"
-        strokeDasharray="1"
-        strokeDashoffset={phase === 'drawing' ? 1 : 0}
-        strokeWidth="2.2"
-        strokeLinejoin="round"
-      />
-      <line
-        ref={bar}
-        fill="none"
-        x1="60"
-        y1="112"
-        x2="140"
-        y2="112"
-        pathLength="1"
-        strokeDasharray="1"
-        strokeDashoffset={phase === 'drawing' ? 1 : 0}
-        strokeWidth="2.2"
-        strokeLinecap="round"
-      />
+      <g ref={shape} strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round">
+        <BrandShape />
+      </g>
     </svg>
   );
 }

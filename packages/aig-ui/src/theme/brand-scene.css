@@ -1,22 +1,31 @@
 /* 页面配方复用环境层，伪元素仅作装饰并避开操作区域。 */
 .aig-brand-scene {
   position: relative;
-  isolation: isolate;
   min-inline-size: 0;
   background:
-    radial-gradient(ellipse at 15% 15%, #f3e7e980, transparent 50%),
+    radial-gradient(
+      ellipse at 15% 15%,
+      color-mix(in srgb, var(--aig-color-mark) 12%, transparent),
+      transparent 50%
+    ),
     radial-gradient(ellipse at 85% 60%, #ffffff, transparent 65%), var(--aig-color-bg);
   border-radius: var(--aig-radius-panel);
+}
+/* 正文置于装饰前方，主题的 Portal 容器保留独立浮层层级。 */
+.aig-brand-scene > :not(.aig-portal-container) {
+  position: relative;
+  z-index: 1;
 }
 .aig-brand-scene::before {
   content: '';
   position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: 0;
   border-radius: inherit;
   pointer-events: none;
   background-image:
-    linear-gradient(#b98b9009 1px, transparent 1px), linear-gradient(90deg, #b98b9009 1px, transparent 1px);
+    linear-gradient(color-mix(in srgb, var(--aig-color-mark) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--aig-color-mark) 6%, transparent) 1px, transparent 1px);
   background-size: 44px 44px;
   background-position: var(--aig-scene-x, 0px) var(--aig-scene-y, 0px);
   transition: background-position 400ms;
@@ -25,10 +34,14 @@
   content: '';
   position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: 0;
   pointer-events: none;
   border-radius: inherit;
-  background: linear-gradient(transparent 40%, #ebdfe030 50%, transparent 60%);
+  background: linear-gradient(
+    transparent 40%,
+    color-mix(in srgb, var(--aig-color-mark) 8%, transparent) 50%,
+    transparent 60%
+  );
   background-size: 100% 250%;
   animation: aig-ambient-scan 12s linear infinite;
 }

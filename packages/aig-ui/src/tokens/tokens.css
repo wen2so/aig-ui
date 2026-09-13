@@ -25,9 +25,13 @@
   --aig-space-8: 40px;
   --aig-space-9: 48px;
   --aig-space-10: 64px;
-  --aig-radius-control: 12px;
-  --aig-radius-card: 24px;
-  --aig-radius-panel: 32px;
+  --aig-radius-control: 4px;
+  --aig-radius-card: 12px;
+  --aig-radius-panel: 16px;
+  --aig-motion-breath-period: 4800ms;
+  --aig-motion-rest-period: 7200ms;
+  --aig-motion-glint-period: 6400ms;
+  --aig-motion-scan-duration: 460ms;
   --aig-motion-draw-delay: 150ms;
   --aig-motion-draw-duration: 1150ms;
   --aig-motion-bar-delay: 950ms;

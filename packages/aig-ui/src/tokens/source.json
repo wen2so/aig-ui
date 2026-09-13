@@ -182,26 +182,42 @@
     "control": {
       "$type": "dimension",
       "$value": {
-        "value": 12,
+        "value": 4,
         "unit": "px"
       }
     },
     "card": {
       "$type": "dimension",
       "$value": {
-        "value": 24,
+        "value": 12,
         "unit": "px"
       }
     },
     "panel": {
       "$type": "dimension",
       "$value": {
-        "value": 32,
+        "value": 16,
         "unit": "px"
       }
     }
   },
   "motion": {
+    "breath-period": {
+      "$type": "duration",
+      "$value": { "value": 4800, "unit": "ms" }
+    },
+    "rest-period": {
+      "$type": "duration",
+      "$value": { "value": 7200, "unit": "ms" }
+    },
+    "glint-period": {
+      "$type": "duration",
+      "$value": { "value": 6400, "unit": "ms" }
+    },
+    "scan-duration": {
+      "$type": "duration",
+      "$value": { "value": 460, "unit": "ms" }
+    },
     "draw-delay": {
       "$type": "duration",
       "$value": {

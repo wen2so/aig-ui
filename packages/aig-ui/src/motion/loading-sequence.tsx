@@ -139,8 +139,11 @@ function Sequence({
     // 子组件已从实际进度启动撤回；用其有限轨道计算交接延迟。
     const eraseDuration = Math.max(
       0,
-      ...Array.from(layer.current.querySelectorAll('path, line')).flatMap((part) =>
-        part.getAnimations().map((animation) => Number(animation.effect?.getComputedTiming().endTime) || 0),
+      ...Array.from(layer.current.querySelectorAll('.aig-loading-mark g *')).flatMap((part) =>
+        part
+          .getAnimations()
+          .map((animation) => Number(animation.effect?.getComputedTiming().endTime))
+          .filter(Number.isFinite),
       ),
     );
     const labels = [labelRef.current, progressRef.current, actionsRef.current].flatMap((element) => {

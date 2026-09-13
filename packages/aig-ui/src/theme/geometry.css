@@ -1,4 +1,38 @@
-/* 仿生界面的边缘坐标、分段轨迹与一次性构建反馈。 */
+/*
+ * 线框语言层：容器、页面骨架、浮层仪器框与状态图形的公共规则，同时提供
+ * 全库共享的自主运动词汇。规则——以线代面、以绘代现；静止不是停滞：
+ * 轨道缓慢旋转、光点沿线巡航、节点自转，运动的永远是线、节点与光，
+ * 文字和布局保持稳定。装饰色继承品牌配置；容器保留柔和材质。
+ * 规范见 docs/design-language.md。
+ */
+
+/* 巡航光点位置：注册为可插值的百分比变量，供背景层定位。 */
+@property --aig-glint-x {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: -30%;
+}
+@property --aig-glint-y {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: -30%;
+}
+
+:root,
+[data-aig-theme] {
+  /* 仪器角标：四角括线的完整背景层列表，按需以 background 简写取用。 */
+  --aig-frame-bracket: color-mix(in srgb, var(--aig-color-mark) 42%, transparent);
+  --aig-frame-corner:
+    linear-gradient(var(--aig-frame-bracket), var(--aig-frame-bracket)) left top / 9px 1px no-repeat,
+    linear-gradient(var(--aig-frame-bracket), var(--aig-frame-bracket)) left top / 1px 9px no-repeat,
+    linear-gradient(var(--aig-frame-bracket), var(--aig-frame-bracket)) right top / 9px 1px no-repeat,
+    linear-gradient(var(--aig-frame-bracket), var(--aig-frame-bracket)) right top / 1px 9px no-repeat,
+    linear-gradient(var(--aig-frame-bracket), var(--aig-frame-bracket)) left bottom / 9px 1px no-repeat,
+    linear-gradient(var(--aig-frame-bracket), var(--aig-frame-bracket)) left bottom / 1px 9px no-repeat,
+    linear-gradient(var(--aig-frame-bracket), var(--aig-frame-bracket)) right bottom / 9px 1px no-repeat,
+    linear-gradient(var(--aig-frame-bracket), var(--aig-frame-bracket)) right bottom / 1px 9px no-repeat;
+}
+
 :is(.aig-dialog, .aig-popover, .aig-menu, .aig-select-popup, .aig-combobox-popup, .aig-tooltip, .aig-toast) {
   transition:
     opacity 200ms,
@@ -16,108 +50,310 @@
   opacity: 0;
   translate: 0 6px;
 }
-:is(.aig-card, .aig-panel, .aig-popover, .aig-menu, .aig-select-popup, .aig-combobox-popup, .aig-toast) {
+:is(.aig-card, .aig-panel, .aig-dialog) {
+  isolation: isolate;
+}
+
+/* 浮层是仪器面板：四角括线 + 顶边巡航光点。 */
+:is(.aig-menu, .aig-select-popup, .aig-combobox-popup, .aig-popover) {
+  position: relative;
+}
+:is(.aig-menu, .aig-select-popup, .aig-combobox-popup, .aig-popover)::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  background: var(--aig-frame-corner);
+  pointer-events: none;
+}
+:is(.aig-menu, .aig-select-popup, .aig-combobox-popup, .aig-popover)::after {
+  content: '';
+  position: absolute;
+  inset: 5px 5px auto;
+  block-size: 1px;
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--aig-color-mark) 70%, transparent),
+    transparent
+  );
+  background-size: 26% 1px;
+  background-repeat: no-repeat;
+  background-position: var(--aig-glint-x) 0;
+  animation: aig-glint-x var(--aig-motion-glint-period) linear infinite;
+  pointer-events: none;
+}
+
+/* 容器按用途分配刻线：卡片边角、面板侧轨与游标、对话框中轴、AI 编辑边线。 */
+:is(.aig-card, .aig-panel, .aig-prompt-input, .aig-tool-result, .aig-artifact-preview, .aig-confirmation) {
   position: relative;
 }
 :is(
   .aig-card,
   .aig-panel,
   .aig-dialog,
-  .aig-popover,
-  .aig-menu,
-  .aig-select-popup,
-  .aig-combobox-popup,
-  .aig-toast
+  .aig-prompt-input,
+  .aig-tool-result,
+  .aig-artifact-preview,
+  .aig-confirmation
 )::before {
   content: '';
   position: absolute;
-  inset: 16px;
+  inset-block-start: 16px;
+  inset-inline-start: 16px;
+  inline-size: 64px;
+  block-size: 1px;
+  background: linear-gradient(90deg, var(--aig-color-mark), transparent);
+  opacity: 0.8;
   pointer-events: none;
-  border-radius: 3px;
-  background:
-    linear-gradient(var(--aig-color-signal), var(--aig-color-signal)) left top / 30px 1px no-repeat,
-    linear-gradient(var(--aig-color-signal), var(--aig-color-signal)) left top / 1px 18px no-repeat,
-    linear-gradient(var(--aig-color-mark), var(--aig-color-mark)) right bottom / 30px 1px no-repeat,
-    linear-gradient(var(--aig-color-mark), var(--aig-color-mark)) right bottom / 1px 18px no-repeat;
-  opacity: 0.55;
-  animation: aig-frame-establish var(--aig-motion-frame-duration) cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  transform-origin: left;
+  animation:
+    aig-line-establish 900ms ease-out both,
+    aig-ambient-orbit var(--aig-motion-outer-period) linear infinite;
 }
-:is(.aig-card, .aig-panel, .aig-dialog) {
-  isolation: isolate;
+/* 卡片边角沿轮廓定位，巡线始终位于顶部与底部边缘。 */
+.aig-card::before {
+  box-sizing: border-box;
+  inline-size: 10px;
+  block-size: 10px;
+  border-block-start: 1px solid var(--aig-color-mark);
+  border-inline-start: 1px solid var(--aig-color-mark);
+  background-image: linear-gradient(90deg, transparent, var(--aig-color-mark), transparent);
+  background-size: 40% 1px;
+  background-repeat: no-repeat;
+  background-position: var(--aig-glint-x) top;
+  animation: aig-glint-x var(--aig-motion-glint-period) linear infinite;
+  inset: 1px auto auto 1px;
 }
-:is(.aig-menu, .aig-select-popup, .aig-combobox-popup, .aig-toast)::before {
-  inset: 4px;
-  background-size:
-    12px 1px,
-    1px 8px,
-    12px 1px,
-    1px 8px;
-  opacity: 0.35;
-}
-:is(.aig-card, .aig-panel, .aig-dialog)::after {
+.aig-card::after {
+  box-sizing: border-box;
   content: '';
   position: absolute;
-  inset-block-start: 18px;
-  inset-inline-end: 18px;
-  width: 38px;
-  height: 38px;
-  border: 1px dashed var(--aig-color-signal);
-  border-radius: 50%;
-  opacity: 0.2;
+  inset: auto 1px 1px auto;
+  inline-size: 10px;
+  block-size: 10px;
+  border-block-end: 1px solid var(--aig-color-mark);
+  border-inline-end: 1px solid var(--aig-color-mark);
+  background-image: linear-gradient(90deg, transparent, var(--aig-color-mark), transparent);
+  background-size: 40% 1px;
+  background-repeat: no-repeat;
+  background-position: var(--aig-glint-x) bottom;
+  opacity: 0.8;
   pointer-events: none;
-  z-index: -1;
-  animation: aig-orbit-establish 1200ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation: aig-glint-x var(--aig-motion-glint-period) linear infinite reverse;
 }
+/* 面板：侧轨末端游标缓慢自转，轨道上光点缓慢下巡。 */
+.aig-panel::before {
+  inline-size: 1px;
+  block-size: max(0px, min(46px, calc(100% - 28px)));
+  inset: 14px auto auto -1px;
+  background-image:
+    linear-gradient(
+      180deg,
+      transparent,
+      color-mix(in srgb, var(--aig-color-mark) 80%, transparent),
+      transparent
+    ),
+    linear-gradient(180deg, color-mix(in srgb, var(--aig-color-mark) 60%, transparent), transparent);
+  background-size:
+    100% 34%,
+    100% 100%;
+  background-repeat: no-repeat;
+  background-position:
+    0 var(--aig-glint-y),
+    0 0;
+  background-color: transparent;
+  animation:
+    aig-line-establish 900ms ease-out both,
+    aig-glint-y calc(var(--aig-motion-rest-period) * 2) linear infinite;
+}
+.aig-panel::after {
+  content: '';
+  position: absolute;
+  inline-size: 5px;
+  block-size: 5px;
+  inset: min(68px, calc(100% - 12px)) auto auto -3px;
+  background: var(--aig-color-mark);
+  opacity: 0.7;
+  pointer-events: none;
+  transform: rotate(45deg);
+  animation: aig-node-spin var(--aig-motion-outer-period) linear infinite;
+}
+/* 装饰停靠在边缘安全区，聚焦内容时沿容器边线建立完整范围。 */
+:is(.aig-card, .aig-panel, .aig-prompt-input, .aig-tool-result, .aig-artifact-preview, .aig-confirmation) {
+  transition: border-color 240ms;
+}
+:is(
+  .aig-card,
+  .aig-panel,
+  .aig-prompt-input,
+  .aig-tool-result,
+  .aig-artifact-preview,
+  .aig-confirmation
+):focus-within {
+  border-color: var(--aig-color-mark);
+}
+.aig-card::before,
+.aig-card::after {
+  transition:
+    inline-size 380ms,
+    block-size 380ms;
+}
+.aig-card:focus-within::before,
+.aig-card:focus-within::after {
+  inline-size: 28px;
+  block-size: 18px;
+}
+.aig-panel::before {
+  transition: block-size 420ms;
+}
+.aig-panel::after {
+  transition: inset-block-start 420ms;
+}
+.aig-panel:focus-within::before {
+  block-size: calc(100% - 28px);
+}
+.aig-panel:focus-within::after {
+  inset-block-start: calc(100% - 18px);
+}
+/* 对话框：顶部中轴刻线带上巡光点，底部有对位短线。 */
+.aig-dialog::before {
+  inset: 12px auto auto calc(50% - 18px);
+  inline-size: 36px;
+  background-image:
+    linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--aig-color-mark) 95%, transparent),
+      transparent
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--aig-color-mark) 55%, transparent),
+      color-mix(in srgb, var(--aig-color-mark) 55%, transparent)
+    );
+  background-size:
+    40% 1px,
+    100% 1px;
+  background-repeat: no-repeat;
+  background-position:
+    var(--aig-glint-x) 0,
+    0 0;
+  animation:
+    aig-line-establish 900ms ease-out both,
+    aig-glint-x var(--aig-motion-glint-period) linear infinite;
+}
+.aig-dialog::after {
+  content: '';
+  position: absolute;
+  inset: auto auto 0 calc(50% - 8px);
+  inline-size: 16px;
+  block-size: 1px;
+  background: color-mix(in srgb, var(--aig-color-mark) 45%, transparent);
+  pointer-events: none;
+}
+/* AI 阅读与输入面：底线巡航。 */
+:is(.aig-prompt-input, .aig-artifact-preview)::before {
+  inset: auto 24px 0;
+  inline-size: auto;
+  scale: 0.4 1;
+  transform-origin: center;
+  transition: scale 420ms;
+  background-image:
+    linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--aig-color-mark) 85%, transparent),
+      transparent
+    ),
+    linear-gradient(90deg, color-mix(in srgb, var(--aig-color-mark) 45%, transparent), transparent 70%);
+  background-size:
+    24% 1px,
+    100% 1px;
+  background-repeat: no-repeat;
+  background-position:
+    var(--aig-glint-x) 0,
+    0 0;
+  animation:
+    aig-line-establish 900ms ease-out both,
+    aig-glint-x var(--aig-motion-glint-period) linear infinite;
+}
+:is(.aig-prompt-input, .aig-artifact-preview):focus-within::before,
+.aig-prompt-input[data-running]::before {
+  scale: 1;
+}
+/* 工具结果与确认卡：左轨光点缓慢下巡。 */
+:is(.aig-tool-result, .aig-confirmation)::before {
+  inset: 20px auto 20px 0;
+  inline-size: 1px;
+  block-size: auto;
+  background-image:
+    linear-gradient(
+      180deg,
+      transparent,
+      color-mix(in srgb, var(--aig-color-mark) 85%, transparent),
+      transparent
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--aig-color-mark) 50%, transparent),
+      color-mix(in srgb, var(--aig-color-mark) 30%, transparent)
+    );
+  background-size:
+    100% 26%,
+    100% 100%;
+  background-repeat: no-repeat;
+  background-position:
+    0 var(--aig-glint-y),
+    0 0;
+  animation:
+    aig-line-establish 900ms ease-out both,
+    aig-glint-y var(--aig-motion-glint-period) linear infinite;
+}
+
+/* 页面骨架：标题节点保持方向，分隔线以品牌短段起笔。 */
 .aig-page-header::before {
   content: '';
-  width: 11px;
-  height: 11px;
+  width: 10px;
+  height: 10px;
   flex: none;
-  border: 1px solid var(--aig-color-signal);
+  border: 1px solid var(--aig-color-mark);
   transform: rotate(45deg);
-  box-shadow:
-    3px -3px 0 -1px var(--aig-color-bg),
-    3px -3px 0 0 var(--aig-color-mark);
 }
 .aig-page-header > div:first-of-type {
   flex: 1;
 }
 .aig-heading {
-  border-inline-start: 2px solid var(--aig-color-signal);
-  padding-inline-start: 12px;
-}
-.aig-description-list dt::before {
-  content: '';
-  display: inline-block;
-  width: 12px;
-  height: 1px;
-  background: var(--aig-color-signal);
-  margin-inline-end: 7px;
-  vertical-align: middle;
+  letter-spacing: -0.025em;
 }
 .aig-separator[data-orientation='horizontal'] {
   background: linear-gradient(
     90deg,
-    var(--aig-color-signal) 0 24px,
+    var(--aig-color-mark) 0 24px,
     transparent 24px 29px,
     var(--aig-color-border-subtle) 29px
   );
 }
+
+/* 状态图形：环形轨迹与分层绘制。 */
 .aig-status-glyph {
   display: inline-block;
-  width: 112px;
-  height: 112px;
+  width: 88px;
+  height: 88px;
   overflow: visible;
   color: var(--aig-color-mark);
 }
 .aig-status-glyph-orbit {
   opacity: 0.45;
   transform-origin: 60px 60px;
-  animation: aig-orbit-establish 1200ms ease-out both;
+  animation:
+    aig-orbit-establish 1200ms ease-out both,
+    aig-ambient-orbit var(--aig-motion-outer-period) 1200ms linear infinite;
 }
 .aig-status-glyph-arc {
-  color: var(--aig-color-signal);
+  color: var(--aig-color-accent);
   opacity: 0.7;
+  transform-origin: 60px 60px;
+  animation: aig-ambient-orbit var(--aig-motion-inner-period) linear infinite reverse;
 }
 .aig-status-glyph-frame,
 .aig-status-glyph-detail {
@@ -130,14 +366,45 @@
 .aig-result-symbol .aig-status-glyph {
   color: inherit;
 }
-@keyframes aig-frame-establish {
+
+/* 共享运动词汇。 */
+@keyframes aig-line-establish {
   from {
+    transform: scaleX(0);
     opacity: 0;
-    clip-path: inset(0 100% 0 0);
+  }
+}
+@keyframes aig-ambient-orbit {
+  to {
+    rotate: 360deg;
+  }
+}
+/* 菱形节点自转一整圈：静止元素的自主运动。 */
+@keyframes aig-node-spin {
+  from {
+    transform: rotate(45deg);
   }
   to {
-    opacity: 0.55;
-    clip-path: inset(0);
+    transform: rotate(405deg);
+  }
+}
+/* 巡航光点：沿边线从外侧驶入、驶出，然后驻留等待下一轮。 */
+@keyframes aig-glint-x {
+  0%,
+  4% {
+    --aig-glint-x: -30%;
+  }
+  100% {
+    --aig-glint-x: 130%;
+  }
+}
+@keyframes aig-glint-y {
+  0%,
+  4% {
+    --aig-glint-y: -30%;
+  }
+  100% {
+    --aig-glint-y: 130%;
   }
 }
 @keyframes aig-orbit-establish {
@@ -154,7 +421,28 @@
     stroke-dashoffset: 0;
   }
 }
+
 @media (prefers-reduced-motion: reduce) {
+  :is(.aig-card, .aig-panel, .aig-prompt-input, .aig-tool-result, .aig-artifact-preview, .aig-confirmation),
+  :is(.aig-card, .aig-panel, .aig-prompt-input, .aig-artifact-preview)::before,
+  :is(.aig-card, .aig-panel)::after {
+    transition: none;
+  }
+  .aig-card::before,
+  .aig-card::after,
+  .aig-panel::before,
+  .aig-panel::after,
+  .aig-dialog::before,
+  :is(.aig-menu, .aig-select-popup, .aig-combobox-popup, .aig-popover)::after,
+  :is(.aig-prompt-input, .aig-artifact-preview)::before,
+  :is(.aig-tool-result, .aig-confirmation)::before,
+  .aig-page-header::before,
+  .aig-status-glyph :is(circle, path) {
+    animation: none;
+  }
+  .aig-status-glyph-orbit {
+    transform: rotate(0deg);
+  }
   :is(
     .aig-dialog,
     .aig-popover,
@@ -166,20 +454,6 @@
   ) {
     transition: none;
   }
-  :is(
-    .aig-card,
-    .aig-panel,
-    .aig-dialog,
-    .aig-popover,
-    .aig-menu,
-    .aig-select-popup,
-    .aig-combobox-popup,
-    .aig-toast
-  )::before,
-  :is(.aig-card, .aig-panel, .aig-dialog)::after,
-  .aig-status-glyph :is(circle, path) {
-    animation: none;
-  }
 }
 @media (forced-colors: active) {
   .aig-status-glyph {
@@ -189,13 +463,19 @@
     .aig-card,
     .aig-panel,
     .aig-dialog,
-    .aig-popover,
+    .aig-prompt-input,
+    .aig-tool-result,
+    .aig-artifact-preview,
+    .aig-confirmation,
     .aig-menu,
     .aig-select-popup,
     .aig-combobox-popup,
-    .aig-toast
+    .aig-popover
   )::before,
-  :is(.aig-card, .aig-panel, .aig-dialog)::after {
+  .aig-card::after,
+  .aig-panel::after,
+  .aig-dialog::after,
+  :is(.aig-menu, .aig-select-popup, .aig-combobox-popup, .aig-popover)::after {
     display: none;
   }
 }

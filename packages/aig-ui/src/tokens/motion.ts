@@ -1,5 +1,9 @@
 /** 从同一 Token 源生成的动效时长，单位为毫秒。 */
 export const motionTiming = {
+  "breath-period": 4800,
+  "rest-period": 7200,
+  "glint-period": 6400,
+  "scan-duration": 460,
   "draw-delay": 150,
   "draw-duration": 1150,
   "bar-delay": 950,
