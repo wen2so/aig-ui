@@ -1,3 +1,11 @@
+import '@fontsource/inter/latin-300.css';
+import '@fontsource/inter/latin-400.css';
+import '@fontsource/inter/latin-500.css';
+import '@fontsource/inter/latin-600.css';
+import '@fontsource/inter/latin-700.css';
+import '@fontsource/jetbrains-mono/latin-400.css';
+import '@fontsource/jetbrains-mono/latin-500.css';
+import '@fontsource/jetbrains-mono/latin-600.css';
 import {
   Code,
   ArrowLeft,
@@ -460,7 +468,7 @@ function Preview() {
                 <div className="guideline-note">
                   <span aria-hidden="true">01</span>
                   <div>
-                    <h3>线条持续运行，内容清晰稳定。</h3>
+                    <h3>线条随状态响应，内容清晰稳定。</h3>
                     <p>
                       线条沿控件边界与基线运行，文字与图标保持稳定。悬停、聚焦、按压与选择通过轮廓变化表达状态；加载图形随任务推进。系统减少动态效果偏好会停止装饰运动。
                     </p>
@@ -534,7 +542,7 @@ function Preview() {
               <a href="#api">API 属性</a>
               <a href="#guidelines">使用说明</a>
               <div className="toc-note">
-                线条持续巡行
+                线条随状态响应
                 <br />
                 内容保持清晰
               </div>
@@ -551,7 +559,7 @@ function Preview() {
                 <p>
                   {query
                     ? `找到 ${visible.length} 项与「${search.trim()}」相关的组件与页面。`
-                    : '用持续运转的细线、协同的轨道与连续的过渡，构建清晰而有生命力的界面。'}
+                    : '以留白组织内容，让线条随操作建立，在完成后从容归位。'}
                 </p>
                 <div className="preview-count">
                   <strong>{entries.filter((item) => item.group !== '页面组合').length}</strong> 个已实现组件{' '}
@@ -560,17 +568,17 @@ function Preview() {
                 </div>
               </div>
               <div className="overview-mark" aria-hidden="true">
-                <LoadingMark phase="holding" label="" />
+                <LoadingMark phase="static" label="" />
                 <span>FORM IN MOTION</span>
               </div>
             </header>
             {!query && (
               <div className="featured-links">
-                <a {...link('Button')}>
+                <a {...link('visual-study')}>
                   <span>01 / FORM</span>
                   <strong>从一次行动开始</strong>
                   <small>
-                    探索按钮的层级与状态 <Icon icon={ArrowUpRight} size={14} />
+                    查看完整操作样板 <Icon icon={ArrowUpRight} size={14} />
                   </small>
                 </a>
                 <a {...link('LoadingSequence')}>
@@ -626,12 +634,17 @@ function Preview() {
                     .map((item) => (
                       <article className="catalog-card" key={item.name}>
                         <div className="catalog-art" data-group={item.group}>
-                          <div className="catalog-miniature" inert aria-hidden="true">
+                          <div className="catalog-miniature" data-ambient="paused" inert aria-hidden="true">
                             {item.group === '页面组合' || item.name === 'LoadingSequence' ? (
                               <>
-                                <LoadingMark phase="holding" label="" />
+                                <LoadingMark phase="static" label="" />
                                 <p>{item.label}</p>
                               </>
+                            ) : item.name === 'Button' ? (
+                              <div className="preview-actions">
+                                <Button>开始创作</Button>
+                                <Button variant="ghost">了解更多</Button>
+                              </div>
                             ) : (
                               item.examples[0]!.render()
                             )}

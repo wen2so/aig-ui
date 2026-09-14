@@ -49,6 +49,7 @@ const shapeSource: Record<string, string> = {
 };
 /** 字体预设按优先级排列；自定义项由宿主直接书写字体栈。 */
 export const familyPresets: Record<string, string[]> = {
+  reference: ['Inter', 'Microsoft YaHei', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
   system: ['system-ui', 'Microsoft YaHei', 'sans-serif'],
   humanist: ['Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'sans-serif'],
   serif: ['Songti SC', 'SimSun', 'Georgia', 'serif'],
@@ -59,6 +60,7 @@ export const displayPresets: Record<string, string | string[]> = {
   inherit: 'var(--aig-font-family)',
 };
 export const monoPresets: Record<string, string[]> = {
+  reference: ['JetBrains Mono', 'ui-monospace', 'Consolas', 'monospace'],
   system: ['ui-monospace', 'Consolas', 'monospace'],
   terminal: ['Cascadia Code', 'JetBrains Mono', 'Menlo', 'Consolas', 'monospace'],
 };
@@ -70,10 +72,10 @@ export interface FontChoice {
   mono: string;
 }
 export const defaultFontChoice: FontChoice = {
-  family: 'system',
+  family: 'reference',
   custom: '',
-  display: 'serif',
-  mono: 'system',
+  display: 'inherit',
+  mono: 'reference',
 };
 /** 选择结果转成 Provider 属性；自定义字体栈为空时回退到系统无衬线。 */
 export function resolveFont(choice: FontChoice): AigFont {
@@ -257,6 +259,7 @@ export function BrandControls({
               value={font.family}
               onChange={(event) => onFontChange({ ...font, family: event.target.value })}
             >
+              <option value="reference">Inter · 微软雅黑</option>
               <option value="system">系统无衬线</option>
               <option value="humanist">人文无衬线</option>
               <option value="serif">衬线阅读</option>
@@ -300,6 +303,7 @@ export function BrandControls({
               value={font.mono}
               onChange={(event) => onFontChange({ ...font, mono: event.target.value })}
             >
+              <option value="reference">JetBrains Mono</option>
               <option value="system">系统等宽</option>
               <option value="terminal">终端等宽</option>
             </select>

@@ -5,7 +5,7 @@ test('全部组件与页面在品牌环境和窄屏保持可见，记录迁移�
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('http://127.0.0.1:5173/');
   const cards = page.locator('.catalog-card');
-  await expect(cards).toHaveCount(56);
+  await expect(cards).toHaveCount(57);
   const links = await cards.evaluateAll((els) =>
     els.map((el) => el.querySelector('.catalog-card-caption')!.getAttribute('href')!),
   );

@@ -486,7 +486,7 @@ const loadingIcon = <Icon icon={LoaderCircle} className="demo-loader-orbit" />;
     {
       id: 'states',
       title: '开启、关闭与锁定',
-      description: '圆形内核沿轨道平移，静止时保持轻微巡行。',
+      description: '菱形内核沿轨道平移，开闭与禁用状态保持清晰。',
       render: () => (
         <div className="example-stack">
           <label>

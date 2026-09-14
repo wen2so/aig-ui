@@ -21,7 +21,7 @@ export const groups = [
     caption: '状态与回应',
     names: 'Alert Dialog Drawer Toast Progress Spinner Skeleton StatusIndicator EmptyState Result',
   },
-  { label: '动效', caption: '有巡行的界面', names: 'LoadingMark LoadingSequence' },
+  { label: '动效', caption: '从等待到就绪', names: 'LoadingMark LoadingSequence' },
   {
     label: 'AI',
     caption: '与智能协作',
@@ -30,7 +30,7 @@ export const groups = [
   {
     label: '页面组合',
     caption: '完整的工作场景',
-    names: 'access-state-page settings-form filterable-list ai-assistant artifact-review',
+    names: 'visual-study access-state-page settings-form filterable-list ai-assistant artifact-review',
   },
   { label: '主题', caption: '作用域与品牌', names: 'AigProvider' },
 ];
@@ -40,7 +40,7 @@ const rawFiles = import.meta.glob('../../../packages/aig-ui/src/**/*.{stories.ts
   import: 'default',
   eager: true,
 }) as Record<string, string>;
-const pageSource = import.meta.glob('./pages.tsx', {
+const pageSource = import.meta.glob(['./pages.tsx', './visual-study.tsx'], {
   query: '?raw',
   import: 'default',
   eager: true,
@@ -90,7 +90,9 @@ export const entries: Entry[] = [
             description: entry.description,
             render: entry.render,
             code:
-              group === '页面组合' ? pageSource['./pages.tsx']! : rawFiles[`${prefix}/${id}.stories.tsx`]!,
+              group === '页面组合'
+                ? pageSource[entry.name === 'visual-study' ? './visual-study.tsx' : './pages.tsx']!
+                : rawFiles[`${prefix}/${id}.stories.tsx`]!,
             wide:
               ['页面组合', 'AI', '主题'].includes(group) ||
               ['Table', 'Conversation', 'Panel'].includes(entry.name),
@@ -103,15 +105,17 @@ export const entries: Entry[] = [
       examples,
       readme: rawFiles[`${prefix}/README.md`] ?? '',
       importPath:
-        group === '页面组合'
-          ? 'Registry 页面源码'
-          : group === '动效'
-            ? 'aig-ui/motion'
-            : group === 'AI'
-              ? `aig-ui/ai/${id}`
-              : group === '主题'
-                ? 'aig-ui'
-                : `aig-ui/${id}`,
+        entry.name === 'visual-study'
+          ? '预览页操作样板'
+          : group === '页面组合'
+            ? 'Registry 页面源码'
+            : group === '动效'
+              ? 'aig-ui/motion'
+              : group === 'AI'
+                ? `aig-ui/ai/${id}`
+                : group === '主题'
+                  ? 'aig-ui'
+                  : `aig-ui/${id}`,
     };
   })
   .sort(

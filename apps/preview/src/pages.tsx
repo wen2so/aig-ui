@@ -1,3 +1,4 @@
+import { VisualStudy } from './visual-study.js';
 import { useEffect, useRef, useState } from 'react';
 import { AccessStatePage } from '../../../registry/blocks/access-state-page/access-state-page.js';
 import { SettingsForm } from '../../../registry/blocks/settings-form/settings-form.js';
@@ -7,6 +8,13 @@ import type { TaskState } from '../../../packages/aig-ui/src/ai/task-status/task
 import { ArtifactReview } from '../../../registry/blocks/artifact-review/artifact-review.js';
 
 export const pageEntries = [
+  {
+    name: 'visual-study',
+    label: '视觉样板',
+    group: '页面组合',
+    description: '留白、表单操作、确认浮层与完整加载交接。',
+    render: () => <VisualStudy />,
+  },
   {
     name: 'access-state-page',
     label: '访问状态页',

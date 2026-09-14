@@ -410,7 +410,7 @@ summary:focus-visible,
   flex-direction: column;
   padding: 28px 18px 18px;
   border-right: 1px solid var(--preview-line);
-  background: #fffdfa;
+  background: #fff;
 }
 .overview-link {
   display: flex;
@@ -552,10 +552,7 @@ h1:focus,
   font-size: 11px;
 }
 .preview-count strong {
-  font:
-    19px ui-serif,
-    Georgia,
-    serif;
+  font: 500 19px var(--aig-font-family);
   color: var(--aig-color-accent);
   padding-right: 3px;
 }
@@ -688,7 +685,7 @@ h1:focus,
   display: block;
   min-width: 0;
   border: 1px solid var(--preview-line);
-  background: #fffdfa;
+  background: #fff;
   border-radius: 8px;
   transition:
     border-color 300ms,
@@ -707,27 +704,9 @@ h1:focus,
   place-items: center;
   position: relative;
   overflow: hidden;
-  background:
-    radial-gradient(
-      ellipse at 50% 100%,
-      color-mix(in srgb, var(--aig-color-mark) 12%, transparent),
-      transparent 80%
-    ),
-    #fcf8f5;
+  background: transparent;
   border-bottom: 1px solid var(--preview-line);
   pointer-events: none;
-}
-.catalog-card:nth-child(3n + 2) .catalog-art {
-  background:
-    radial-gradient(
-      ellipse at 20% 20%,
-      color-mix(in srgb, var(--aig-color-mark) 10%, transparent),
-      transparent 70%
-    ),
-    #fbf9f7;
-}
-.catalog-card:nth-child(3n + 3) .catalog-art {
-  background: linear-gradient(145deg, #fbf7f5, #eee5e138);
 }
 .catalog-miniature {
   width: 380px;
@@ -844,8 +823,8 @@ h1:focus,
   line-height: 1.3;
 }
 .component-header h1 span {
-  font: 26px var(--aig-font-display);
-  letter-spacing: 2px;
+  font: 500 24px var(--aig-font-display);
+  letter-spacing: 0;
 }
 .component-header > p {
   color: var(--preview-muted);
@@ -922,7 +901,7 @@ h1:focus,
   border: 1px solid var(--preview-line);
   border-radius: 8px;
   min-width: 0;
-  background: #fffdfa;
+  background: #fff;
   scroll-margin-top: 96px;
 }
 .example-card[data-wide] {
@@ -935,11 +914,7 @@ h1:focus,
   justify-content: center;
   padding: clamp(20px, 3vw, 36px);
   border-radius: 8px 8px 0 0;
-  background: radial-gradient(
-    ellipse at 70% 100%,
-    color-mix(in srgb, var(--aig-color-mark) 10%, transparent),
-    transparent 80%
-  );
+  background: transparent;
   min-width: 0;
 }
 .preview-example > * {
@@ -953,7 +928,7 @@ h1:focus,
 }
 .example-caption h3 {
   display: table;
-  background: #fffdfa;
+  background: #fff;
   padding: 0 9px;
   margin: -10px 0 8px -9px;
   font-size: 13px;
@@ -1197,9 +1172,7 @@ h1:focus,
   border-block: 1px solid var(--preview-line);
 }
 .guideline-note > span {
-  font:
-    italic 30px Georgia,
-    serif;
+  font: 300 30px var(--aig-font-family);
   color: var(--aig-color-accent);
 }
 .guideline-note h3 {
@@ -1310,9 +1283,7 @@ h1:focus,
   padding: 55px 0 100px;
 }
 .search-empty > span {
-  font:
-    52px Georgia,
-    serif;
+  font: 300 52px var(--aig-font-family);
   color: var(--aig-color-mark);
 }
 .search-empty h2 {
@@ -1808,4 +1779,34 @@ h1:focus,
 .semantic-palette p {
   font-size: 12px;
   color: var(--aig-color-text-muted);
+}
+
+/* 目录为稳定缩略图，完整动效在组件详情中展示。 */
+.catalog-miniature .aig-loading-mark * {
+  animation: none !important;
+}
+.catalog-miniature .aig-loading-mark [pathLength] {
+  stroke-dashoffset: 0 !important;
+}
+/* 目录缩略图只说明形状，任务的实际运动在详情页展示。 */
+[data-ambient='paused'].catalog-miniature *,
+[data-ambient='paused'].catalog-miniature *::before,
+[data-ambient='paused'].catalog-miniature *::after {
+  animation-play-state: paused !important;
+}
+.catalog-card {
+  background: var(--aig-color-surface);
+}
+.catalog-art {
+  background-image: none;
+}
+.catalog-card:hover .catalog-art {
+  background-color: color-mix(in srgb, var(--aig-color-mark) 3%, white);
+}
+.component-header h1 {
+  font-weight: 500;
+  letter-spacing: -0.035em;
+}
+.example-caption {
+  background: transparent;
 }

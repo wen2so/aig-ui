@@ -1,0 +1,116 @@
+/* 样板以一个主操作组织页面，加载舞台与演示入口分开。 */
+.visual-study {
+  min-inline-size: 0;
+}
+.visual-study-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  color: var(--aig-color-text-muted);
+  font-size: 11px;
+  margin-bottom: 20px;
+}
+.visual-study > .aig-loading-sequence {
+  min-height: 570px;
+}
+.visual-study-workspace {
+  padding: clamp(20px, 4vw, 56px);
+  background: radial-gradient(135% 105% at 50% 0%, white, #fdfaf9);
+}
+.visual-study-heading {
+  margin-bottom: 40px;
+}
+.visual-study-heading > span {
+  font: 10px var(--aig-font-mono);
+  letter-spacing: 0.16em;
+  color: var(--aig-color-text-muted);
+}
+.visual-study-heading h2 {
+  font-size: clamp(24px, 2.2vw, 32px);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  margin: 16px 0 12px;
+}
+.visual-study-heading p,
+.visual-study-form > p,
+.visual-study-summary > p {
+  font-size: 13px;
+  color: var(--aig-color-text-muted);
+  line-height: 1.8;
+}
+.visual-study-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(180px, 1fr);
+  gap: 48px;
+}
+.visual-study-form.aig-card {
+  padding: 28px;
+}
+.visual-study h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.visual-study-form > p {
+  margin: 0 0 28px;
+}
+.visual-study-form form {
+  display: grid;
+  gap: 24px;
+}
+.visual-study-form .aig-textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+.visual-study-actions {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-top: 8px;
+}
+.visual-study-feedback {
+  margin: 0;
+  min-height: 20px;
+  font-size: 12px;
+  color: var(--aig-color-success);
+}
+.visual-study-summary {
+  padding-block: 28px;
+  min-width: 0;
+}
+.visual-study-summary dl {
+  margin: 28px 0;
+}
+.visual-study-summary dt {
+  font-size: 11px;
+  color: var(--aig-color-text-muted);
+  margin-top: 20px;
+}
+.visual-study-summary dd {
+  margin: 6px 0 0;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.visual-study-danger {
+  border-top: 1px solid var(--aig-color-border-subtle);
+  margin-top: 32px;
+  padding-top: 24px;
+}
+@media (max-width: 800px) {
+  .visual-study-columns {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .visual-study-summary {
+    padding-inline: 8px;
+  }
+  .visual-study-workspace {
+    padding: 20px 12px;
+  }
+  .visual-study-form.aig-card {
+    padding: 20px;
+  }
+}

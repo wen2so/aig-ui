@@ -7,7 +7,7 @@ test('总览分类、检索、组件直达和浏览器返回保持一致', async
     if (message.type() === 'error') errors.push(message.text());
   });
   await page.goto('http://127.0.0.1:5173/');
-  await expect(page.locator('.catalog-card')).toHaveCount(56);
+  await expect(page.locator('.catalog-card')).toHaveCount(57);
   await page.screenshot({ path: 'artifacts/preview-redesign/overview-desktop.png' });
   await page.getByRole('button', { name: '数据录入', exact: true }).click();
   await expect(page.locator('.catalog-card')).toHaveCount(8);
@@ -15,7 +15,7 @@ test('总览分类、检索、组件直达和浏览器返回保持一致', async
   await expect(page).toHaveURL(/component=Input/);
   await expect(page.getByRole('heading', { name: 'Input 输入框', exact: true })).toBeVisible();
   await page.goBack();
-  await expect(page.locator('.catalog-card')).toHaveCount(56);
+  await expect(page.locator('.catalog-card')).toHaveCount(57);
   await page.getByLabel('查找组件').fill('  LoAdInGmArK  ');
   await expect(page.locator('.catalog-card')).toHaveCount(1);
   await page.getByRole('link', { name: '加载标记 LoadingMark', exact: true }).click();
@@ -54,44 +54,25 @@ test('示例参数、重置、源码复制和当前 API 可实际使用', async 
   await page.locator('#example-states').screenshot({ path: 'artifacts/preview-redesign/button-states.png' });
 });
 
-test('静止底线光点持续巡航，禁用保持静态，支持暂停与减少动画', async ({ page }) => {
+test('普通按钮与禁用状态保持静态，加载保留扫描并支持减少动画', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Button');
   const idle = page.locator('#example-states .aig-button[data-variant=primary]:enabled');
   const disabled = page.locator(
     '#example-states .aig-button[data-variant=primary]:disabled:not([aria-busy])',
   );
-  await expect(idle.locator('.aig-button-frame')).toHaveCSS('animation-name', 'aig-button-glint');
+  const busy = page.locator('#example-states .aig-button[data-variant=primary][aria-busy=true]');
+  await expect(idle.locator('.aig-button-frame')).toHaveCSS('animation-name', 'none');
   await expect(disabled.locator('.aig-button-frame')).toHaveCSS('animation-name', 'none');
   await expect(disabled).toBeDisabled();
-  const measurements = await idle.evaluate((el) => {
-    const frame = el.querySelector('.aig-button-frame')!;
-    const animation = frame.getAnimations()[0]!;
-    animation.pause();
-    animation.currentTime = 0;
-    const start = getComputedStyle(frame).getPropertyValue('--aig-glint-x');
-    const opacity = getComputedStyle(frame).opacity;
-    const textOpacity = getComputedStyle(el).opacity;
-    animation.currentTime = 3200;
-    return {
-      start,
-      end: getComputedStyle(frame).getPropertyValue('--aig-glint-x'),
-      opacity,
-      finalOpacity: getComputedStyle(frame).opacity,
-      filter: getComputedStyle(frame).filter,
-      textOpacity,
-      finalTextOpacity: getComputedStyle(el).opacity,
-    };
-  });
-  expect(measurements.start).not.toBe(measurements.end);
-  expect(measurements.opacity).toBe(measurements.finalOpacity);
-  expect(measurements.filter).toBe('none');
-  expect(measurements.textOpacity).toBe(measurements.finalTextOpacity);
+  await expect(busy.locator('.aig-button-frame')).toHaveCSS('animation-name', 'aig-button-scan');
+  await expect(busy).toBeDisabled();
   await page.getByRole('button', { name: '全局主题', exact: true }).click();
   await page.getByRole('button', { name: '暂停环境动效' }).click();
   await page.getByRole('button', { name: '完成设置', exact: true }).click();
   await expect(idle.locator('.aig-button-frame')).toHaveCSS('animation-play-state', 'paused');
+  await expect(busy.locator('.aig-button-frame')).toHaveCSS('animation-play-state', 'running');
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await expect(disabled.locator('.aig-button-frame')).toHaveCSS('animation-name', 'none');
+  await expect(busy.locator('.aig-button-frame')).toHaveCSS('animation-name', 'none');
   await expect(idle.locator('.aig-button-frame')).toHaveCSS('animation-name', 'none');
   await page.goto('http://127.0.0.1:5173/?component=Input');
   await expect(page.getByLabel('等待开通')).toBeDisabled();
@@ -273,7 +254,7 @@ test('顶部分类在总览、详情、筛选与历史间准确定位，当前�
   await page.getByRole('button', { name: '数据录入', exact: true }).click();
   await expect(page.locator('.catalog-card')).toHaveCount(8);
   await topNav.getByRole('link', { name: '动效', exact: true }).click();
-  await expect(page.locator('.catalog-card')).toHaveCount(56);
+  await expect(page.locator('.catalog-card')).toHaveCount(57);
   await expect
     .poll(() => page.locator('#catalog-motion').evaluate((el) => Math.round(el.getBoundingClientRect().top)))
     .toBe(92);
@@ -307,7 +288,7 @@ test('顶部分类在总览、详情、筛选与历史间准确定位，当前�
   await page.getByLabel('查找组件').fill('Button');
   await topNav.getByRole('link', { name: '动效', exact: true }).click();
   await expect(page.getByLabel('查找组件')).toHaveValue('');
-  await expect(page.locator('.catalog-card')).toHaveCount(56);
+  await expect(page.locator('.catalog-card')).toHaveCount(57);
   expect(errors).toEqual([]);
 });
 
@@ -355,9 +336,9 @@ test('全局主题入口集中设置并支持键盘返回、跨页保持和统�
   expect(await settings.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
   await settings.getByRole('button', { name: '恢复默认', exact: true }).click();
   await expect(settings.getByLabel('品牌色', { exact: true })).toHaveValue('#b98b90');
-  await expect(settings.getByLabel('正文字体', { exact: true })).toHaveValue('system');
-  await expect(settings.getByLabel('标题字体', { exact: true })).toHaveValue('serif');
-  await expect(settings.getByLabel('等宽字体', { exact: true })).toHaveValue('system');
+  await expect(settings.getByLabel('正文字体', { exact: true })).toHaveValue('reference');
+  await expect(settings.getByLabel('标题字体', { exact: true })).toHaveValue('inherit');
+  await expect(settings.getByLabel('等宽字体', { exact: true })).toHaveValue('reference');
   await expect(page.locator('.preview-shell')).toHaveAttribute('data-aig-material', 'glass');
   await expect(page.locator('.preview-shell')).toHaveAttribute('data-aig-density', 'comfortable');
   await expect(page.locator('.preview-shell')).toHaveAttribute('data-ambient', 'running');
