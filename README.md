@@ -1,61 +1,40 @@
 # aig-ui
 
-暖白 React 组件库，当前交付为本地实验性 `0.1.0-alpha.0`。包含 50 个组件、5 个页面组合、独立样式入口和与源码对应的机器资料。
+暖白精密线绘 React 组件库。当前为本地实验性 `0.1.0-alpha.0`，提供 40 个通用组件、2 个加载动效组件、8 个 AI 组件，以及 AigProvider 主题作用域和 5 个页面组合。
 
 ## 启动预览
 
-使用 Node 24.9.0 和 pnpm 10.28.1。
+环境要求：Node.js `>=24.9.0 <25`、pnpm `10.28.1`。CI 使用 Node.js 24.9.0。
 
 ```sh
 pnpm install --frozen-lockfile
 pnpm preview
 ```
 
-打开 [组件预览](http://127.0.0.1:5173/) 或 [加载动画](http://127.0.0.1:5173/?component=LoadingSequence)。页面支持名称检索，修改源码后自动更新。`pnpm dev` 在 6006 端口启动 Storybook。
+打开[组件预览](http://127.0.0.1:5173/)。页面支持名称与用途搜索、交互示例、源码、API 和使用说明；顶部“全局主题”实时设置品牌、字体、材质与密度。[AigProvider](http://127.0.0.1:5173/?component=AigProvider) 和 [LoadingSequence](http://127.0.0.1:5173/?component=LoadingSequence) 可直接访问。Storybook 使用 `pnpm dev` 启动，端口为 6006。
 
-加载动画保留镂空三角、错峰横线、双环旋转、反向擦除和柔和解构。完整效果保持开启；系统减少动态效果偏好作为无障碍设置生效。
-
-## 使用方式
+## 接入应用
 
 ```tsx
-import { Button, AigProvider } from 'aig-ui';
-import { LoadingSequence } from 'aig-ui/motion';
-import { Message } from 'aig-ui/ai';
+import { AigProvider, Button } from 'aig-ui';
 import 'aig-ui/styles.css';
-import 'aig-ui/motion/styles.css';
-import 'aig-ui/ai/styles.css';
+
+export function App() {
+  return (
+    <AigProvider>
+      <Button>创建项目</Button>
+    </AigProvider>
+  );
+}
 ```
 
-基础组件支持独立入口，例如 `aig-ui/button`。主题通过 `AigProvider` 和 `--aig-*` 变量覆盖，浮层挂载在最近的主题内。React 与 React DOM 当前验证版本为 19.3.0。
+当前通过本地 tarball 接入，React 与 React DOM 的 peer 版本均为 `19.3.0`。动效和 AI 组件分别使用 `aig-ui/motion`、`aig-ui/ai`，并导入对应样式。[快速接入](docs/guides/getting-started.md)提供完整操作。
 
-## 验证与本地分发
+## 文档入口
 
-```sh
-pnpm check
-pnpm format:check
-pnpm build:docs
-pnpm build:preview
-pnpm pack:local
-pnpm prepare:consumer
-pnpm --dir examples/vite-consumer install --ignore-workspace --no-frozen-lockfile
-pnpm --dir examples/next-consumer install --ignore-workspace --no-frozen-lockfile
-pnpm --dir examples/vite-consumer build
-pnpm --dir examples/next-consumer build
-pnpm exec playwright install chromium
-pnpm test:browser
-pnpm check:size
-```
+- [文档目录](docs/README.md)：按接入、设计和维护组织。
+- [工程结构与开发](docs/engineering/development.md)：目录职责、生成关系和开发检查。
+- [构建与分发](docs/engineering/distribution.md)：打包、Registry 与 Vite/Next 独立消费。
+- [项目状态](docs/progress.md)：现有能力、验证范围与待办。
 
-`pnpm check` 执行 ESLint、TypeScript、交互单测、包构建、资料示例类型检查与 Registry schema 校验。独立项目安装 `artifacts/aig-ui-0.1.0-alpha.0.tgz`，用于发现 workspace 链接掩盖的缺失文件和出口问题。消费项目的 lockfile 是本地打包验证产物；tarball 随提交与源码散列变化，安装时重新解析该本地文件。
-
-构建输出位于 `packages/aig-ui/dist`：`manifest.json`、`api/`、`components/`、`examples/`、`source/`、`llms.txt` 与 `r/`。Registry 的版本目录另存于 `artifacts/registry/<version>/r/`。JSON 提取的 5 个页面源码在独立 Vite 项目参与类型、构建和浏览器验证。
-
-## 文档与状态
-
-- [实施进度与验证边界](docs/progress.md)
-- [方案目录](docs/README.md)
-- [组件使用说明](packages/aig-ui/src/components/)
-- [AI 组件使用说明](packages/aig-ui/src/ai/)
-- [动效使用说明](packages/aig-ui/src/motion/README.md)
-
-正式发布前继续完成素材与源码授权、人工辅助技术验收、真实业务试点和公开安装验证。当前包标记为 `UNLICENSED`，本次交付保持本地使用。
+项目使用普通 CSS 与 `--aig-*` Token；完整线绘动效默认开启，系统减少动态效果偏好提供静态等价表现。许可证当前为 `UNLICENSED`，交付范围为本地使用，公开发布条件见项目状态。

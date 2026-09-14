@@ -1,8 +1,10 @@
-# 品牌与加载图形自定义
+# 主题与品牌
 
-更新日期：2026-09-14。全局品牌通过 `AigProvider.brand` 配置，字体通过 `AigProvider.font` 配置，普通控件、主题浮层、BrandMark、LoadingMark 和 LoadingSequence 共用该作用域。
+更新日期：2026-09-14。全局品牌通过 `AigProvider.brand` 配置，字体通过 `AigProvider.font` 配置，普通控件、主题浮层、BrandMark、LoadingMark 和 LoadingSequence 共用该作用域。Provider 的 material 默认 glass，density 默认 comfortable，theme 默认 warm。
 
 预览站在顶部提供唯一的“全局主题”入口，统一调整品牌颜色、SVG、字体、材质、密度和环境动效。组件切换后继续沿用当前设置，接入代码在该入口复制；Provider 的属性表与数据类型随其他组件一起在 [AigProvider 文档](http://127.0.0.1:5173/?component=AigProvider)中查看。组件文档聚焦自身用法，应用侧通常在根布局配置一次 AigProvider。
+
+以下组合片段中的 taskId、status 与内容组件由宿主提供。
 
 ```tsx
 import { AigProvider, BrandMark, Button } from 'aig-ui';
