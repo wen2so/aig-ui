@@ -126,46 +126,77 @@ test('首轮收回，hover 复用刻面并局部闪切后保持三档高亮，�
   await expect.poll(hidden).toBe(false);
 });
 
-test('各层级无悬停使用深字，悬停与键盘聚焦使用浅字', async ({ page }) => {
+test('浅字区域与实际闪切刻面同步，未覆盖区域保留深字', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Button');
   await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
-  const buttons = page.locator('#example-variants .preview-actions > .aig-button');
-  for (const button of await buttons.all()) {
-    const highlight = button.locator('.aig-button-highlight');
-    const content = button.locator('.aig-button-content');
-    await expect(highlight).not.toHaveAttribute('data-playing', '');
-    const colors = await button.evaluate((el) => {
-      const probe = document.createElement('span');
-      el.append(probe);
-      const colors = ['--aig-color-text', '--aig-color-surface'].map((token) => {
-        probe.style.color = `var(${token})`;
-        return getComputedStyle(probe).color;
-      });
-      probe.remove();
-      return colors;
+  const button = page.locator('#example-variants .preview-actions > .aig-button').first();
+  const highlight = button.locator('.aig-button-highlight');
+  const overlay = button.locator('.aig-button-contrast');
+  await expect(highlight).not.toHaveAttribute('data-playing', '');
+  // 首次打开时等待字体完成排版，避免取样期间按钮移位导致 hover 退出。
+  await page.evaluate(() => document.fonts.ready.then(() => undefined));
+  const idle = await button.locator('.aig-button-content').evaluate((el) => getComputedStyle(el).color);
+  await button.hover();
+  await highlight.evaluate((el) => {
+    el.querySelectorAll('polygon').forEach((polygon) =>
+      polygon.getAnimations().forEach((animation) => {
+        animation.pause();
+        animation.currentTime = 0;
+      }),
+    );
+    el.setAttribute('data-sample-time', '0');
+  });
+  await expect(overlay).toHaveCSS('clip-path', 'inset(50%)');
+  await expect(button.locator('.aig-button-content')).toHaveCSS('color', idle);
+  const flash = highlight.locator('polygon[data-motion=flash]').first();
+  const sample = async (progress: number) => {
+    await flash.evaluate((el, progress) => {
+      const animation = el.getAnimations()[0]!;
+      const timing = animation.effect!.getTiming();
+      animation.currentTime = Number(timing.delay) + Number(timing.duration) * progress;
+      el.closest('svg')!.setAttribute('data-sample-time', String(progress));
+    }, progress);
+  };
+  await sample(0.22);
+  await expect(overlay).toHaveCSS('clip-path', /^path\(/);
+  const path = await overlay.evaluate((el) => getComputedStyle(el).clipPath);
+  expect(path.match(/M/g)).toHaveLength(1);
+  await sample(0.35);
+  await expect(overlay).toHaveCSS('clip-path', 'inset(50%)');
+  await sample(0.96);
+  await expect(overlay).toHaveCSS('clip-path', /^path\(/);
+  await highlight.evaluate((el) => {
+    el.querySelectorAll('polygon').forEach((polygon) =>
+      polygon.getAnimations().forEach((animation) => animation.finish()),
+    );
+    el.setAttribute('data-sample-time', 'finished');
+  });
+  await expect
+    .poll(() =>
+      highlight.evaluate((el) => ({
+        hovered: el.hasAttribute('data-hovered'),
+        lit: [...el.querySelectorAll('polygon')].filter(
+          (polygon) => Number(getComputedStyle(polygon).fillOpacity) > 0,
+        ).length,
+        clipped: (
+          getComputedStyle(el.parentElement!.querySelector('.aig-button-contrast')!).clipPath.match(/M/g) ??
+          []
+        ).length,
+      })),
+    )
+    .toEqual({
+      hovered: true,
+      lit: await highlight.locator('polygon').count(),
+      clipped: await highlight.locator('polygon').count(),
     });
-    const [idle, ink] = colors as [string, string];
-    await expect(content).toHaveCSS('color', idle);
-    await button.hover();
-    await expect(content).toHaveCSS('color', ink);
-    await expect(content).toHaveCSS('mix-blend-mode', 'normal');
-    await expect(button).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
-    await expect(highlight).not.toHaveAttribute('data-playing', '');
-    await expect(content).toHaveCSS('color', ink);
-    await page.mouse.move(4, 4);
-    await expect(content).toHaveCSS('color', idle);
-    await expect(button).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
-  }
-  const first = buttons.first();
-  await first.focus();
-  await page.keyboard.press('Tab');
-  await page.keyboard.press('Shift+Tab');
-  await expect(first.locator('.aig-button-content')).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await expect(button).toHaveAccessibleName('开始创作');
+  await page.mouse.move(4, 4);
+  await expect(overlay).toHaveCSS('clip-path', 'inset(50%)');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await button.hover();
+  await expect(overlay).toHaveCSS('clip-path', /^path\(/);
   await page.emulateMedia({ forcedColors: 'active' });
-  await first.hover();
-  expect(await first.locator('.aig-button-content').evaluate((el) => getComputedStyle(el).color)).toBe(
-    await first.evaluate((el) => getComputedStyle(el).color),
-  );
+  await expect(overlay).toHaveCSS('display', 'none');
 });
 
 test('悬停、按压、选中与加载分别使用对应反馈', async ({ page }) => {

@@ -46,15 +46,15 @@ it('刻面在挂载后固定，两端直角、中间内部汇聚，局部快慢�
   const durations = flashes
     .map((facet) => parseFloat(facet.style.getPropertyValue('--aig-facet-duration')))
     .sort((a, b) => a - b);
-  expect(durations[0]).toBeLessThanOrEqual(910);
-  expect(durations.at(-1)).toBeGreaterThanOrEqual(1170);
+  expect(durations[0]).toBeLessThanOrEqual(369);
+  expect(durations.at(-1)).toBeGreaterThanOrEqual(474);
   const finishes = flashes.map(
     (facet) =>
       parseFloat(facet.style.getPropertyValue('--aig-facet-delay')) +
       parseFloat(facet.style.getPropertyValue('--aig-facet-duration')),
   );
-  expect(Math.min(...finishes)).toBe(1170);
-  expect(Math.max(...finishes)).toBe(1976);
+  expect(Math.min(...finishes)).toBe(474);
+  expect(Math.max(...finishes)).toBe(800);
   fireEvent.pointerLeave(button);
   fireEvent.pointerOver(button);
   expect([...button.querySelectorAll('polygon')]).toEqual(facets);
@@ -112,6 +112,6 @@ it('前后图标保持装饰语义，加载保留内容槽位与切换状态', (
   const button = screen.getByRole('button', { name: '保存当前工作区' });
   expect(button).toHaveAttribute('aria-pressed', 'true');
   expect(button).toBeDisabled();
-  expect(button.querySelectorAll('.aig-button-icon[aria-hidden="true"]')).toHaveLength(2);
+  expect(button.querySelectorAll('.aig-button-content .aig-button-icon[aria-hidden="true"]')).toHaveLength(2);
   expect(button.querySelector('.aig-button-label')).toHaveTextContent('保存当前工作区');
 });

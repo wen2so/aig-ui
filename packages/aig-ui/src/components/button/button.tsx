@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, type ComponentPropsWithRef, type ReactNode } from 'react';
 import { BrandMark, useAigBrand } from '../../theme/aig-provider.js';
+import { useButtonContrast } from './button-contrast.js';
 
 /** 执行动作的原生按钮。 */
 export interface ButtonProps extends ComponentPropsWithRef<'button'> {
@@ -78,7 +79,7 @@ function initializeButtonFacets(element: SVGSVGElement | null) {
   );
 }
 
-/** 约四成刻面快慢交错闪切，稳定时刻覆盖后半程；整轮最长保持 1976ms。 */
+/** 约四成刻面快慢交错闪切，稳定时刻覆盖后半程；整轮最长 800ms。 */
 function replayButtonFacets(element: SVGSVGElement | null) {
   if (!element) return;
   initializeButtonFacets(element);
@@ -105,9 +106,11 @@ function replayButtonFacets(element: SVGSVGElement | null) {
     const delay = flashes
       ? end - duration
       : 180 + Math.round((700 * (index - flashCount)) / Math.max(1, order.length - flashCount - 1));
-    // 整体延长三成，保持局部快慢比例与稳定顺序。
-    facet.style.setProperty('--aig-facet-delay', `${Math.round(delay * 1.3)}ms`);
-    facet.style.setProperty('--aig-facet-duration', `${Math.round(duration * 1.3)}ms`);
+    // 统一缩放到 800ms，先确定结束时刻，避免独立取整造成超时。
+    const scaledDuration = Math.round((duration * 800) / 1520);
+    const scaledEnd = Math.round(((delay + duration) * 800) / 1520);
+    facet.style.setProperty('--aig-facet-delay', `${scaledEnd - scaledDuration}ms`);
+    facet.style.setProperty('--aig-facet-duration', `${scaledDuration}ms`);
   });
   void element.getBoundingClientRect();
   element.dataset.playing = '';
@@ -171,6 +174,9 @@ export function Button({
 }: ButtonProps) {
   const brand = useAigBrand();
   const highlightRef = useRef<SVGSVGElement>(null);
+  const contentRef = useRef<HTMLSpanElement>(null);
+  const contrastRef = useRef<HTMLSpanElement>(null);
+  useButtonContrast(highlightRef, contentRef, contrastRef);
   const enteredRef = useRef(false);
   useEffect(() => {
     const element = highlightRef.current;
@@ -255,7 +261,7 @@ export function Button({
         className="aig-button-highlight"
         onAnimationEnd={(event) => {
           const element = event.currentTarget;
-          // 最后一块收回后恢复静止文字色；悬停时继续由高亮状态保持深色。
+          // 最后一块播放结束后清理播放标记，稳定刻面继续决定浅字覆盖区域。
           if (
             element.getAnimations({ subtree: true }).every((animation) => animation.playState === 'finished')
           ) {
@@ -273,7 +279,7 @@ export function Button({
           {loadingIcon ?? brand.loadingIcon ?? <ButtonMark />}
         </span>
       )}
-      <span className="aig-button-content">
+      <span ref={contentRef} className="aig-button-content">
         {leadingIcon != null && (
           <span className="aig-button-icon" data-slot="leading" aria-hidden="true">
             {leadingIcon}
@@ -286,6 +292,7 @@ export function Button({
           </span>
         )}
       </span>
+      <span ref={contrastRef} className="aig-button-contrast" aria-hidden="true" inert />
     </button>
   );
 }
