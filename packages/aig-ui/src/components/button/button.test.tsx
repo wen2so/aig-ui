@@ -46,15 +46,15 @@ it('刻面在挂载后固定，两端直角、中间内部汇聚，局部快慢�
   const durations = flashes
     .map((facet) => parseFloat(facet.style.getPropertyValue('--aig-facet-duration')))
     .sort((a, b) => a - b);
-  expect(durations[0]).toBeLessThanOrEqual(700);
-  expect(durations.at(-1)).toBeGreaterThanOrEqual(900);
+  expect(durations[0]).toBeLessThanOrEqual(910);
+  expect(durations.at(-1)).toBeGreaterThanOrEqual(1170);
   const finishes = flashes.map(
     (facet) =>
       parseFloat(facet.style.getPropertyValue('--aig-facet-delay')) +
       parseFloat(facet.style.getPropertyValue('--aig-facet-duration')),
   );
-  expect(Math.min(...finishes)).toBe(900);
-  expect(Math.max(...finishes)).toBe(1520);
+  expect(Math.min(...finishes)).toBe(1170);
+  expect(Math.max(...finishes)).toBe(1976);
   fireEvent.pointerLeave(button);
   fireEvent.pointerOver(button);
   expect([...button.querySelectorAll('polygon')]).toEqual(facets);

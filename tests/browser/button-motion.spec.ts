@@ -137,11 +137,20 @@ test('各层级文字随刻面显示切换，三档背景均保持可读对比',
     const idle = await content.evaluate((el) => getComputedStyle(el).color);
     await button.hover();
     const ink = await content.evaluate((el) => getComputedStyle(el).color);
-    expect(ink).toBe('rgb(255, 255, 255)');
+    expect(ink).toBe(
+      await button.evaluate((el) => {
+        const probe = document.createElement('span');
+        probe.style.color = 'var(--aig-color-text)';
+        el.append(probe);
+        const value = getComputedStyle(probe).color;
+        probe.remove();
+        return value;
+      }),
+    );
     expect(ink).not.toBe(idle);
-    await expect(content).toHaveCSS('mix-blend-mode', 'difference');
+    await expect(content).toHaveCSS('mix-blend-mode', 'multiply');
     await expect(button).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
-    // 合成深色三角和浅色表面，再计算差值文字的实际输出色。
+    // 合成品牌三角和浅色表面，再计算深色文字叠色后的实际输出色。
     const minimum = await button.evaluate((el) => {
       const style = getComputedStyle(el);
       const canvas = document.createElement('canvas');
@@ -158,13 +167,14 @@ test('各层级文字随刻面显示切换，三档背景均保持可读对比',
           .map((value) => (value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4))
           .reduce((sum, value, index) => sum + value * [0.2126, 0.7152, 0.0722][index]!, 0);
       const fill = rgb(getComputedStyle(el.querySelector('polygon')!).fill);
+      const ink = rgb(getComputedStyle(el.querySelector('.aig-button-content')!).color);
       return Math.min(
         ...['--aig-color-bg', '--aig-color-surface', '--aig-color-surface-muted'].flatMap((token) => {
           const surface = rgb(style.getPropertyValue(token));
           return [0, 0.88, 0.94, 1].map((alpha) => {
             const composite = surface.map((value, index) => value * (1 - alpha) + fill[index]! * alpha);
             const background = luminance(composite);
-            const text = luminance(composite.map((value) => 1 - value));
+            const text = luminance(composite.map((value, index) => value * ink[index]!));
             return (Math.max(text, background) + 0.05) / (Math.min(text, background) + 0.05);
           });
         }),

@@ -78,7 +78,7 @@ function initializeButtonFacets(element: SVGSVGElement | null) {
   );
 }
 
-/** 约四成刻面快慢交错闪切，稳定时刻覆盖后半程；整轮最长保持 1520ms。 */
+/** 约四成刻面快慢交错闪切，稳定时刻覆盖后半程；整轮最长保持 1976ms。 */
 function replayButtonFacets(element: SVGSVGElement | null) {
   if (!element) return;
   initializeButtonFacets(element);
@@ -105,8 +105,9 @@ function replayButtonFacets(element: SVGSVGElement | null) {
     const delay = flashes
       ? end - duration
       : 180 + Math.round((700 * (index - flashCount)) / Math.max(1, order.length - flashCount - 1));
-    facet.style.setProperty('--aig-facet-delay', `${delay}ms`);
-    facet.style.setProperty('--aig-facet-duration', `${duration}ms`);
+    // 整体延长三成，保持局部快慢比例与稳定顺序。
+    facet.style.setProperty('--aig-facet-delay', `${Math.round(delay * 1.3)}ms`);
+    facet.style.setProperty('--aig-facet-duration', `${Math.round(duration * 1.3)}ms`);
   });
   void element.getBoundingClientRect();
   element.dataset.playing = '';
