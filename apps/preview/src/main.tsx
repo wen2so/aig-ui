@@ -7,6 +7,7 @@ import {
   brandShapes,
   BrandControls,
   defaultFontChoice,
+  defaultPalette,
   resolveFont,
   type FontChoice,
 } from './brand-controls.js';
@@ -154,6 +155,7 @@ function Preview() {
   const [material, setMaterial] = useState<'glass' | 'solid'>('glass');
   const [ambient, setAmbient] = useState(true);
   const [density, setDensity] = useState<'comfortable' | 'compact'>('comfortable');
+  const [palette, setPalette] = useState(defaultPalette);
   const [brandColor, setBrandColor] = useState('#b98b90');
   const [brandShape, setBrandShape] = useState('triangle');
   const [font, setFont] = useState<FontChoice>(defaultFontChoice);
@@ -252,6 +254,7 @@ function Preview() {
   });
   /** 恢复默认覆盖全局主题的全部选项，抽屉不再单独记录默认值。 */
   function resetTheme() {
+    setPalette(defaultPalette);
     setBrandColor('#b98b90');
     setBrandShape('triangle');
     setMaterial('glass');
@@ -270,6 +273,7 @@ function Preview() {
       material={material}
       density={density}
       brand={{ color: brandColor, mark: brandShapes[brandShape] }}
+      palette={palette}
       font={resolveFont(font)}
       data-ambient={ambient ? 'running' : 'paused'}
     >
@@ -319,6 +323,8 @@ function Preview() {
           0.1.0 <span>ALPHA</span>
         </span>
         <BrandControls
+          palette={palette}
+          onPaletteChange={setPalette}
           color={brandColor}
           shape={brandShape}
           material={material}

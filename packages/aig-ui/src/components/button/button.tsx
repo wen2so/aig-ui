@@ -7,6 +7,8 @@ import { useButtonContrast } from './button-contrast.js';
 export interface ButtonProps extends ComponentPropsWithRef<'button'> {
   /** 操作层级，默认 primary。 */
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+  /** 语义色；danger 层级固定使用危险色，其余默认使用品牌色。 */
+  tone?: 'brand' | 'neutral' | 'info' | 'success' | 'warning' | 'danger';
   /** 控件尺寸，默认 md。 */
   size?: 'sm' | 'md' | 'lg';
   /** 保留名称和尺寸，并禁用重复激活。 */
@@ -186,6 +188,7 @@ function queueButtonEntrance(element: SVGSVGElement, play: () => void) {
 /** 保留表单、键盘、ref 和可访问名称的按钮。 */
 export function Button({
   variant = 'primary',
+  tone = 'brand',
   size = 'md',
   loading = false,
   loadingIcon,
@@ -253,6 +256,7 @@ export function Button({
       aria-busy={loading || undefined}
       data-aig-component="button"
       data-variant={variant}
+      data-tone={variant === 'danger' ? 'danger' : tone}
       data-size={size}
       className={`aig-button ${className}`}
       onPointerEnter={(event) => {

@@ -87,10 +87,25 @@ export interface AigFont {
   /** 代码、路径与编号使用的等宽字体；默认系统等宽。 */
   mono?: string | string[];
 }
-/** 主题作用域管理品牌、字体、材质、密度、方向和浮层归属。 */
+/** 语义色系独立于品牌色，未配置字段继承外层 Token。 */
+export interface AigPalette {
+  /** 删除、移除与失败，默认鲜红。 */
+  danger?: string;
+  /** 完成、确认与通过，默认绿色。 */
+  success?: string;
+  /** 警告与需要留意的操作，默认琥珀色。 */
+  warning?: string;
+  /** 信息与进行中的操作，默认蓝色。 */
+  info?: string;
+  /** 常规与中性操作，默认灰色。 */
+  neutral?: string;
+}
+/** 主题作用域管理品牌、语义色、字体、材质、密度和浮层归属。 */
 export interface AigProviderProps extends ComponentPropsWithRef<'div'> {
   /** 局部配置继承外层品牌；style 中的 Token 覆盖优先。 */
   brand?: AigBrand;
+  /** 全局语义色系，局部字段覆盖并同步作用于浮层。 */
+  palette?: AigPalette;
   /** 主题字体；省略的字段继承外层 Token，字符串按 CSS 原样使用。 */
   font?: AigFont;
   /** 主题名称，默认 warm。 */
@@ -107,6 +122,7 @@ export function AigProvider({
   density = 'comfortable',
   material = 'glass',
   brand,
+  palette,
   font,
   style,
   children,
@@ -117,6 +133,11 @@ export function AigProvider({
   const color = brand?.color;
   const accent = brand?.accentColor ?? (color ? `color-mix(in srgb, ${color} 58%, #202024)` : undefined);
   const brandStyle: AigProviderProps['style'] = {
+    ...Object.fromEntries(
+      Object.entries(palette ?? {})
+        .filter(([, value]) => value)
+        .map(([key, value]) => [`--aig-color-${key}`, value]),
+    ),
     ...(color
       ? {
           '--aig-color-mark': color,

@@ -1776,3 +1776,36 @@ h1:focus,
     border-color: Highlight;
   }
 }
+
+/* 全局语义色表并列展示颜色值与真实按钮。 */
+.semantic-palette {
+  margin-block: 20px;
+}
+.semantic-palette table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.semantic-palette th,
+.semantic-palette td {
+  padding: 8px 4px;
+  text-align: start;
+  border-bottom: 1px solid var(--aig-color-border-subtle);
+}
+.semantic-palette label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.semantic-palette input {
+  width: 30px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.semantic-palette p {
+  font-size: 12px;
+  color: var(--aig-color-text-muted);
+}

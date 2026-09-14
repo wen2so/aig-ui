@@ -21,7 +21,7 @@
   position: relative;
 }
 .aig-status-indicator[data-tone='info'] {
-  color: var(--aig-color-accent);
+  color: var(--aig-color-info);
 }
 .aig-status-indicator[data-tone='success'] {
   color: var(--aig-color-success);
@@ -50,4 +50,8 @@
   .aig-status-dot::after {
     animation: none;
   }
+}
+
+.aig-status-indicator[data-tone='neutral'] {
+  color: var(--aig-color-neutral);
 }

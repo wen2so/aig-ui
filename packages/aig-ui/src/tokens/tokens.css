@@ -10,11 +10,13 @@
   --aig-color-border-subtle: rgb(230 220 222);
   --aig-color-border-control: rgb(140 125 129);
   --aig-color-focus: rgb(125 78 87);
-  --aig-color-danger: rgb(160 68 58);
-  --aig-color-success: rgb(63 118 94);
-  --aig-color-warning: rgb(138 91 36);
+  --aig-color-danger: rgb(230 0 18);
+  --aig-color-success: rgb(21 128 61);
+  --aig-color-warning: rgb(180 83 9);
   --aig-color-mark: rgb(185 139 144);
   --aig-color-signal: rgb(86 139 155);
+  --aig-color-info: rgb(29 78 216);
+  --aig-color-neutral: rgb(82 82 91);
   --aig-font-family: system-ui, 'Microsoft YaHei', sans-serif;
   --aig-font-display: STSong, 'Songti SC', SimSun, Georgia, serif;
   --aig-font-mono: ui-monospace, Consolas, monospace;

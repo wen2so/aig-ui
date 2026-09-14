@@ -98,3 +98,25 @@ LoadingMark 会规范化 path、line、circle、rect、ellipse、polyline、poly
 ```
 
 语义状态色继续表达成功、警告和危险。品牌色主要影响装饰、强调文字、焦点与边界；正文及语义状态色可继续通过对应 Token 设置。自定义强调色按实际背景核对文字对比度。
+
+## 语义色系
+
+`AigProvider.palette` 统一配置语义颜色，独立于 `brand.color`。省略字段继承外层，浮层使用所属主题色，`style` 中的 Token 覆盖优先。
+
+| 字段 | 默认色 | 用途 |
+| --- | --- | --- |
+| danger | `#E60012` 鲜红 | 删除、移除、失败 |
+| success | `#15803D` 绿色 | 确认、完成、通过 |
+| warning | `#B45309` 琥珀 | 警告、需要留意 |
+| info | `#1D4ED8` 蓝色 | 信息、进度 |
+| neutral | `#52525B` 灰色 | 常规、中性 |
+
+```tsx
+<AigProvider palette={{ danger: '#e60012', success: '#15803d', warning: '#b45309', info: '#1d4ed8', neutral: '#52525b' }}>
+  <Button variant="danger">删除记录</Button>
+  <Button tone="success">确认通过</Button>
+  <Button variant="outline" tone="warning">需要留意</Button>
+</AigProvider>
+```
+
+Button 的 `variant` 表达操作层级，`tone` 表达语义色。`variant="danger"` 固定使用危险色，其余默认 `tone="brand"`。静止时文字、边框与细线使用语义色；稳定高亮使用实色和白字；加载与选中保留语义，禁用降低整体明度。全局主题抽屉提供可编辑色表和实时按钮示例。自定义颜色应结合文字和背景核对对比度。

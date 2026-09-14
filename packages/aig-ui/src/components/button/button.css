@@ -39,7 +39,7 @@
   justify-content: center;
   gap: var(--aig-space-2);
   min-inline-size: 0;
-  color: var(--aig-color-text);
+  color: var(--aig-button-text, var(--aig-color-text));
 }
 /* 浅字副本只在可见刻面覆盖处显示，原始深字始终保留。 */
 .aig-button-contrast {
@@ -185,6 +185,40 @@
   --aig-button-facet: var(--aig-color-danger);
   color: var(--aig-color-danger);
   box-shadow: inset 0 -2px color-mix(in srgb, var(--aig-color-danger) 26%, transparent);
+}
+/* 语义色覆盖各层级的品牌配色，文字与几何共用同一色系。 */
+.aig-button[data-tone='danger'] {
+  --aig-button-semantic: var(--aig-color-danger);
+}
+.aig-button[data-tone='success'] {
+  --aig-button-semantic: var(--aig-color-success);
+}
+.aig-button[data-tone='warning'] {
+  --aig-button-semantic: var(--aig-color-warning);
+}
+.aig-button[data-tone='info'] {
+  --aig-button-semantic: var(--aig-color-info);
+}
+.aig-button[data-tone='neutral'] {
+  --aig-button-semantic: var(--aig-color-neutral);
+}
+.aig-button[data-tone]:not([data-tone='brand']) {
+  --aig-button-edge: var(--aig-button-semantic);
+  --aig-button-trace: var(--aig-button-semantic);
+  --aig-button-facet: var(--aig-button-semantic);
+  --aig-button-text: var(--aig-button-semantic);
+  --aig-color-focus: var(--aig-button-semantic);
+  color: var(--aig-button-semantic);
+}
+.aig-button[data-tone]:not([data-tone='brand']) .aig-button-highlight {
+  fill: var(--aig-button-semantic);
+}
+/* 稳定语义高亮使用实色，白字与危险红等色系保持清晰对比。 */
+.aig-button[data-tone]:not([data-tone='brand']):enabled .aig-button-highlight[data-hovered] polygon {
+  --aig-facet-rest: 1;
+}
+.aig-button[data-tone]:not([data-tone='brand']) .aig-button-contrast-content {
+  color: white;
 }
 /* 框线：完整矩形四边加一条停在基线上的扫描光带。 */
 .aig-button-frame {
@@ -406,6 +440,14 @@
 }
 .aig-button[aria-busy='true'] :is(.aig-button-content, .aig-button-contrast-content)::before {
   opacity: 0;
+}
+.aig-button[data-tone]:not([data-tone='brand']):is(
+    :hover,
+    :focus-visible,
+    [aria-pressed='true'],
+    [aria-expanded='true']
+  ) {
+  color: var(--aig-button-semantic);
 }
 .aig-button-loading {
   position: absolute;

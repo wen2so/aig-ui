@@ -1,6 +1,31 @@
 import type { ReactNode } from 'react';
-import { BrandMark, Button, CopyButton, Drawer, type AigFont } from 'aig-ui';
+import tokens from '../../../packages/aig-ui/src/tokens/source.json' with { type: 'json' };
+import { BrandMark, Button, CopyButton, Drawer, type AigPalette, type AigFont } from 'aig-ui';
 
+/** 色表默认值从 Token 真源读取，恢复主题时复用。 */
+export const paletteLabels = {
+  danger: '危险',
+  success: '成功',
+  warning: '警告',
+  info: '信息',
+  neutral: '中性',
+} as const;
+export const defaultPalette = Object.fromEntries(
+  Object.keys(paletteLabels).map((key) => {
+    const token = tokens.color[key as keyof typeof paletteLabels];
+    return [
+      key,
+      '#' +
+        token.$value.components
+          .map((value) =>
+            Math.round(value * 255)
+              .toString(16)
+              .padStart(2, '0'),
+          )
+          .join(''),
+    ];
+  }),
+) as Required<AigPalette>;
 /** 预览切换复用同一组节点，避免普通页面更新重启品牌绘制。 */
 export const brandShapes: Record<string, ReactNode> = {
   triangle: undefined,
@@ -70,7 +95,14 @@ const literal = (value: string | string[]) => {
     : `'${value}'`;
 };
 /** 可复制的品牌接入代码与当前预览参数一致。 */
-function brandSource(color: string, shape: string, material: string, density: string, font: AigFont) {
+function brandSource(
+  color: string,
+  shape: string,
+  material: string,
+  density: string,
+  font: AigFont,
+  palette: Required<AigPalette>,
+) {
   return `import { AigProvider, BrandMark, Button } from 'aig-ui';
 import { LoadingMark } from 'aig-ui/motion';
 import 'aig-ui/styles.css';
@@ -80,6 +112,7 @@ import 'aig-ui/motion/styles.css';
   material="${material}"
   density="${density}"
   brand={{ color: '${color}', mark: ${shapeSource[shape]} }}
+  palette={${JSON.stringify(palette)}}
   font={{
     family: ${literal(font.family ?? '')},
     display: ${literal(font.display ?? '')},
@@ -99,6 +132,8 @@ export function BrandControls({
   density,
   ambient,
   font,
+  palette,
+  onPaletteChange,
   onColorChange,
   onShapeChange,
   onMaterialChange,
@@ -107,6 +142,8 @@ export function BrandControls({
   onFontChange,
   onReset,
 }: {
+  palette: Required<AigPalette>;
+  onPaletteChange: (palette: Required<AigPalette>) => void;
   color: string;
   shape: string;
   material: 'glass' | 'solid';
@@ -122,7 +159,7 @@ export function BrandControls({
   onReset: () => void;
 }) {
   const resolved = resolveFont(font);
-  const source = brandSource(color, shape, material, density, resolved);
+  const source = brandSource(color, shape, material, density, resolved, palette);
   return (
     <Drawer.Root>
       <Drawer.Trigger render={<Button className="theme-toggle" variant="outline" size="sm" />}>
@@ -149,6 +186,42 @@ export function BrandControls({
             <span>组件、加载图形与浮层同步更新</span>
           </div>
         </div>
+        <section aria-label="语义色系" className="semantic-palette">
+          <h3>语义色系</h3>
+          <p>品牌色用于主操作，语义色用于表达动作含义，组件与浮层同步更新。</p>
+          <table>
+            <thead>
+              <tr>
+                <th>语义</th>
+                <th>颜色</th>
+                <th>按钮预览</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(Object.keys(paletteLabels) as (keyof AigPalette)[]).map((key) => (
+                <tr key={key}>
+                  <th scope="row">{paletteLabels[key]}</th>
+                  <td>
+                    <label>
+                      <input
+                        type="color"
+                        aria-label={`${paletteLabels[key]}色`}
+                        value={palette[key]}
+                        onChange={(event) => onPaletteChange({ ...palette, [key]: event.target.value })}
+                      />
+                      <code>{palette[key].toUpperCase()}</code>
+                    </label>
+                  </td>
+                  <td>
+                    <Button tone={key} size="sm">
+                      {paletteLabels[key]}操作
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
         <div className="brand-controls">
           <label>
             <span>

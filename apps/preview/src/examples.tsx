@@ -288,6 +288,23 @@ const toneLabels = ['草稿', '进行中', '已完成', '待确认', '处理失�
 export const extraExamples: Record<string, Example[]> = {
   Button: [
     {
+      id: 'semantic-colors',
+      title: '语义色系',
+      description:
+        '危险使用鲜红，成功使用绿色，警告使用琥珀色，信息使用蓝色，中性使用灰色。全局主题统一配置，加载与选中保持动作语义。',
+      render: () => (
+        <div className="preview-actions">
+          {tones.map((tone, index) => (
+            <Button key={tone} tone={tone}>
+              {['常规操作', '查看进度', '确认通过', '需要留意', '删除记录'][index]}
+            </Button>
+          ))}
+        </div>
+      ),
+      code: tones.map((tone) => `<Button tone="${tone}">${tone}</Button>`).join('\n'),
+      wide: true,
+    },
+    {
       id: 'variants',
       title: '操作层级',
       description:
