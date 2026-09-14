@@ -23,7 +23,7 @@ test('按钮视图切换和图标收藏支持键盘，并保留可见激活反�
   await expect(selection).toContainText('当前显示数据视图');
 });
 
-test('首轮收回，hover 生成直角刻面并保持三档高亮，移出收回', async ({ page }) => {
+test('首轮收回，hover 复用刻面并局部闪切后保持三档高亮，移出收回', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Button');
   await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
   const primary = page.locator('#example-variants .preview-actions > .aig-button').first();
@@ -38,26 +38,46 @@ test('首轮收回，hover 生成直角刻面并保持三档高亮，移出收�
   const initial = await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')));
   await primary.hover();
   const next = await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')));
-  expect(next).not.toEqual(initial);
-  expect([4, 6, 8]).toContain(next.length);
+  expect(next).toEqual(initial);
+  expect([6, 7, 8]).toContain(next.length);
   // 在同一轮中采样两次明灭与稳定时刻，核对真实 CSS 播放节奏。
-  const samples = await facets.first().evaluate((el) => {
-    const animation = el.getAnimations()[0]!;
-    animation.pause();
-    const delay = Number(animation.effect!.getTiming().delay);
-    const duration = Number(animation.effect!.getTiming().duration);
-    const values = [0.22, 0.35, 0.5, 0.68, 0.9].map((progress) => {
-      animation.currentTime = delay + duration * progress;
-      return Number(getComputedStyle(el).fillOpacity);
+  await expect(primary.locator('polygon[data-motion=flash]')).toHaveCount(2);
+  const samples = await primary
+    .locator('polygon[data-motion=flash]')
+    .first()
+    .evaluate((el) => {
+      const animation = el.getAnimations()[0]!;
+      animation.pause();
+      const delay = Number(animation.effect!.getTiming().delay);
+      const duration = Number(animation.effect!.getTiming().duration);
+      const values = [0.22, 0.35, 0.5, 0.68, 0.9].map((progress) => {
+        animation.currentTime = delay + duration * progress;
+        return Number(getComputedStyle(el).fillOpacity);
+      });
+      animation.play();
+      return values;
     });
-    animation.play();
-    return values;
-  });
   expect(samples[0]).toBeGreaterThan(0);
   expect(samples[1]).toBe(0);
   expect(samples[2]).toBeGreaterThan(0);
   expect(samples[3]).toBe(0);
   expect(samples[4]).toBeGreaterThan(0);
+  const quiet = await primary
+    .locator('polygon[data-motion=settle]')
+    .first()
+    .evaluate((el) => {
+      const animation = el.getAnimations()[0]!;
+      animation.pause();
+      const timing = animation.effect!.getTiming();
+      const values = [0.22, 0.35, 0.5, 0.68, 0.9].map((progress) => {
+        animation.currentTime = Number(timing.delay) + Number(timing.duration) * progress;
+        return Number(getComputedStyle(el).fillOpacity);
+      });
+      animation.play();
+      return values;
+    });
+  expect(new Set(quiet).size).toBe(1);
+  expect(quiet[0]).toBeGreaterThan(0);
   await expect
     .poll(() => facets.evaluateAll((elements) => elements.every((el) => el.getAnimations().length === 0)))
     .toBe(true);
@@ -80,7 +100,7 @@ test('首轮收回，hover 生成直角刻面并保持三档高亮，移出收�
   await page.mouse.move(4, 4);
   await expect.poll(hidden).toBe(true);
   await primary.hover();
-  expect(await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')))).not.toEqual(
+  expect(await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')))).toEqual(
     next,
   );
   await page.emulateMedia({ reducedMotion: 'reduce' });

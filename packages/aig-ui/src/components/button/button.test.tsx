@@ -3,18 +3,18 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { expect, it, vi } from 'vitest';
 import { Button } from './button.js';
 
-it('移入时生成数量可变的直角三角和三档明度，支持宿主取消', () => {
+it('刻面在挂载后固定，两端直角、中间内部汇聚，局部快慢闪切支持宿主取消', () => {
   const enter = vi.fn();
   const { rerender } = render(<Button onPointerEnter={enter}>保存</Button>);
   const button = screen.getByRole('button', { name: '保存' });
   fireEvent.pointerOver(button);
   expect(enter).toHaveBeenCalledOnce();
   const facets = [...button.querySelectorAll<SVGElement>('.aig-button-highlight polygon')];
-  expect([4, 6, 8]).toContain(facets.length);
+  expect([6, 7, 8]).toContain(facets.length);
   const depths = facets.map((facet) => Number(facet.style.getPropertyValue('--aig-facet-depth')));
   expect(depths.every((depth) => [0.14, 0.22, 0.3].includes(depth))).toBe(true);
   expect(new Set(depths).size).toBeLessThanOrEqual(3);
-  for (const facet of facets) {
+  for (const [index, facet] of facets.entries()) {
     const points = facet
       .getAttribute('points')!
       .split(' ')
@@ -26,8 +26,28 @@ it('移入时生成数量可变的直角三角和三档明度，支持宿主取�
         Math.abs((a[0]! - point[0]!) * (b[0]! - point[0]!) + (a[1]! - point[1]!) * (b[1]! - point[1]!)) < 0.01
       );
     });
-    expect(rightAngle).toBe(true);
+    if (index === 0 || index === facets.length - 1) expect(rightAngle).toBe(true);
+    else {
+      expect(points.some((point) => point[1]! > 30 && point[1]! < 70)).toBe(true);
+      expect(points.every((point, i) => point[0] !== points[(i + 1) % 3]![0])).toBe(true);
+    }
   }
+  const geometry = facets.map((facet) => facet.getAttribute('points'));
+  const flashes = facets.filter((facet) => facet.dataset.motion === 'flash');
+  expect(flashes).toHaveLength(2);
+  const durations = flashes
+    .map((facet) => parseFloat(facet.style.getPropertyValue('--aig-facet-duration')))
+    .sort((a, b) => a - b);
+  expect(durations[0]).toBeLessThanOrEqual(700);
+  expect(durations[1]).toBe(1240);
+  fireEvent.pointerLeave(button);
+  fireEvent.pointerOver(button);
+  expect([...button.querySelectorAll('polygon')]).toEqual(facets);
+  expect(facets.map((facet) => facet.getAttribute('points'))).toEqual(geometry);
+  expect(facets.map((facet) => Number(facet.style.getPropertyValue('--aig-facet-depth')))).toEqual(depths);
+  rerender(<Button loading>保存</Button>);
+  rerender(<Button>保存</Button>);
+  expect(facets.map((facet) => facet.getAttribute('points'))).toEqual(geometry);
   const before = button.querySelector('svg')!.innerHTML;
   rerender(<Button onPointerEnter={(event) => event.preventDefault()}>保存</Button>);
   fireEvent.pointerOver(button);

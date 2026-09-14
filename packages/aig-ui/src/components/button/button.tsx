@@ -32,56 +32,80 @@ function ButtonMark() {
   );
 }
 
-/** 将矩形分为二至四列，每列沿随机对角线分成两个直角三角形。 */
+/** 两端直角收口，中部向内部节点汇聚，形成连续、不重复折返的刻面。 */
 function createButtonFacets() {
-  const columns = 2 + Math.floor(Math.random() * 3);
-  const edges = Array.from({ length: columns + 1 }, (_, index) =>
-    index === 0 ? 0 : index === columns ? 300 : ((index + (Math.random() - 0.5) * 0.36) * 300) / columns,
-  );
-  return edges.slice(0, -1).flatMap((left, index) => {
-    const right = edges[index + 1]!;
-    const corners = [
+  const left = 65 + Math.random() * 30;
+  const right = 220 + Math.random() * 25;
+  const center = [140 + Math.random() * 30, 38 + Math.random() * 24];
+  // 中部四边形沿周界连接内部节点，避免顶点在上下边缘交替形成锯齿。
+  const boundary = [[left, 0]];
+  if (Math.random() < 0.5) boundary.push([200 + Math.random() * 20, 0]);
+  boundary.push([300, 0], [right, 100]);
+  if (Math.random() < 0.5) boundary.push([85 + Math.random() * 25, 100]);
+  boundary.push([0, 100]);
+  const triangles = [
+    [
+      [0, 0],
+      [0, 100],
       [left, 0],
-      [right, 0],
+    ],
+    ...boundary.map((point, index) => [point, boundary[(index + 1) % boundary.length]!, center]),
+    [
+      [300, 0],
+      [300, 100],
       [right, 100],
-      [left, 100],
-    ];
-    const triangles =
-      Math.random() < 0.5
-        ? [
-            [0, 1, 2],
-            [0, 2, 3],
-          ]
-        : [
-            [0, 1, 3],
-            [1, 2, 3],
-          ];
-    return triangles.map((indices) => {
-      const points = indices.map((i) => corners[i]!);
-      const cx = points.reduce((sum, point) => sum + point[0]!, 0) / 3;
-      const cy = points.reduce((sum, point) => sum + point[1]!, 0) / 3;
-      // 等比向重心收拢，保留细缝和水平、垂直两条直角边。
-      return points
-        .map(([x, y]) => `${(cx + (x! - cx) * 0.97).toFixed(2)},${(cy + (y! - cy) * 0.97).toFixed(2)}`)
-        .join(' ');
-    });
+    ],
+  ];
+  const flip = Math.random() < 0.5;
+  return triangles.map((triangle) => {
+    const points = triangle.map(([x, y]) => [x!, flip ? 100 - y! : y!]);
+    const cx = points.reduce((sum, point) => sum + point[0]!, 0) / 3;
+    const cy = points.reduce((sum, point) => sum + point[1]!, 0) / 3;
+    // 等比收拢保留细缝，边缘直角与中部斜线保持原有方向。
+    return points
+      .map(([x, y]) => `${(cx + (x! - cx) * 0.97).toFixed(2)},${(cy + (y! - cy) * 0.97).toFixed(2)}`)
+      .join(' ');
   });
 }
 
-/** 重建本轮刻面，颜色使用三档浅色，闪切由样式控制。 */
+/** 每次挂载只初始化一次结构和配色，重渲染与交互均复用原有刻面。 */
+function initializeButtonFacets(element: SVGSVGElement | null) {
+  if (!element || element.childElementCount) return;
+  const depths = [0.14, 0.22, 0.3];
+  element.replaceChildren(
+    ...createButtonFacets().map((points) => {
+      const facet = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      facet.setAttribute('points', points);
+      facet.style.setProperty('--aig-facet-depth', String(depths[Math.floor(Math.random() * depths.length)]));
+      return facet;
+    }),
+  );
+}
+
+/** 两块刻面分别以快、慢节奏闪切，其余单次显现；整轮最长保持 1520ms。 */
 function replayButtonFacets(element: SVGSVGElement | null) {
   if (!element) return;
+  initializeButtonFacets(element);
   delete element.dataset.playing;
-  const depths = [0.14, 0.22, 0.3];
-  const facets = createButtonFacets().map((points) => {
-    const facet = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-    facet.setAttribute('points', points);
-    facet.style.setProperty('--aig-facet-depth', String(depths[Math.floor(Math.random() * depths.length)]));
-    facet.style.setProperty('--aig-facet-delay', `${Math.round(Math.random() * 280)}ms`);
-    facet.style.setProperty('--aig-facet-duration', `${1000 + Math.round(Math.random() * 240)}ms`);
-    return facet;
+  const facets = [...element.querySelectorAll('polygon')];
+  const order = [...facets];
+  for (let index = order.length - 1; index > 0; index--) {
+    const target = Math.floor(Math.random() * (index + 1));
+    [order[index], order[target]] = [order[target]!, order[index]!];
+  }
+  facets.forEach((facet) => {
+    const fast = facet === order[0];
+    const slow = facet === order[1];
+    facet.dataset.motion = fast || slow ? 'flash' : 'settle';
+    const delay = slow ? 280 : Math.round(Math.random() * (fast ? 80 : 180));
+    const duration = slow
+      ? 1240
+      : fast
+        ? 560 + Math.round(Math.random() * 140)
+        : 600 + Math.round(Math.random() * 450);
+    facet.style.setProperty('--aig-facet-delay', `${delay}ms`);
+    facet.style.setProperty('--aig-facet-duration', `${duration}ms`);
   });
-  element.replaceChildren(...facets);
   void element.getBoundingClientRect();
   element.dataset.playing = '';
 }
@@ -147,6 +171,7 @@ export function Button({
   const enteredRef = useRef(false);
   useEffect(() => {
     const element = highlightRef.current;
+    initializeButtonFacets(element);
     if (disabled || loading) {
       if (element) delete element.dataset.playing;
       return;
