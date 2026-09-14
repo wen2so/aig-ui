@@ -46,10 +46,7 @@
 }
 .brand-settings-sample strong {
   display: block;
-  font:
-    22px 'STSong',
-    'SimSun',
-    serif;
+  font: 22px var(--aig-font-display);
 }
 .brand-settings-sample span {
   display: block;
@@ -88,6 +85,19 @@
   border-radius: 5px;
   cursor: pointer;
 }
+.brand-controls input[type='text'] {
+  width: 48%;
+  min-height: 34px;
+  border: 1px solid var(--aig-color-border-subtle);
+  border-radius: 4px;
+  padding: 6px 10px;
+  background: var(--aig-color-surface-muted);
+  color: var(--aig-color-text);
+  font-size: 12px;
+}
+.brand-controls input[type='text']::placeholder {
+  color: var(--aig-color-text-muted);
+}
 .brand-controls select {
   max-width: 48%;
   min-height: 34px;
@@ -120,9 +130,6 @@
   margin-block: 12px;
   font-size: 10px;
   padding: 14px;
-}
-.brand-api .doc-section {
-  padding-top: 16px;
 }
 .component-document [id] {
   scroll-margin-top: 0;
@@ -370,9 +377,7 @@ summary:focus-visible,
 .site-search kbd {
   white-space: nowrap;
   color: var(--preview-muted);
-  font:
-    10px ui-monospace,
-    monospace;
+  font: 10px var(--aig-font-mono);
 }
 .site-search button {
   border: 0;
@@ -382,9 +387,7 @@ summary:focus-visible,
   font-size: 20px;
 }
 .site-version {
-  font:
-    12px ui-monospace,
-    monospace;
+  font: 12px var(--aig-font-mono);
   color: var(--preview-muted);
   white-space: nowrap;
 }
@@ -453,9 +456,7 @@ summary:focus-visible,
   font-weight: 500;
 }
 .sidebar-group h2 span {
-  font:
-    10px ui-monospace,
-    monospace;
+  font: 10px var(--aig-font-mono);
   color: #918380;
 }
 .sidebar-group a {
@@ -522,14 +523,12 @@ summary:focus-visible,
   padding: 0 0 26px;
 }
 .preview-eyebrow {
-  font:
-    10px ui-monospace,
-    monospace;
+  font: 10px var(--aig-font-mono);
   letter-spacing: 2px;
   color: var(--aig-color-accent);
 }
 .overview-header h1 {
-  font-family: 'STSong', 'SimSun', serif;
+  font-family: var(--aig-font-display);
   font-weight: 400;
   font-size: clamp(30px, 3.4vw, 50px);
   line-height: 1.4;
@@ -591,9 +590,7 @@ h1:focus,
 .overview-mark > span {
   position: absolute;
   bottom: 5px;
-  font:
-    8px ui-monospace,
-    monospace;
+  font: 8px var(--aig-font-mono);
   letter-spacing: 3px;
   color: var(--preview-muted);
 }
@@ -622,9 +619,7 @@ h1:focus,
   background: var(--aig-color-surface-muted);
 }
 .featured-links span {
-  font:
-    9px ui-monospace,
-    monospace;
+  font: 9px var(--aig-font-mono);
   letter-spacing: 1.4px;
   color: var(--aig-color-accent);
 }
@@ -675,9 +670,7 @@ h1:focus,
 }
 .catalog-group-heading h2 span {
   color: var(--aig-color-mark);
-  font:
-    11px ui-monospace,
-    monospace;
+  font: 11px var(--aig-font-mono);
   margin-left: 10px;
 }
 .catalog-group-heading p {
@@ -851,10 +844,7 @@ h1:focus,
   line-height: 1.3;
 }
 .component-header h1 span {
-  font:
-    26px 'STSong',
-    'SimSun',
-    serif;
+  font: 26px var(--aig-font-display);
   letter-spacing: 2px;
 }
 .component-header > p {
@@ -890,10 +880,7 @@ h1:focus,
   min-width: 0;
 }
 .import-bar > code {
-  font:
-    11px/1.7 ui-monospace,
-    Consolas,
-    monospace;
+  font: 11px/1.7 var(--aig-font-mono);
   overflow-wrap: anywhere;
 }
 .import-bar .aig-button {
@@ -1012,10 +999,7 @@ h1:focus,
 }
 .example-code,
 .readme pre {
-  font:
-    12px/1.9 ui-monospace,
-    Consolas,
-    monospace;
+  font: 12px/1.9 var(--aig-font-mono);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   margin: 0;
@@ -1111,9 +1095,7 @@ h1:focus,
   display: contents;
 }
 .button-state-matrix small {
-  font:
-    11px ui-monospace,
-    monospace;
+  font: 11px var(--aig-font-mono);
   color: var(--preview-muted);
 }
 .button-state-matrix .aig-button {
@@ -1126,14 +1108,12 @@ h1:focus,
   gap: 28px;
 }
 .example-pair small {
-  font:
-    9px ui-monospace,
-    monospace;
+  font: 9px var(--aig-font-mono);
   letter-spacing: 1.3px;
   color: var(--aig-color-accent);
 }
 .example-pair h3 {
-  font-family: 'STSong', 'SimSun', serif;
+  font-family: var(--aig-font-display);
   font-size: 22px;
   font-weight: 400;
 }
@@ -1201,7 +1181,7 @@ h1:focus,
   overflow-wrap: anywhere;
 }
 .api-scroll code {
-  font-family: ui-monospace, Consolas, monospace;
+  font-family: var(--aig-font-mono);
 }
 .api-scroll td:last-child {
   white-space: nowrap;

@@ -57,4 +57,10 @@ it('解析引用并拒绝循环、缺失和非法 Token', () => {
   expect(() =>
     compileTokens({ shadow: { $type: 'shadow', $value: { ...shadow, blur: dimension(-1) } } }),
   ).toThrow('阴影');
+  expect(
+    compileTokens({ font: { $type: 'fontFamily', $value: ['Noto Sans SC', 'system-ui', 'serif'] } }).font,
+  ).toBe("'Noto Sans SC', system-ui, serif");
+  expect(compileTokens({ font: { $type: 'fontFamily', $value: 'Consolas' } }).font).toBe('Consolas');
+  expect(() => compileTokens({ font: { $type: 'fontFamily', $value: [] } })).toThrow('字体栈');
+  expect(() => compileTokens({ font: { $type: 'fontFamily', $value: ['  '] } })).toThrow('字体栈');
 });

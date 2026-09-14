@@ -7,7 +7,7 @@ test('总览分类、检索、组件直达和浏览器返回保持一致', async
     if (message.type() === 'error') errors.push(message.text());
   });
   await page.goto('http://127.0.0.1:5173/');
-  await expect(page.locator('.catalog-card')).toHaveCount(55);
+  await expect(page.locator('.catalog-card')).toHaveCount(56);
   await page.screenshot({ path: 'artifacts/preview-redesign/overview-desktop.png' });
   await page.getByRole('button', { name: '数据录入', exact: true }).click();
   await expect(page.locator('.catalog-card')).toHaveCount(8);
@@ -15,7 +15,7 @@ test('总览分类、检索、组件直达和浏览器返回保持一致', async
   await expect(page).toHaveURL(/component=Input/);
   await expect(page.getByRole('heading', { name: 'Input 输入框', exact: true })).toBeVisible();
   await page.goBack();
-  await expect(page.locator('.catalog-card')).toHaveCount(55);
+  await expect(page.locator('.catalog-card')).toHaveCount(56);
   await page.getByLabel('查找组件').fill('  LoAdInGmArK  ');
   await expect(page.locator('.catalog-card')).toHaveCount(1);
   await page.getByRole('link', { name: '加载标记 LoadingMark', exact: true }).click();
@@ -273,7 +273,7 @@ test('顶部分类在总览、详情、筛选与历史间准确定位，当前�
   await page.getByRole('button', { name: '数据录入', exact: true }).click();
   await expect(page.locator('.catalog-card')).toHaveCount(8);
   await topNav.getByRole('link', { name: '动效', exact: true }).click();
-  await expect(page.locator('.catalog-card')).toHaveCount(55);
+  await expect(page.locator('.catalog-card')).toHaveCount(56);
   await expect
     .poll(() => page.locator('#catalog-motion').evaluate((el) => Math.round(el.getBoundingClientRect().top)))
     .toBe(92);
@@ -307,7 +307,7 @@ test('顶部分类在总览、详情、筛选与历史间准确定位，当前�
   await page.getByLabel('查找组件').fill('Button');
   await topNav.getByRole('link', { name: '动效', exact: true }).click();
   await expect(page.getByLabel('查找组件')).toHaveValue('');
-  await expect(page.locator('.catalog-card')).toHaveCount(55);
+  await expect(page.locator('.catalog-card')).toHaveCount(56);
   expect(errors).toEqual([]);
 });
 
@@ -322,12 +322,18 @@ test('全局主题入口集中设置并支持键盘返回、跨页保持和统�
   await expect(settings).toBeVisible();
   await settings.getByLabel('品牌色', { exact: true }).fill('#267b86');
   await settings.getByLabel('品牌 SVG', { exact: true }).selectOption('diamond');
+  await settings.getByLabel('正文字体', { exact: true }).selectOption('serif');
+  await settings.getByLabel('标题字体', { exact: true }).selectOption('inherit');
+  await settings.getByLabel('等宽字体', { exact: true }).selectOption('terminal');
   await settings.getByLabel('预览材质').selectOption('solid');
   await settings.getByLabel('预览密度').selectOption('compact');
   await settings.getByRole('button', { name: '暂停环境动效' }).click();
   expect(
     await settings.evaluate((el) => getComputedStyle(el).getPropertyValue('--aig-color-mark').trim()),
   ).toBe('#267b86');
+  // 字体随选择即时生效：正文、标题与代码分别读取对应 Token。
+  await expect(page.locator('.preview-shell')).toHaveCSS('font-family', /Songti SC/);
+  await expect(settings.locator('.brand-settings-sample strong')).toHaveCSS('font-family', /Songti SC/);
   await page.keyboard.press('Escape');
   await expect(settings).toBeHidden();
   await expect(trigger).toBeFocused();
@@ -338,29 +344,53 @@ test('全局主题入口集中设置并支持键盘返回、跨页保持和统�
   await expect(page.locator('.preview-shell')).toHaveAttribute('data-aig-material', 'solid');
   await expect(page.locator('.preview-shell')).toHaveAttribute('data-aig-density', 'compact');
   await expect(page.locator('.preview-shell')).toHaveAttribute('data-ambient', 'paused');
+  await expect(page.locator('.component-header h1 span')).toHaveCSS('font-family', /Songti SC/);
+  await expect(page.locator('#content .example-code').first()).toHaveCSS('font-family', /Cascadia Code/);
   await trigger.click();
   await expect(settings.getByLabel('品牌色', { exact: true })).toHaveValue('#267b86');
   await expect(settings.getByLabel('品牌 SVG', { exact: true })).toHaveValue('diamond');
+  await expect(settings.getByLabel('正文字体', { exact: true })).toHaveValue('serif');
+  await expect(settings.getByLabel('等宽字体', { exact: true })).toHaveValue('terminal');
   await page.setViewportSize({ width: 320, height: 640 });
   expect(await settings.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
-  await settings.getByText('主题 API', { exact: true }).click();
-  const themeApi = settings.locator('#theme-api');
-  await expect(themeApi).toContainText('AigProvider');
-  await expect(themeApi).toContainText('AigBrand');
-  await expect(themeApi).toContainText('loadingIcon');
-  await expect(themeApi).toContainText('density');
-  expect(await settings.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
-  const providerTable = themeApi.getByRole('region').first();
-  await providerTable.focus();
-  await expect(providerTable).toBeFocused();
-  await page.keyboard.press('ArrowRight');
-  await expect.poll(() => providerTable.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
   await settings.getByRole('button', { name: '恢复默认', exact: true }).click();
   await expect(settings.getByLabel('品牌色', { exact: true })).toHaveValue('#b98b90');
+  await expect(settings.getByLabel('正文字体', { exact: true })).toHaveValue('system');
+  await expect(settings.getByLabel('标题字体', { exact: true })).toHaveValue('serif');
+  await expect(settings.getByLabel('等宽字体', { exact: true })).toHaveValue('system');
   await expect(page.locator('.preview-shell')).toHaveAttribute('data-aig-material', 'glass');
   await expect(page.locator('.preview-shell')).toHaveAttribute('data-aig-density', 'comfortable');
   await expect(page.locator('.preview-shell')).toHaveAttribute('data-ambient', 'running');
   await settings.screenshot({ path: 'artifacts/preview-refinement/global-theme-mobile.png' });
   await settings.getByRole('button', { name: '完成设置', exact: true }).click();
   await expect(trigger).toBeFocused();
+});
+
+test('主题作用域作为组件文档提供示例与属性表', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 640 });
+  await page.goto('http://127.0.0.1:5173');
+  const card = page.getByRole('link', { name: '主题作用域 AigProvider', exact: true });
+  await expect(card).toBeVisible();
+  const topNav = page.getByRole('navigation', { name: '主导航', exact: true });
+  await topNav.getByRole('link', { name: '主题', exact: true }).click();
+  await expect(page).toHaveURL(/#catalog-theme$/);
+  await expect(topNav.getByRole('link', { name: '主题', exact: true })).toHaveAttribute(
+    'aria-current',
+    'location',
+  );
+  await card.click();
+  await expect(page).toHaveURL(/component=AigProvider/);
+  await expect(page.getByRole('heading', { name: 'AigProvider 主题作用域', exact: true })).toBeVisible();
+  await expect(page.locator('.import-bar code')).toContainText("import { AigProvider } from 'aig-ui';");
+  const themeApi = page.locator('#api');
+  await expect(themeApi).toContainText('AigBrand');
+  await expect(themeApi).toContainText('AigFont');
+  await expect(themeApi).toContainText('loadingIcon');
+  await expect(themeApi).toContainText('density');
+  const providerTable = themeApi.getByRole('region').first();
+  await providerTable.focus();
+  await expect(providerTable).toBeFocused();
+  await page.keyboard.press('ArrowRight');
+  await expect.poll(() => providerTable.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
+  await expect(page.locator('#guidelines')).toContainText('--aig-font-mono');
 });

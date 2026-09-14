@@ -22,7 +22,7 @@ export * from './components/checkbox/checkbox.js';
 export * from './components/switch/switch.js';
 export * from './components/radio-group/radio-group.js';
 export { AigProvider, BrandMark } from './theme/aig-provider.js';
-export type { AigProviderProps, AigBrand } from './theme/aig-provider.js';
+export type { AigProviderProps, AigBrand, AigFont } from './theme/aig-provider.js';
 export * from './components/dialog/dialog.js';
 export * from './components/drawer/drawer.js';
 export * from './components/popover/popover.js';

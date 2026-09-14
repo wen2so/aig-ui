@@ -19,7 +19,7 @@
   border: 1px solid var(--aig-color-border-subtle);
   border-radius: 4px;
   box-shadow: 0 8px 32px #3a323414;
-  font-family: system-ui, sans-serif;
+  font-family: var(--aig-font-family);
   font-size: 13px;
   overflow-wrap: anywhere;
 }

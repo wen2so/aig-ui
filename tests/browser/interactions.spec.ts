@@ -74,7 +74,7 @@ test('所有组件在移动视口可达，代表性预览通过 axe', async ({ p
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('http://127.0.0.1:5173');
-  await expect(page.locator('.preview-count')).toContainText('50 个已实现组件');
+  await expect(page.locator('.preview-count')).toContainText('51 个已实现组件');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.getByLabel('查找组件').fill('Confirmation');
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);

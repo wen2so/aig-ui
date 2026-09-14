@@ -1,6 +1,22 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 
+/** 通用字体族按 CSS 关键字原样输出，含空格的具体字体名使用单引号。 */
+const GENERIC_FAMILIES = new Set([
+  'serif',
+  'sans-serif',
+  'monospace',
+  'cursive',
+  'fantasy',
+  'system-ui',
+  'ui-serif',
+  'ui-sans-serif',
+  'ui-monospace',
+  'ui-rounded',
+  'math',
+  'emoji',
+  'fangsong',
+]);
 /** 校验项目使用的 DTCG 子集，解析引用并拒绝循环。 */
 export function compileTokens(source) {
   const flat = new Map();
@@ -75,6 +91,15 @@ export function compileTokens(source) {
         return token.$type === 'duration' && value.unit === 's'
           ? `${value.value * 1000}ms`
           : `${value.value}${value.unit}`;
+      case 'fontFamily': {
+        const families = Array.isArray(value) ? value : [value];
+        if (!families.length || !families.every((item) => typeof item === 'string' && item.trim()))
+          throw Error(`字体栈无效：${name}`);
+        return families
+          .map((family) => family.trim())
+          .map((family) => (GENERIC_FAMILIES.has(family) || !/\s/.test(family) ? family : `'${family}'`))
+          .join(', ');
+      }
       case 'number':
         if (!Number.isFinite(value)) throw Error(`数值无效：${name}`);
         return String(value);

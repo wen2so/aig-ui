@@ -15,6 +15,9 @@
   --aig-color-warning: rgb(138 91 36);
   --aig-color-mark: rgb(185 139 144);
   --aig-color-signal: rgb(86 139 155);
+  --aig-font-family: system-ui, 'Microsoft YaHei', sans-serif;
+  --aig-font-display: STSong, 'Songti SC', SimSun, Georgia, serif;
+  --aig-font-mono: ui-monospace, Consolas, monospace;
   --aig-space-1: 4px;
   --aig-space-2: 8px;
   --aig-space-3: 12px;

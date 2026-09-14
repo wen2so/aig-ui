@@ -19,7 +19,7 @@
 }
 .aig-confirmation small {
   color: var(--aig-color-text-muted);
-  font-family: ui-monospace, monospace;
+  font-family: var(--aig-font-mono);
   font-size: 11px;
 }
 .aig-confirmation-actions {

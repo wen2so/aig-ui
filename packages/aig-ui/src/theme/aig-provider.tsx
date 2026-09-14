@@ -26,6 +26,30 @@ const BrandContext = createContext<AigBrand>({});
 export function useAigBrand() {
   return useContext(BrandContext);
 }
+/** 通用字体族按 CSS 关键字原样输出，含空格的具体字体名加引号。 */
+const genericFamilies = new Set([
+  'serif',
+  'sans-serif',
+  'monospace',
+  'cursive',
+  'fantasy',
+  'system-ui',
+  'ui-serif',
+  'ui-sans-serif',
+  'ui-monospace',
+  'ui-rounded',
+  'math',
+  'emoji',
+  'fangsong',
+]);
+/** 数组按优先级编译为字体栈；字符串按宿主写好的 CSS 原样使用。 */
+function fontStack(value: string | string[]) {
+  if (typeof value === 'string') return value.trim();
+  return value
+    .map((family) => family.trim())
+    .map((family) => (genericFamilies.has(family) || !/\s/.test(family) ? family : `'${family}'`))
+    .join(', ');
+}
 /** 默认品牌描边供标题、按钮与加载序列共用。 */
 export function BrandShape() {
   const { mark } = useAigBrand();
@@ -54,10 +78,21 @@ export function BrandMark({ className = '', ...props }: ComponentPropsWithRef<'s
     </svg>
   );
 }
-/** 主题作用域管理品牌、材质、密度、方向和浮层归属。 */
+/** 主题字体栈；数组按优先级编译，字符串按宿主写好的 CSS 使用。 */
+export interface AigFont {
+  /** 正文字体，作用于控件、正文与浮层；默认系统无衬线。 */
+  family?: string | string[];
+  /** 标题与展示文字；省略时沿用正文字体。 */
+  display?: string | string[];
+  /** 代码、路径与编号使用的等宽字体；默认系统等宽。 */
+  mono?: string | string[];
+}
+/** 主题作用域管理品牌、字体、材质、密度、方向和浮层归属。 */
 export interface AigProviderProps extends ComponentPropsWithRef<'div'> {
   /** 局部配置继承外层品牌；style 中的 Token 覆盖优先。 */
   brand?: AigBrand;
+  /** 主题字体；省略的字段继承外层 Token，字符串按 CSS 原样使用。 */
+  font?: AigFont;
   /** 主题名称，默认 warm。 */
   theme?: string;
   /** 布局密度，默认 comfortable。 */
@@ -72,6 +107,7 @@ export function AigProvider({
   density = 'comfortable',
   material = 'glass',
   brand,
+  font,
   style,
   children,
   ...props
@@ -91,6 +127,9 @@ export function AigProvider({
         }
       : {}),
     ...(accent ? { '--aig-color-accent': accent, '--aig-color-focus': accent } : {}),
+    ...(font?.family ? { '--aig-font-family': fontStack(font.family) } : {}),
+    ...(font?.display ? { '--aig-font-display': fontStack(font.display) } : {}),
+    ...(font?.mono ? { '--aig-font-mono': fontStack(font.mono) } : {}),
     ...style,
   };
   // 容器挂载后更新消费者，避免初始打开的浮层回退到 body。

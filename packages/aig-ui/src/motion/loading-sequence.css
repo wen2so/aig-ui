@@ -79,7 +79,7 @@
   z-index: 1000;
   overflow-y: auto;
   background: transparent;
-  font-family: system-ui, 'Microsoft YaHei', sans-serif;
+  font-family: var(--aig-font-family);
 }
 .aig-sequence-fullscreen > .aig-sequence-layer {
   background: radial-gradient(ellipse at 50% 0%, var(--aig-color-surface), var(--aig-color-bg));

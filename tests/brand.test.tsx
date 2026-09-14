@@ -39,6 +39,24 @@ it('品牌图形与加载图标按作用域继承，局部覆盖保留禁用语�
   expect(scopes[1]!.style.getPropertyValue('--aig-color-mark')).toBe('');
 });
 
+it('字体按字段覆盖，省略的字段与字符串原样保留', () => {
+  const { container } = render(
+    <AigProvider font={{ family: ['Noto Sans SC', 'Microsoft YaHei', 'sans-serif'], mono: 'Consolas' }}>
+      <AigProvider font={{ display: ['Songti SC', 'serif'] }}>
+        <Button>保存</Button>
+      </AigProvider>
+    </AigProvider>,
+  );
+  const [outer, inner] = container.querySelectorAll<HTMLElement>('[data-aig-theme]');
+  expect(outer!.style.getPropertyValue('--aig-font-family')).toBe(
+    "'Noto Sans SC', 'Microsoft YaHei', sans-serif",
+  );
+  expect(outer!.style.getPropertyValue('--aig-font-mono')).toBe('Consolas');
+  expect(outer!.style.getPropertyValue('--aig-font-display')).toBe('');
+  expect(inner!.style.getPropertyValue('--aig-font-display')).toBe("'Songti SC', serif");
+  expect(inner!.style.getPropertyValue('--aig-font-family')).toBe('');
+});
+
 it('自定义多种 SVG 形状完成撤回后只交接一次', async () => {
   vi.stubGlobal('matchMedia', () => ({ matches: true, addEventListener() {}, removeEventListener() {} }));
   const exited = vi.fn();

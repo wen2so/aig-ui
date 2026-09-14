@@ -1,8 +1,8 @@
 # 品牌与加载图形自定义
 
-更新日期：2026-09-12。全局品牌通过 `AigProvider.brand` 配置，普通控件、主题浮层、BrandMark、LoadingMark 和 LoadingSequence 共用该作用域。
+更新日期：2026-09-14。全局品牌通过 `AigProvider.brand` 配置，字体通过 `AigProvider.font` 配置，普通控件、主题浮层、BrandMark、LoadingMark 和 LoadingSequence 共用该作用域。
 
-预览站在顶部提供唯一的“全局主题”入口，统一调整品牌颜色、SVG、材质、密度和环境动效。组件切换后继续沿用当前设置，接入代码与 Provider 属性说明也在该入口查看和复制。组件文档聚焦自身用法，应用侧通常在根布局配置一次 AigProvider。
+预览站在顶部提供唯一的“全局主题”入口，统一调整品牌颜色、SVG、字体、材质、密度和环境动效。组件切换后继续沿用当前设置，接入代码在该入口复制；Provider 的属性表与数据类型随其他组件一起在 [AigProvider 文档](http://127.0.0.1:5173/?component=AigProvider)中查看。组件文档聚焦自身用法，应用侧通常在根布局配置一次 AigProvider。
 
 ```tsx
 import { AigProvider, BrandMark, Button } from 'aig-ui';
@@ -17,7 +17,10 @@ const mark = (
   </>
 );
 
-<AigProvider brand={{ color: '#267b86', accentColor: '#235660', mark }}>
+<AigProvider
+  brand={{ color: '#267b86', accentColor: '#235660', mark }}
+  font={{ family: ['Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'sans-serif'] }}
+>
   <BrandMark aria-label="应用品牌" aria-hidden={false} role="img" />
   <Button loading>正在保存</Button>
   <LoadingSequence taskId={taskId} status={status} label="准备资料">
@@ -38,6 +41,30 @@ const mark = (
 品牌 SVG 使用 200 × 200 坐标。其他坐标可以嵌套 `<svg viewBox="0 0 24 24" width="200" height="200">…</svg>`。描边使用 `currentColor`，颜色随作用域改变。宿主传入可信的 React SVG 节点。
 
 LoadingMark 会规范化 path、line、circle、rect、ellipse、polyline、polygon 的路径长度，并协调绘制与反向撤回；双环继续独立运行。实心填充在表面解构时随整体退出，线绘品牌适合使用 `fill="none"`。任务期间保持 `mark` 的 React 节点引用稳定，可以避免普通状态更新重新启动绘制。
+
+## 字体
+
+字体由 `AigProvider.font` 设置，写成数组时按优先级编译为字体栈（通用关键字原样输出，含空格的具体字体名加引号），写成字符串时按宿主写好的 CSS 使用。
+
+| 字段      | Token                | 用途与默认值                                                       |
+| --------- | -------------------- | ------------------------------------------------------------------ |
+| `family`  | `--aig-font-family`  | 正文、控件与浮层，默认 `system-ui, 'Microsoft YaHei', sans-serif`  |
+| `display` | `--aig-font-display` | 标题与展示文字，默认 `STSong, 'Songti SC', SimSun, Georgia, serif` |
+| `mono`    | `--aig-font-mono`    | 代码、路径与编号，默认 `ui-monospace, Consolas, monospace`         |
+
+```tsx
+<AigProvider
+  font={{
+    family: ['Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'sans-serif'],
+    display: ['Songti SC', 'SimSun', 'serif'],
+    mono: ['Consolas', 'monospace'],
+  }}
+>
+  <Application />
+</AigProvider>
+```
+
+省略的字段继承外层 Token，未声明的字体由浏览器沿字体栈回退；自定义字体文件由宿主自行加载，接入 web font 时保持 `font-display: swap`。Dialog、Toast 与全屏加载按组件声明读取 `--aig-font-family`，只要在 Provider 内部就使用该作用域的字体。
 
 ## 局部覆盖
 

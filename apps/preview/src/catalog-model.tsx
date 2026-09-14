@@ -32,6 +32,7 @@ export const groups = [
     caption: '完整的工作场景',
     names: 'access-state-page settings-form filterable-list ai-assistant artifact-review',
   },
+  { label: '主题', caption: '作用域与品牌', names: 'AigProvider' },
 ];
 
 const rawFiles = import.meta.glob('../../../packages/aig-ui/src/**/*.{stories.tsx,md}', {
@@ -70,7 +71,14 @@ export const entries: Entry[] = [
   .map((entry) => {
     const group = groups.find((group) => group.names.split(' ').includes(entry.name))!.label;
     const id = entry.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-    const directory = group === 'AI' ? `ai/${id}` : group === '动效' ? 'motion' : `components/${id}`;
+    const directory =
+      group === 'AI'
+        ? `ai/${id}`
+        : group === '动效'
+          ? 'motion'
+          : group === '主题'
+            ? 'theme'
+            : `components/${id}`;
     const prefix = `../../../packages/aig-ui/src/${directory}`;
     const extras = extraExamples[entry.name] ?? [];
     const examples = special.some((item) => item.name === entry.name)
@@ -84,7 +92,8 @@ export const entries: Entry[] = [
             code:
               group === '页面组合' ? pageSource['./pages.tsx']! : rawFiles[`${prefix}/${id}.stories.tsx`]!,
             wide:
-              ['页面组合', 'AI'].includes(group) || ['Table', 'Conversation', 'Panel'].includes(entry.name),
+              ['页面组合', 'AI', '主题'].includes(group) ||
+              ['Table', 'Conversation', 'Panel'].includes(entry.name),
           },
           ...extras,
         ];
@@ -100,7 +109,9 @@ export const entries: Entry[] = [
             ? 'aig-ui/motion'
             : group === 'AI'
               ? `aig-ui/ai/${id}`
-              : `aig-ui/${id}`,
+              : group === '主题'
+                ? 'aig-ui'
+                : `aig-ui/${id}`,
     };
   })
   .sort(

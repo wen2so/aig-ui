@@ -106,6 +106,20 @@
       }
     }
   },
+  "font": {
+    "family": {
+      "$type": "fontFamily",
+      "$value": ["system-ui", "Microsoft YaHei", "sans-serif"]
+    },
+    "display": {
+      "$type": "fontFamily",
+      "$value": ["STSong", "Songti SC", "SimSun", "Georgia", "serif"]
+    },
+    "mono": {
+      "$type": "fontFamily",
+      "$value": ["ui-monospace", "Consolas", "monospace"]
+    }
+  },
   "space": {
     "1": {
       "$type": "dimension",

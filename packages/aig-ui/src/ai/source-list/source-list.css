@@ -26,7 +26,7 @@
 
 .aig-source-list li::marker {
   color: var(--aig-color-accent);
-  font-family: ui-monospace, monospace;
+  font-family: var(--aig-font-mono);
   font-size: 11px;
 }
 .aig-source-list li + li {

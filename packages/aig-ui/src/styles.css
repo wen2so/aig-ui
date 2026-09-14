@@ -46,7 +46,7 @@
 @import './theme/ambient.css';
 :where([data-aig-theme]) {
   color: var(--aig-color-text);
-  font-family: system-ui, 'Microsoft YaHei', sans-serif;
+  font-family: var(--aig-font-family);
   line-height: 1.5;
 }
 :where([class^='aig-'], [class*=' aig-']):focus-visible {

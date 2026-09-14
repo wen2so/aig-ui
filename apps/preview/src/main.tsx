@@ -3,7 +3,13 @@ import { createRoot } from 'react-dom/client';
 import { AigProvider, Accordion, BrandMark, Button, CopyButton } from 'aig-ui';
 import { LoadingMark } from 'aig-ui/motion';
 import { SafeMarkdown } from '../../../packages/aig-ui/src/ai/safe-markdown.js';
-import { brandShapes, BrandControls } from './brand-controls.js';
+import {
+  brandShapes,
+  BrandControls,
+  defaultFontChoice,
+  resolveFont,
+  type FontChoice,
+} from './brand-controls.js';
 import '../../../packages/aig-ui/src/styles.css';
 import '../../../packages/aig-ui/src/motion/styles.css';
 import '../../../packages/aig-ui/src/ai/styles.css';
@@ -14,8 +20,19 @@ import api from 'virtual:component-api';
 
 /** 分类锚点同时供顶部导航、直达地址和浏览器历史使用。 */
 const catalogId = (group: string) =>
-  ({ 通用: 'catalog-components', 动效: 'catalog-motion', 页面组合: 'catalog-pages' })[group] ??
-  `catalog-${group}`;
+  ({
+    通用: 'catalog-components',
+    动效: 'catalog-motion',
+    页面组合: 'catalog-pages',
+    主题: 'catalog-theme',
+  })[group] ?? `catalog-${group}`;
+/** 顶部导航覆盖总览的组件、动效、页面组合与主题分组。 */
+const navGroups = [
+  { label: '组件', group: '通用' },
+  { label: '动效', group: '动效' },
+  { label: '页面组合', group: '页面组合' },
+  { label: '主题', group: '主题' },
+];
 
 /** 示例保留独立状态，重置后从初始状态重新演示。 */
 function ExampleCard({ example }: { example: Example }) {
@@ -64,9 +81,10 @@ function ExampleCard({ example }: { example: Example }) {
   );
 }
 
+/** 属性表来自当前源码声明，主题作用域与其他组件共用同一套资料。 */
 function ApiTable({ entry }: { entry: Pick<Entry, 'name' | 'group'> }) {
   return (
-    <section className="doc-section" id={entry.name === 'AigProvider' ? 'theme-api' : 'api'}>
+    <section className="doc-section" id="api">
       <h2>
         API <span>属性参考</span>
       </h2>
@@ -138,6 +156,7 @@ function Preview() {
   const [density, setDensity] = useState<'comfortable' | 'compact'>('comfortable');
   const [brandColor, setBrandColor] = useState('#b98b90');
   const [brandShape, setBrandShape] = useState('triangle');
+  const [font, setFont] = useState<FontChoice>(defaultFontChoice);
   const searchInput = useRef<HTMLInputElement>(null);
   const title = useRef<HTMLHeadingElement>(null);
   const sidebar = useRef<HTMLElement>(null);
@@ -231,9 +250,18 @@ function Preview() {
     href: `${location.pathname}${name ? `?component=${encodeURIComponent(name)}` : ''}${anchor}`,
     onClick: (event: MouseEvent<HTMLAnchorElement>) => navigate(event, name, anchor),
   });
+  /** 恢复默认覆盖全局主题的全部选项，抽屉不再单独记录默认值。 */
+  function resetTheme() {
+    setBrandColor('#b98b90');
+    setBrandShape('triangle');
+    setMaterial('glass');
+    setDensity('comfortable');
+    setAmbient(true);
+    setFont(defaultFontChoice);
+  }
   const activeSection =
     entry && !query
-      ? catalogId(['动效', '页面组合'].includes(entry.group) ? entry.group : '通用')
+      ? catalogId(navGroups.some((item) => item.group === entry.group) ? entry.group : '通用')
       : section.slice(1) || 'catalog-components';
 
   return (
@@ -242,6 +270,7 @@ function Preview() {
       material={material}
       density={density}
       brand={{ color: brandColor, mark: brandShapes[brandShape] }}
+      font={resolveFont(font)}
       data-ambient={ambient ? 'running' : 'paused'}
     >
       <a className="skip-link" href="#content">
@@ -254,15 +283,15 @@ function Preview() {
           <small>DESIGN SYSTEM</small>
         </a>
         <nav className="site-nav" aria-label="主导航">
-          {['组件', '动效', '页面组合'].map((label) => {
-            const id = catalogId(label === '组件' ? '通用' : label);
+          {navGroups.map((item) => {
+            const id = catalogId(item.group);
             return (
               <a
-                key={label}
+                key={item.label}
                 {...link('', `#${id}`)}
                 aria-current={activeSection === id ? 'location' : undefined}
               >
-                {label}
+                {item.label}
               </a>
             );
           })}
@@ -295,14 +324,15 @@ function Preview() {
           material={material}
           density={density}
           ambient={ambient}
+          font={font}
           onColorChange={setBrandColor}
           onShapeChange={setBrandShape}
           onMaterialChange={setMaterial}
           onDensityChange={setDensity}
           onAmbientChange={setAmbient}
-        >
-          <ApiTable entry={{ name: 'AigProvider', group: '主题' }} />
-        </BrandControls>
+          onFontChange={setFont}
+          onReset={resetTheme}
+        />
         <button
           ref={menuToggle}
           className="menu-toggle"
