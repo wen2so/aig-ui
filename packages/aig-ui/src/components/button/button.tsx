@@ -59,19 +59,15 @@ function createButtonFacets() {
   const flip = Math.random() < 0.5;
   return triangles.map((triangle) => {
     const points = triangle.map(([x, y]) => [x!, flip ? 100 - y! : y!]);
-    const cx = points.reduce((sum, point) => sum + point[0]!, 0) / 3;
-    const cy = points.reduce((sum, point) => sum + point[1]!, 0) / 3;
-    // 等比收拢保留细缝，边缘直角与中部斜线保持原有方向。
-    return points
-      .map(([x, y]) => `${(cx + (x! - cx) * 0.97).toFixed(2)},${(cy + (y! - cy) * 0.97).toFixed(2)}`)
-      .join(' ');
+    // 共用同一组边界坐标，刻面直接拼接。
+    return points.map(([x, y]) => `${x!.toFixed(2)},${y!.toFixed(2)}`).join(' ');
   });
 }
 
 /** 每次挂载只初始化一次结构和配色，重渲染与交互均复用原有刻面。 */
 function initializeButtonFacets(element: SVGSVGElement | null) {
   if (!element || element.childElementCount) return;
-  const depths = [0.14, 0.22, 0.3];
+  const depths = [0.88, 0.94, 1];
   element.replaceChildren(
     ...createButtonFacets().map((points) => {
       const facet = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
@@ -82,7 +78,7 @@ function initializeButtonFacets(element: SVGSVGElement | null) {
   );
 }
 
-/** 约六成刻面快慢交错闪切，稳定时刻覆盖后半程；整轮最长保持 1520ms。 */
+/** 约四成刻面快慢交错闪切，稳定时刻覆盖后半程；整轮最长保持 1520ms。 */
 function replayButtonFacets(element: SVGSVGElement | null) {
   if (!element) return;
   initializeButtonFacets(element);
@@ -94,7 +90,7 @@ function replayButtonFacets(element: SVGSVGElement | null) {
     const target = Math.floor(Math.random() * (index + 1));
     [order[index], order[target]] = [order[target]!, order[index]!];
   }
-  const flashCount = Math.round(facets.length * 0.6);
+  const flashCount = Math.round(facets.length * 0.4);
   order.forEach((facet, index) => {
     const flashes = index < flashCount;
     facet.dataset.motion = flashes ? 'flash' : 'settle';

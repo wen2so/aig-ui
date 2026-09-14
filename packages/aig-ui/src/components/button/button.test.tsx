@@ -12,7 +12,7 @@ it('刻面在挂载后固定，两端直角、中间内部汇聚，局部快慢�
   const facets = [...button.querySelectorAll<SVGElement>('.aig-button-highlight polygon')];
   expect([6, 7, 8]).toContain(facets.length);
   const depths = facets.map((facet) => Number(facet.style.getPropertyValue('--aig-facet-depth')));
-  expect(depths.every((depth) => [0.14, 0.22, 0.3].includes(depth))).toBe(true);
+  expect(depths.every((depth) => [0.88, 0.94, 1].includes(depth))).toBe(true);
   expect(new Set(depths).size).toBeLessThanOrEqual(3);
   for (const [index, facet] of facets.entries()) {
     const points = facet
@@ -32,9 +32,17 @@ it('刻面在挂载后固定，两端直角、中间内部汇聚，局部快慢�
       expect(points.every((point, i) => point[0] !== points[(i + 1) % 3]![0])).toBe(true);
     }
   }
+  const area = facets.reduce((sum, facet) => {
+    const [a, b, c] = facet
+      .getAttribute('points')!
+      .split(' ')
+      .map((point) => point.split(',').map(Number));
+    return sum + Math.abs((b![0]! - a![0]!) * (c![1]! - a![1]!) - (c![0]! - a![0]!) * (b![1]! - a![1]!)) / 2;
+  }, 0);
+  expect(area).toBeCloseTo(30000, 0);
   const geometry = facets.map((facet) => facet.getAttribute('points'));
   const flashes = facets.filter((facet) => facet.dataset.motion === 'flash');
-  expect(flashes).toHaveLength(Math.round(facets.length * 0.6));
+  expect(flashes).toHaveLength(Math.round(facets.length * 0.4));
   const durations = flashes
     .map((facet) => parseFloat(facet.style.getPropertyValue('--aig-facet-duration')))
     .sort((a, b) => a - b);

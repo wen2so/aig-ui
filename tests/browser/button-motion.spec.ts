@@ -41,7 +41,7 @@ test('首轮收回，hover 复用刻面并局部闪切后保持三档高亮，�
   expect(next).toEqual(initial);
   expect([6, 7, 8]).toContain(next.length);
   // 在同一轮中采样两次明灭与稳定时刻，核对真实 CSS 播放节奏。
-  await expect(primary.locator('polygon[data-motion=flash]')).toHaveCount(Math.round(next.length * 0.6));
+  await expect(primary.locator('polygon[data-motion=flash]')).toHaveCount(Math.round(next.length * 0.4));
   const samples = await primary
     .locator('polygon[data-motion=flash]')
     .first()
@@ -83,19 +83,29 @@ test('首轮收回，hover 复用刻面并局部闪切后保持三档高亮，�
     .toBe(true);
   await expect
     .poll(() =>
-      facets.evaluateAll((elements) =>
-        elements.every((el) => {
-          const style = getComputedStyle(el);
-          return Number(style.fillOpacity) === Number(style.getPropertyValue('--aig-facet-depth'));
+      primary.evaluate((el) => ({
+        hovered: el.querySelector('.aig-button-highlight')!.hasAttribute('data-hovered'),
+        opacity: [...el.querySelectorAll('polygon')].map((facet) => {
+          const style = getComputedStyle(facet);
+          return [style.fillOpacity, style.getPropertyValue('--aig-facet-depth')];
         }),
-      ),
+      })),
     )
-    .toBe(true);
+    .toMatchObject({ hovered: true });
+  await expect
+    .poll(() =>
+      facets.evaluateAll((elements) => elements.map((el) => Number(getComputedStyle(el).fillOpacity))),
+    )
+    .toEqual(
+      await facets.evaluateAll((elements) =>
+        elements.map((el) => Number(getComputedStyle(el).getPropertyValue('--aig-facet-depth'))),
+      ),
+    );
   const depths = await facets.evaluateAll((elements) =>
     elements.map((el) => Number(getComputedStyle(el).fillOpacity)),
   );
   expect(new Set(depths).size).toBeLessThanOrEqual(3);
-  expect(depths.every((depth) => [0.14, 0.22, 0.3].includes(depth))).toBe(true);
+  expect(depths.every((depth) => [0.88, 0.94, 1].includes(depth))).toBe(true);
   await primary.screenshot({ path: test.info().outputPath('button-facets.png') });
   await page.mouse.move(4, 4);
   await expect.poll(hidden).toBe(true);
@@ -103,6 +113,15 @@ test('首轮收回，hover 复用刻面并局部闪切后保持三档高亮，�
   expect(await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')))).toEqual(
     next,
   );
+  await facets.evaluateAll((elements) =>
+    elements.forEach((el) =>
+      el.getAnimations().forEach((animation) => {
+        animation.pause();
+        animation.currentTime = 1100;
+      }),
+    ),
+  );
+  await primary.screenshot({ path: test.info().outputPath('button-partial-facets.png') });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect.poll(hidden).toBe(false);
 });
@@ -118,8 +137,11 @@ test('各层级文字随刻面显示切换，三档背景均保持可读对比',
     const idle = await content.evaluate((el) => getComputedStyle(el).color);
     await button.hover();
     const ink = await content.evaluate((el) => getComputedStyle(el).color);
+    expect(ink).toBe('rgb(255, 255, 255)');
     expect(ink).not.toBe(idle);
-    // 按实际计算色值合成三档刻面，覆盖空白区域和主题的三种浅色表面。
+    await expect(content).toHaveCSS('mix-blend-mode', 'difference');
+    await expect(button).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    // 合成深色三角和浅色表面，再计算差值文字的实际输出色。
     const minimum = await button.evaluate((el) => {
       const style = getComputedStyle(el);
       const canvas = document.createElement('canvas');
@@ -135,15 +157,14 @@ test('各层级文字随刻面显示切换，三档背景均保持可读对比',
         values
           .map((value) => (value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4))
           .reduce((sum, value, index) => sum + value * [0.2126, 0.7152, 0.0722][index]!, 0);
-      const text = luminance(rgb(getComputedStyle(el.querySelector('.aig-button-content')!).color));
       const fill = rgb(getComputedStyle(el.querySelector('polygon')!).fill);
       return Math.min(
         ...['--aig-color-bg', '--aig-color-surface', '--aig-color-surface-muted'].flatMap((token) => {
           const surface = rgb(style.getPropertyValue(token));
-          return [0, 0.14, 0.22, 0.3].map((alpha) => {
-            const background = luminance(
-              surface.map((value, index) => value * (1 - alpha) + fill[index]! * alpha),
-            );
+          return [0, 0.88, 0.94, 1].map((alpha) => {
+            const composite = surface.map((value, index) => value * (1 - alpha) + fill[index]! * alpha);
+            const background = luminance(composite);
+            const text = luminance(composite.map((value) => 1 - value));
             return (Math.max(text, background) + 0.05) / (Math.min(text, background) + 0.05);
           });
         }),
@@ -154,6 +175,7 @@ test('各层级文字随刻面显示切换，三档背景均保持可读对比',
     await expect(content).toHaveCSS('color', ink);
     await page.mouse.move(4, 4);
     await expect(content).toHaveCSS('color', idle);
+    await expect(button).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   }
   await page.emulateMedia({ forcedColors: 'active' });
   const first = buttons.first();
@@ -170,6 +192,14 @@ test('悬停、按压、选中与加载分别使用对应反馈', async ({ page 
   const matrix = page.locator('#example-states');
   const primary = matrix.locator('.aig-button[data-variant=primary]:enabled').first();
   const frame = primary.locator('.aig-button-frame');
+  const edgeDifference = () =>
+    primary.evaluate((el) => {
+      const frame = el.querySelector('.aig-button-frame')!.getBoundingClientRect();
+      const facets = el.querySelector('.aig-button-highlight')!.getBoundingClientRect();
+      return Math.max(
+        ...(['left', 'top', 'right', 'bottom'] as const).map((edge) => Math.abs(frame[edge] - facets[edge])),
+      );
+    });
   const indicator = () =>
     primary.evaluate((el) => getComputedStyle(el.querySelector('.aig-button-content')!, '::before').opacity);
   await expect(frame).toHaveCSS('animation-name', 'aig-button-glint');
@@ -177,12 +207,15 @@ test('悬停、按压、选中与加载分别使用对应反馈', async ({ page 
   await primary.hover();
   await expect(frame).toHaveCSS('animation-name', 'aig-button-scan');
   await expect(frame).toHaveCSS('inset', '-1px');
+  await expect.poll(edgeDifference).toBeLessThan(0.1);
   /* 悬停时左侧的固定三角指示点亮，与选中态共用同一个标记位。 */
   expect(await indicator()).toBe('1');
   await page.mouse.down();
   await expect(frame).toHaveCSS('inset', '1px');
+  await expect.poll(edgeDifference).toBeLessThan(0.1);
   await page.mouse.up();
   await expect(frame).toHaveCSS('inset', '-1px');
+  await expect.poll(edgeDifference).toBeLessThan(0.1);
 
   const ghost = matrix.locator('.aig-button[data-variant=ghost]:enabled').first();
   await ghost.hover();
