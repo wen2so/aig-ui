@@ -24,7 +24,6 @@
   height: 4px;
   background: var(--aig-color-mark);
   transform: rotate(45deg);
-  animation: aig-node-spin var(--aig-motion-outer-period) linear infinite;
 }
 @media (prefers-reduced-motion: reduce) {
   .aig-pagination [aria-current='page']::before {

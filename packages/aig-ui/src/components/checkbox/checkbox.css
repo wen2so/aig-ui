@@ -21,7 +21,7 @@
   cursor: pointer;
   --aig-check-line: color-mix(in srgb, var(--aig-color-border-control) 60%, transparent);
   background-color: transparent;
-  animation: aig-glint-x var(--aig-motion-glint-period) linear infinite;
+
   background-image:
     linear-gradient(90deg, transparent, var(--aig-color-mark), transparent),
     linear-gradient(var(--aig-check-line), var(--aig-check-line)),
@@ -102,7 +102,6 @@
 .aig-checkbox:disabled {
   cursor: default;
   opacity: 0.55;
-  animation-duration: var(--aig-motion-rest-period);
 }
 @media (prefers-reduced-motion: reduce) {
   .aig-checkbox,

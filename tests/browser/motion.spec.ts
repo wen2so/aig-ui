@@ -78,14 +78,18 @@ test('标记保持镂空，回放呈现错峰描边与退出前的清晰线条',
       sequence.locator('line').evaluate((element) => parseFloat(getComputedStyle(element).strokeDashoffset)),
     )
     .toBe(0);
-  for (const part of await sequence.locator('svg circle, svg path, svg line').all())
+  for (const part of await sequence
+    .locator('.aig-loading-mark circle, .aig-loading-mark path, .aig-loading-mark line')
+    .all())
     await expect(part).toHaveCSS('fill', 'none');
   await expect(sequence.locator('.aig-sequence-layer')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   await sequence.screenshot({ path: 'artifacts/loading-hollow-holding.png' });
   await section.getByRole('button', { name: '任务就绪' }).click();
   await expect(sequence).toHaveAttribute('data-phase', 'exiting');
   await expect
-    .poll(() => sequence.locator('path').evaluate((element) => element.getAnimations().length))
+    .poll(() =>
+      sequence.locator('.aig-loading-mark path').evaluate((element) => element.getAnimations().length),
+    )
     .toBeGreaterThan(0);
   await sequence.evaluate((element) =>
     element
@@ -98,7 +102,7 @@ test('标记保持镂空，回放呈现错峰描边与退出前的清晰线条',
   );
   expect(
     await sequence
-      .locator('path')
+      .locator('.aig-loading-mark path')
       .evaluate((element) => parseFloat(getComputedStyle(element).strokeDashoffset)),
   ).toBeGreaterThan(0);
   const opacity = await sequence
@@ -130,7 +134,7 @@ test('退出 450ms 旧文字消失且内容尚未出现，撤回仍可见', asyn
   await expect(sequence.locator('.aig-sequence-content')).toHaveCSS('opacity', '0');
   await expect(sequence.locator('.aig-sequence-layer')).toHaveCSS('opacity', '1');
   const offset = await sequence
-    .locator('path')
+    .locator('.aig-loading-mark path')
     .evaluate((el) => parseFloat(getComputedStyle(el).strokeDashoffset));
   expect(offset).toBeGreaterThan(0);
   expect(offset).toBeLessThan(1);

@@ -1,4 +1,4 @@
-/* 徽章使用胶囊轮廓与自转菱形节点，保持状态标签的紧凑识别。 */
+/* 徽章以紧凑轮廓和静态节点标记状态。 */
 .aig-badge {
   display: inline-flex;
   align-items: center;
@@ -35,7 +35,6 @@
   flex: none;
   opacity: 0.7;
   transform: rotate(45deg);
-  animation: aig-node-spin var(--aig-motion-outer-period) linear infinite;
 }
 @media (prefers-reduced-motion: reduce) {
   .aig-badge::before {

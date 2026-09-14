@@ -1,13 +1,13 @@
 import { test, expect } from '@playwright/test';
 
-test('输入聚焦扩展刻线，保持文本区域和控件尺寸稳定', async ({ page }) => {
+test('输入聚焦建立基线，保持文本区域和控件尺寸稳定', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Input');
   const input = page.getByRole('textbox', { name: '工作空间名称' });
   const size = await input.boundingBox();
   const resting = await input.evaluate((el) => getComputedStyle(el).backgroundSize);
   await input.click();
   await expect.poll(() => input.evaluate((el) => getComputedStyle(el).backgroundSize)).not.toBe(resting);
-  await expect.poll(() => input.evaluate((el) => getComputedStyle(el).backgroundSize)).toContain('1px 16px');
+  await expect(input).toHaveCSS('background-size', '100% 1px');
   await input.fill('稳定的文字与展开的边线');
   const focused = await input.boundingBox();
   expect(focused!.width).toBe(size!.width);
@@ -15,7 +15,7 @@ test('输入聚焦扩展刻线，保持文本区域和控件尺寸稳定', async
   await expect(input).toHaveValue('稳定的文字与展开的边线');
 });
 
-test('选择族通过内核与外轨建立明确状态，减少动画保持最终形态', async ({ page }) => {
+test('选择族通过内核建立明确状态，减少动画保持最终形态', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const [component, role, name] of [
     ['Checkbox', 'checkbox', '接收处理结果通知'],
@@ -25,11 +25,11 @@ test('选择族通过内核与外轨建立明确状态，减少动画保持最�
     await page.goto(`http://127.0.0.1:5173/?component=${component}`);
     const control = page.getByRole(role, { name, exact: true });
     if (role !== 'radio') await control.uncheck();
-    const resting = await control.evaluate((el) => getComputedStyle(el, '::after').scale);
+    const resting = await control.evaluate((el) => getComputedStyle(el, '::before').transform);
     await control.check();
     await expect(control).toBeChecked();
-    expect(await control.evaluate((el) => getComputedStyle(el, '::after').scale)).not.toBe(resting);
-    expect(await control.evaluate((el) => getComputedStyle(el, '::after').animationName)).toBe('none');
+    expect(await control.evaluate((el) => getComputedStyle(el, '::before').transform)).not.toBe(resting);
+    expect(await control.evaluate((el) => getComputedStyle(el, '::before').animationName)).toBe('none');
     const bounds = await control.boundingBox();
     expect(bounds!.width).toBeGreaterThan(10);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -103,7 +103,7 @@ test('任务等待确认保留静态末节点，状态语义与运动一致', as
   expect(await node.evaluate((el) => getComputedStyle(el, '::before').animationName)).toBe('none');
 });
 
-test('正文与图标保持稳定，卡片角标及选择箭头沿实际边界表达状态', async ({ page }) => {
+test('正文、图标与卡片保持静态，选择箭头随展开表达状态', async ({ page }) => {
   for (const [component, selector] of [
     ['Text', '.aig-text'],
     ['Heading', '.aig-heading'],
@@ -121,7 +121,7 @@ test('正文与图标保持稳定，卡片角标及选择箭头沿实际边界�
       const style = getComputedStyle(el, part);
       return { radius: style.borderRadius, rotate: style.rotate, animation: style.animationName };
     }, pseudo);
-    expect(corner).toEqual({ radius: '0px', rotate: 'none', animation: 'aig-glint-x' });
+    expect(corner).toEqual({ radius: '0px', rotate: 'none', animation: 'none' });
   }
   await page.goto('http://127.0.0.1:5173/?component=Select');
   const select = page.getByRole('combobox', { name: '项目状态' });

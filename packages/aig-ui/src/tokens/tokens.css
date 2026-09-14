@@ -17,9 +17,9 @@
   --aig-color-signal: rgb(86 139 155);
   --aig-color-info: rgb(29 78 216);
   --aig-color-neutral: rgb(82 82 91);
-  --aig-font-family: system-ui, 'Microsoft YaHei', sans-serif;
-  --aig-font-display: STSong, 'Songti SC', SimSun, Georgia, serif;
-  --aig-font-mono: ui-monospace, Consolas, monospace;
+  --aig-font-family: Inter, 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
+  --aig-font-display: Inter, 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
+  --aig-font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
   --aig-space-1: 4px;
   --aig-space-2: 8px;
   --aig-space-3: 12px;

@@ -89,31 +89,3 @@
     outline-offset: -2px;
   }
 }
-/* 持续巡线属于可交互边界与分隔线，正文和图标保留稳定轮廓。 */
-@media (prefers-reduced-motion: no-preference) and (forced-colors: none) {
-  :is(.aig-accordion-item, .aig-tooltip) {
-    background-image: linear-gradient(
-      90deg,
-      transparent,
-      color-mix(in srgb, var(--aig-color-mark) 55%, transparent),
-      transparent
-    );
-    background-size: 24% 1px;
-    background-repeat: no-repeat;
-    background-position: var(--aig-glint-x) 100%;
-    animation: aig-glint-x var(--aig-motion-glint-period) linear infinite;
-  }
-  .aig-separator {
-    background-image: linear-gradient(90deg, transparent, var(--aig-color-mark), transparent);
-    background-size: 24% 100%;
-    background-repeat: no-repeat;
-    background-position: var(--aig-glint-x) 0;
-    animation: aig-glint-x var(--aig-motion-glint-period) linear infinite;
-  }
-  .aig-separator[data-orientation='vertical'] {
-    background-image: linear-gradient(180deg, transparent, var(--aig-color-mark), transparent);
-    background-size: 100% 24%;
-    background-position: 0 var(--aig-glint-y);
-    animation-name: aig-glint-y;
-  }
-}

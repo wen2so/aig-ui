@@ -83,7 +83,6 @@
   background-position:
     0 var(--aig-glint-y),
     0 0;
-  animation: aig-glint-y var(--aig-motion-glint-period) linear infinite;
 }
 
 .aig-message header::before {
@@ -97,6 +96,9 @@
 .aig-message[data-state='streaming'] header::before {
   background: color-mix(in srgb, var(--aig-color-mark) 55%, transparent);
   animation: aig-node-spin var(--aig-motion-inner-period) linear infinite;
+}
+.aig-message[data-state='streaming']::before {
+  animation: aig-glint-y var(--aig-motion-glint-period) linear infinite;
 }
 @media (prefers-reduced-motion: reduce) {
   .aig-message[data-author='assistant']::before,

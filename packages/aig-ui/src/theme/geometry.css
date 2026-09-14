@@ -1,9 +1,8 @@
 /*
  * 线框语言层：容器、页面骨架、浮层仪器框与状态图形的公共规则，同时提供
- * 全库共享的自主运动词汇。规则——以线代面、以绘代现；静止不是停滞：
- * 轨道缓慢旋转、光点沿线巡航、节点自转，运动的永远是线、节点与光，
- * 文字和布局保持稳定。装饰色继承品牌配置；容器保留柔和材质。
- * 规范见 docs/design-language.md。
+ * 状态运动词汇。静止时以边界与留白组织内容，聚焦时建立辅助线。
+ * 任务与加载承担持续运动，文字和布局保持稳定。
+ * 规范见 docs/design/visual-language.md。
  */
 
 /* 巡航光点位置：注册为可插值的百分比变量，供背景层定位。 */
@@ -54,132 +53,9 @@
   isolation: isolate;
 }
 
-/* 浮层是仪器面板：四角括线 + 顶边巡航光点。 */
-:is(.aig-menu, .aig-select-popup, .aig-combobox-popup, .aig-popover) {
-  position: relative;
-}
-:is(.aig-menu, .aig-select-popup, .aig-combobox-popup, .aig-popover)::before {
-  content: '';
-  position: absolute;
-  inset: 5px;
-  background: var(--aig-frame-corner);
-  pointer-events: none;
-}
-:is(.aig-menu, .aig-select-popup, .aig-combobox-popup, .aig-popover)::after {
-  content: '';
-  position: absolute;
-  inset: 5px 5px auto;
-  block-size: 1px;
-  background-image: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in srgb, var(--aig-color-mark) 70%, transparent),
-    transparent
-  );
-  background-size: 26% 1px;
-  background-repeat: no-repeat;
-  background-position: var(--aig-glint-x) 0;
-  animation: aig-glint-x var(--aig-motion-glint-period) linear infinite;
-  pointer-events: none;
-}
-
-/* 容器按用途分配刻线：卡片边角、面板侧轨与游标、对话框中轴、AI 编辑边线。 */
+/* 容器以留白和完整边界组织内容，聚焦时只建立一条辅助线。 */
 :is(.aig-card, .aig-panel, .aig-prompt-input, .aig-tool-result, .aig-artifact-preview, .aig-confirmation) {
   position: relative;
-}
-:is(
-  .aig-card,
-  .aig-panel,
-  .aig-dialog,
-  .aig-prompt-input,
-  .aig-tool-result,
-  .aig-artifact-preview,
-  .aig-confirmation
-)::before {
-  content: '';
-  position: absolute;
-  inset-block-start: 16px;
-  inset-inline-start: 16px;
-  inline-size: 64px;
-  block-size: 1px;
-  background: linear-gradient(90deg, var(--aig-color-mark), transparent);
-  opacity: 0.8;
-  pointer-events: none;
-  transform-origin: left;
-  animation:
-    aig-line-establish 900ms ease-out both,
-    aig-ambient-orbit var(--aig-motion-outer-period) linear infinite;
-}
-/* 卡片边角沿轮廓定位，巡线始终位于顶部与底部边缘。 */
-.aig-card::before {
-  box-sizing: border-box;
-  inline-size: 10px;
-  block-size: 10px;
-  border-block-start: 1px solid var(--aig-color-mark);
-  border-inline-start: 1px solid var(--aig-color-mark);
-  background-image: linear-gradient(90deg, transparent, var(--aig-color-mark), transparent);
-  background-size: 40% 1px;
-  background-repeat: no-repeat;
-  background-position: var(--aig-glint-x) top;
-  animation: aig-glint-x var(--aig-motion-glint-period) linear infinite;
-  inset: 1px auto auto 1px;
-}
-.aig-card::after {
-  box-sizing: border-box;
-  content: '';
-  position: absolute;
-  inset: auto 1px 1px auto;
-  inline-size: 10px;
-  block-size: 10px;
-  border-block-end: 1px solid var(--aig-color-mark);
-  border-inline-end: 1px solid var(--aig-color-mark);
-  background-image: linear-gradient(90deg, transparent, var(--aig-color-mark), transparent);
-  background-size: 40% 1px;
-  background-repeat: no-repeat;
-  background-position: var(--aig-glint-x) bottom;
-  opacity: 0.8;
-  pointer-events: none;
-  animation: aig-glint-x var(--aig-motion-glint-period) linear infinite reverse;
-}
-/* 面板：侧轨末端游标缓慢自转，轨道上光点缓慢下巡。 */
-.aig-panel::before {
-  inline-size: 1px;
-  block-size: max(0px, min(46px, calc(100% - 28px)));
-  inset: 14px auto auto -1px;
-  background-image:
-    linear-gradient(
-      180deg,
-      transparent,
-      color-mix(in srgb, var(--aig-color-mark) 80%, transparent),
-      transparent
-    ),
-    linear-gradient(180deg, color-mix(in srgb, var(--aig-color-mark) 60%, transparent), transparent);
-  background-size:
-    100% 34%,
-    100% 100%;
-  background-repeat: no-repeat;
-  background-position:
-    0 var(--aig-glint-y),
-    0 0;
-  background-color: transparent;
-  animation:
-    aig-line-establish 900ms ease-out both,
-    aig-glint-y calc(var(--aig-motion-rest-period) * 2) linear infinite;
-}
-.aig-panel::after {
-  content: '';
-  position: absolute;
-  inline-size: 5px;
-  block-size: 5px;
-  inset: min(68px, calc(100% - 12px)) auto auto -3px;
-  background: var(--aig-color-mark);
-  opacity: 0.7;
-  pointer-events: none;
-  transform: rotate(45deg);
-  animation: aig-node-spin var(--aig-motion-outer-period) linear infinite;
-}
-/* 装饰停靠在边缘安全区，聚焦内容时沿容器边线建立完整范围。 */
-:is(.aig-card, .aig-panel, .aig-prompt-input, .aig-tool-result, .aig-artifact-preview, .aig-confirmation) {
   transition: border-color 240ms;
 }
 :is(
@@ -190,148 +66,35 @@
   .aig-artifact-preview,
   .aig-confirmation
 ):focus-within {
-  border-color: var(--aig-color-mark);
+  border-color: color-mix(in srgb, var(--aig-color-mark) 60%, var(--aig-color-border-subtle));
 }
-.aig-card::before,
-.aig-card::after {
-  transition:
-    inline-size 380ms,
-    block-size 380ms;
-}
-.aig-card:focus-within::before,
-.aig-card:focus-within::after {
-  inline-size: 28px;
-  block-size: 18px;
-}
-.aig-panel::before {
-  transition: block-size 420ms;
-}
-.aig-panel::after {
-  transition: inset-block-start 420ms;
-}
-.aig-panel:focus-within::before {
-  block-size: calc(100% - 28px);
-}
-.aig-panel:focus-within::after {
-  inset-block-start: calc(100% - 18px);
-}
-/* 对话框：顶部中轴刻线带上巡光点，底部有对位短线。 */
-.aig-dialog::before {
-  inset: 12px auto auto calc(50% - 18px);
-  inline-size: 36px;
-  background-image:
-    linear-gradient(
-      90deg,
-      transparent,
-      color-mix(in srgb, var(--aig-color-mark) 95%, transparent),
-      transparent
-    ),
-    linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--aig-color-mark) 55%, transparent),
-      color-mix(in srgb, var(--aig-color-mark) 55%, transparent)
-    );
-  background-size:
-    40% 1px,
-    100% 1px;
-  background-repeat: no-repeat;
-  background-position:
-    var(--aig-glint-x) 0,
-    0 0;
-  animation:
-    aig-line-establish 900ms ease-out both,
-    aig-glint-x var(--aig-motion-glint-period) linear infinite;
-}
-.aig-dialog::after {
+:is(.aig-card, .aig-panel)::before {
   content: '';
   position: absolute;
-  inset: auto auto 0 calc(50% - 8px);
-  inline-size: 16px;
-  block-size: 1px;
-  background: color-mix(in srgb, var(--aig-color-mark) 45%, transparent);
+  inset: -1px auto auto 24px;
+  width: 36px;
+  height: 1px;
+  background: var(--aig-color-mark);
+  transform-origin: left;
+  transform: scaleX(0);
+  opacity: 0;
   pointer-events: none;
+  transition:
+    transform 320ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 200ms;
 }
-/* AI 阅读与输入面：底线巡航。 */
-:is(.aig-prompt-input, .aig-artifact-preview)::before {
-  inset: auto 24px 0;
-  inline-size: auto;
-  scale: 0.4 1;
-  transform-origin: center;
-  transition: scale 420ms;
-  background-image:
-    linear-gradient(
-      90deg,
-      transparent,
-      color-mix(in srgb, var(--aig-color-mark) 85%, transparent),
-      transparent
-    ),
-    linear-gradient(90deg, color-mix(in srgb, var(--aig-color-mark) 45%, transparent), transparent 70%);
-  background-size:
-    24% 1px,
-    100% 1px;
-  background-repeat: no-repeat;
-  background-position:
-    var(--aig-glint-x) 0,
-    0 0;
-  animation:
-    aig-line-establish 900ms ease-out both,
-    aig-glint-x var(--aig-motion-glint-period) linear infinite;
-}
-:is(.aig-prompt-input, .aig-artifact-preview):focus-within::before,
-.aig-prompt-input[data-running]::before {
-  scale: 1;
-}
-/* 工具结果与确认卡：左轨光点缓慢下巡。 */
-:is(.aig-tool-result, .aig-confirmation)::before {
-  inset: 20px auto 20px 0;
-  inline-size: 1px;
-  block-size: auto;
-  background-image:
-    linear-gradient(
-      180deg,
-      transparent,
-      color-mix(in srgb, var(--aig-color-mark) 85%, transparent),
-      transparent
-    ),
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--aig-color-mark) 50%, transparent),
-      color-mix(in srgb, var(--aig-color-mark) 30%, transparent)
-    );
-  background-size:
-    100% 26%,
-    100% 100%;
-  background-repeat: no-repeat;
-  background-position:
-    0 var(--aig-glint-y),
-    0 0;
-  animation:
-    aig-line-establish 900ms ease-out both,
-    aig-glint-y var(--aig-motion-glint-period) linear infinite;
-}
-
-/* 页面骨架：标题节点保持方向，分隔线以品牌短段起笔。 */
-.aig-page-header::before {
-  content: '';
-  width: 10px;
-  height: 10px;
-  flex: none;
-  border: 1px solid var(--aig-color-mark);
-  transform: rotate(45deg);
+:is(.aig-card, .aig-panel):focus-within::before {
+  transform: scaleX(1);
+  opacity: 0.65;
 }
 .aig-page-header > div:first-of-type {
   flex: 1;
 }
 .aig-heading {
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
 }
 .aig-separator[data-orientation='horizontal'] {
-  background: linear-gradient(
-    90deg,
-    var(--aig-color-mark) 0 24px,
-    transparent 24px 29px,
-    var(--aig-color-border-subtle) 29px
-  );
+  background: var(--aig-color-border-subtle);
 }
 
 /* Lucide 状态图标使用统一尺寸，结果颜色继承语义色。 */
@@ -358,7 +121,7 @@
     rotate: 360deg;
   }
 }
-/* 菱形节点自转一整圈：静止元素的自主运动。 */
+/* 菱形节点自转表示任务或流式内容正在推进。 */
 @keyframes aig-node-spin {
   from {
     transform: rotate(45deg);

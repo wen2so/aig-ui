@@ -72,6 +72,6 @@ phase 支持 drawing、holding、erasing、static，默认为 drawing。默认�
 
 Token 真源为 `packages/aig-ui/src/tokens/source.json`。有限描边与交接使用 WAAPI，循环旋转使用 CSS；CSS 变量覆盖循环周期，有限编排时长通过 Token 生成的常量更新。
 
-默认保留完整效果。系统减少动态效果偏好与主动 reduced 提供静态等价状态；预览的环境暂停只管理装饰，任务演示另有控制。按钮交互规范见[视觉语言](../design/visual-language.md)。
+普通控件在静态阅读时保持稳定，操作触发有限过渡，加载与进行中的任务保留持续运动。默认保留完整加载效果。系统减少动态效果偏好与主动 reduced 提供静态等价状态；预览的环境暂停只管理装饰，任务演示另有控制。按钮交互规范见[视觉语言](../design/visual-language.md)。
 
 检查早到 ready、错误、重复信号、新任务替换、卸载、双实例、焦点、减少动态效果和 onExited 次数。静态截图用于核对构图，实际播放用于核对撤回、解构与内容交接。浏览器环境准备见[工程开发](../engineering/development.md)，当前验收边界见[项目状态](../progress.md)。

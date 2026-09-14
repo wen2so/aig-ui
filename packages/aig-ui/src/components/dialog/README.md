@@ -10,4 +10,4 @@ Root 使用 open/defaultOpen/onOpenChange。Content 内提供 Title；Trigger �
 
 材料默认为 `glass`，通过 `material="solid"` 选择实色；Dialog/Drawer 的选项位于 Content。玻璃样式来自公共入口，包含 46px 模糊、渐变、高光和六层阴影。`AigProvider material="solid"` 提供统一实色偏好，系统强制颜色使用清晰边界。
 
-视觉表现：对话框采用顶部中轴刻线（带缓慢巡航光点）与底部对位短线。玻璃材质、焦点锁定、Escape 关闭和触发器焦点恢复继续生效。 动态装饰遵循系统减少动态效果偏好。
+视觉表现：浮层通过表面、边界和内距组织内容，进入与退出平滑交接，保留焦点锁定与恢复。动态效果遵循系统减少动态效果偏好。

@@ -45,7 +45,7 @@
   background-size: 30% 100%;
   background-repeat: no-repeat;
   background-position: var(--aig-glint-x) 0;
-  animation: aig-glint-x var(--aig-motion-glint-period) linear infinite;
+
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 320ms cubic-bezier(0.22, 0.61, 0.36, 1);

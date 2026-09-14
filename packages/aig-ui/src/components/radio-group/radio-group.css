@@ -1,8 +1,4 @@
-/*
- * 选择族之单选：环与核心——发丝圆环，选中时核心入位；选中项的标签下划
- * 线转为玫瑰，圆环外浮起一圈缓慢自转的虚线轨道。与加载标记的"轨道 + 内核"
- * 语言一致。
- */
+/* 单选使用圆环与核心，选中时核心建立，标签保持阅读位置。 */
 .aig-radio-group {
   border: 0;
   padding: 0;
@@ -66,24 +62,6 @@
   transform: scale(0);
   transition: transform 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
-/* 选中：环外浮起虚线轨道，缓慢自转。 */
-.aig-radio-group input::after {
-  content: '';
-  position: absolute;
-  inset: -4.5px;
-  border: 1px dashed color-mix(in srgb, var(--aig-color-mark) 65%, transparent);
-  border-radius: 50%;
-  opacity: 0.55;
-  scale: 0.75;
-  transition:
-    scale 320ms,
-    opacity 200ms;
-  animation: aig-ambient-orbit var(--aig-motion-outer-period) linear infinite;
-}
-.aig-radio-group input:checked::after {
-  opacity: 1;
-  scale: 1;
-}
 .aig-radio-group input:is(:hover, :focus-visible):enabled {
   border-color: color-mix(in srgb, var(--aig-color-mark) 70%, transparent);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--aig-color-mark) 12%, transparent);
@@ -102,13 +80,11 @@
 }
 .aig-radio-group input:disabled {
   opacity: 0.55;
-  animation-duration: var(--aig-motion-rest-period);
 }
 @media (prefers-reduced-motion: reduce) {
   .aig-radio-group label,
   .aig-radio-group input,
-  .aig-radio-group input::before,
-  .aig-radio-group input::after {
+  .aig-radio-group input::before {
     transition: none;
     animation: none;
   }
@@ -117,8 +93,7 @@
   .aig-radio-group input {
     appearance: auto;
   }
-  .aig-radio-group input::before,
-  .aig-radio-group input::after {
+  .aig-radio-group input::before {
     display: none;
   }
 }

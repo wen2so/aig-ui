@@ -1,4 +1,4 @@
-/* 警告条：语义色发丝框 + 左轨 2px 语义线 + 极淡语义底色；标题前自转节点。 */
+/* 提示使用语义边界和局部底色，保持文字稳定。 */
 .aig-alert {
   position: relative;
   padding: 11px 13px;
@@ -34,7 +34,6 @@
   background: currentColor;
   transform: rotate(45deg);
   margin-inline-end: 8px;
-  animation: aig-node-spin var(--aig-motion-outer-period) linear infinite;
 }
 @media (prefers-reduced-motion: reduce) {
   .aig-alert strong::before {

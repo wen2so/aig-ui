@@ -1,18 +1,11 @@
-/*
- * 字段器物谱——单行输入是两端带刻度痕的基线尺，文本域是带页边线与横格的
- * 记录纸，选择器是四角括线的闭合轮廓，检索框保留缺角结构。细线沿边缘持续巡行，聚焦与错误通过稳定的线色表达。文字与布局稳定。
- */
+/* 字段以完整边界保持可读，聚焦时建立基线，错误通过语义线色表达。 */
 @property --aig-field-line {
   syntax: '<color>';
   inherits: false;
   initial-value: rgb(140 125 129 / 0.55);
 }
 :is(.aig-input, .aig-textarea, .aig-select-trigger, .aig-combobox-input) {
-  --aig-field-corner: 9px;
-  --aig-field-cap: 6px;
   --aig-field-line: color-mix(in srgb, var(--aig-color-border-control) 55%, transparent);
-  border: 0;
-  border-radius: 0;
   background-color: transparent;
   color: var(--aig-color-text);
   caret-color: var(--aig-color-mark);
@@ -22,158 +15,29 @@
     background-size 360ms cubic-bezier(0.22, 0.61, 0.36, 1),
     box-shadow 240ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
-.aig-input {
-  animation: aig-glint-x var(--aig-motion-glint-period) linear infinite;
-}
-.aig-textarea {
-  animation: aig-glint-y var(--aig-motion-glint-period) linear infinite;
-}
-:is(.aig-input, .aig-textarea, .aig-select-trigger, .aig-combobox-input):disabled {
-  animation-duration: var(--aig-motion-rest-period), var(--aig-motion-glint-period);
-}
-
-/* 单行输入：主基线两端立起短刻度，线上是稀疏标尺痕，光点沿线巡航。 */
-.aig-input {
-  --aig-cap: color-mix(in srgb, var(--aig-color-border-control) 78%, transparent);
-  background-image:
-    linear-gradient(
-      90deg,
-      transparent,
-      color-mix(in srgb, var(--aig-color-mark) 85%, transparent),
-      transparent
-    ),
-    repeating-linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--aig-color-border-control) 38%, transparent) 0 1px,
-      transparent 1px 18px
-    ),
-    linear-gradient(var(--aig-field-line), var(--aig-field-line)),
-    linear-gradient(var(--aig-cap), var(--aig-cap)), linear-gradient(var(--aig-cap), var(--aig-cap));
-  background-size:
-    24% 1px,
-    calc(100% - 20px) 3px,
-    calc(100% - 20px) 1px,
-    1px var(--aig-field-cap),
-    1px var(--aig-field-cap);
-  background-position:
-    var(--aig-glint-x) 100%,
-    center 100%,
-    center 100%,
-    left 100%,
-    right 100%;
-  background-repeat: no-repeat;
-}
-/* 文本域：页边线带下巡光点，页面铺极淡横格，底线渐隐收束。 */
-.aig-textarea {
-  --aig-rule: color-mix(in srgb, var(--aig-color-border-control) 20%, transparent);
-  background-image:
-    linear-gradient(
-      180deg,
-      transparent,
-      color-mix(in srgb, var(--aig-color-mark) 80%, transparent),
-      transparent
-    ),
-    linear-gradient(var(--aig-field-line), var(--aig-field-line)),
-    linear-gradient(
-      90deg,
-      var(--aig-field-line),
-      color-mix(in srgb, var(--aig-color-border-control) 16%, transparent)
-    ),
-    repeating-linear-gradient(180deg, transparent 0 23px, var(--aig-rule) 23px 24px);
-  background-size:
-    1px 22%,
-    1px 100%,
-    calc(100% - 16px) 1px,
-    100% 24px;
-  background-position:
-    left var(--aig-glint-y),
-    left top,
-    8px 100%,
-    0 7px;
-  background-repeat: no-repeat, no-repeat, no-repeat, repeat;
-}
-/* 选择器：四角括线的闭合轮廓，括线随字段线色巡行与过渡。 */
-.aig-select-trigger {
-  --aig-trigger-line: color-mix(in srgb, var(--aig-field-line) 92%, transparent);
-  background-image:
-    linear-gradient(var(--aig-trigger-line), var(--aig-trigger-line)),
-    linear-gradient(var(--aig-trigger-line), var(--aig-trigger-line)),
-    linear-gradient(var(--aig-trigger-line), var(--aig-trigger-line)),
-    linear-gradient(var(--aig-trigger-line), var(--aig-trigger-line)),
-    linear-gradient(var(--aig-trigger-line), var(--aig-trigger-line)),
-    linear-gradient(var(--aig-trigger-line), var(--aig-trigger-line)),
-    linear-gradient(var(--aig-trigger-line), var(--aig-trigger-line)),
-    linear-gradient(var(--aig-trigger-line), var(--aig-trigger-line));
-  background-size:
-    var(--aig-field-corner) 1px,
-    1px var(--aig-field-corner),
-    var(--aig-field-corner) 1px,
-    1px var(--aig-field-corner),
-    var(--aig-field-corner) 1px,
-    1px var(--aig-field-corner),
-    var(--aig-field-corner) 1px,
-    1px var(--aig-field-corner);
-  background-position:
-    left top,
-    left top,
-    right top,
-    right top,
-    left bottom,
-    left bottom,
-    right bottom,
-    right bottom;
-  background-repeat: no-repeat;
-}
-/* 检索框：缺角结构——上右角留白给操作节点，其余三角括线。 */
-.aig-combobox-input {
-  --aig-trigger-line: color-mix(in srgb, var(--aig-field-line) 92%, transparent);
-  animation: aig-glint-x var(--aig-motion-glint-period) linear infinite;
-  background-image:
-    linear-gradient(90deg, transparent, var(--aig-color-mark), transparent),
-    linear-gradient(var(--aig-trigger-line), var(--aig-trigger-line)),
-    linear-gradient(var(--aig-trigger-line), var(--aig-trigger-line)),
-    linear-gradient(var(--aig-trigger-line), var(--aig-trigger-line)),
-    linear-gradient(var(--aig-trigger-line), var(--aig-trigger-line)),
-    linear-gradient(var(--aig-trigger-line), var(--aig-trigger-line)),
-    linear-gradient(var(--aig-trigger-line), var(--aig-trigger-line));
-  background-size:
-    24% 1px,
-    var(--aig-field-corner) 1px,
-    1px var(--aig-field-corner),
-    var(--aig-field-corner) 1px,
-    1px var(--aig-field-corner),
-    var(--aig-field-corner) 1px,
-    1px var(--aig-field-corner);
-  background-position:
-    var(--aig-glint-x) 100%,
-    left top,
-    left top,
-    left bottom,
-    left bottom,
-    right bottom,
-    right bottom;
+/* 输入框使用稳定边界与一条聚焦基线，长度变化表达输入位置。 */
+:is(.aig-input, .aig-textarea, .aig-select-trigger, .aig-combobox-input) {
+  border: 1px solid var(--aig-field-line);
+  border-radius: var(--aig-radius-control);
+  background-image: linear-gradient(var(--aig-field-line), var(--aig-field-line));
+  background-size: 0% 1px;
+  background-position: center bottom;
   background-repeat: no-repeat;
 }
 :is(.aig-input, .aig-textarea, .aig-select-trigger, .aig-combobox-input):hover:enabled {
-  --aig-field-corner: 14px;
-  --aig-field-cap: 10px;
-  --aig-field-line: color-mix(in srgb, var(--aig-color-mark) 66%, transparent);
+  --aig-field-line: color-mix(in srgb, var(--aig-color-mark) 65%, var(--aig-color-text));
 }
 :is(.aig-input, .aig-textarea, .aig-select-trigger, .aig-combobox-input):is(
     :focus,
     [aria-expanded='true']
   ):enabled {
-  --aig-field-corner: 22px;
-  --aig-field-cap: 16px;
-  --aig-field-line: var(--aig-color-mark);
-  background-color: color-mix(in srgb, var(--aig-color-mark) 7%, transparent);
-  box-shadow: inset 0 -2px var(--aig-field-line);
-}
-.aig-textarea:focus:enabled {
-  box-shadow: inset 2px 0 var(--aig-field-line);
+  --aig-field-line: var(--aig-color-accent);
+  background-size: 100% 1px;
+  background-color: color-mix(in srgb, var(--aig-color-mark) 3%, transparent);
 }
 :is(.aig-input, .aig-textarea, .aig-select-trigger, .aig-combobox-input)[aria-invalid='true'] {
   --aig-field-line: var(--aig-color-danger);
+  background-size: 100% 1px;
 }
 /* 浮层选项将侧轨留在固定缩进内，鼠标与键盘共享同一定位反馈。 */
 :is(.aig-select-item, .aig-combobox-item, .aig-menu-item) {
@@ -212,17 +76,8 @@
 .aig-field > label {
   transition: color 200ms;
 }
-.aig-field > label::before {
-  transition:
-    scale 300ms,
-    background-color 200ms;
-}
 .aig-field:focus-within > label {
   color: var(--aig-color-accent);
-}
-.aig-field:focus-within > label::before {
-  scale: 1.3;
-  background-color: var(--aig-color-mark);
 }
 @media (prefers-reduced-motion: reduce) {
   :is(.aig-input, .aig-textarea, .aig-select-trigger, .aig-combobox-input, .aig-button) {

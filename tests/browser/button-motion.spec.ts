@@ -23,7 +23,7 @@ test('按钮视图切换和图标收藏支持键盘，并保留可见激活反�
   await expect(selection).toContainText('当前显示数据视图');
 });
 
-test('首轮收回，hover 复用刻面并局部闪切后保持三档高亮，移出收回', async ({ page }) => {
+test('初始稳定，首次 hover 局部闪切后保持三档高亮，重复交互复用刻面', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Button');
   await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
   const primary = page.locator('#example-variants .preview-actions > .aig-button').first();
@@ -230,7 +230,7 @@ test('悬停、按压、选中与加载分别使用对应反馈', async ({ page 
     });
   const indicator = () =>
     primary.evaluate((el) => getComputedStyle(el.querySelector('.aig-button-content')!, '::before').opacity);
-  await expect(frame).toHaveCSS('animation-name', 'aig-button-glint');
+  await expect(frame).toHaveCSS('animation-name', 'none');
   expect(await indicator()).toBe('0');
   await primary.hover();
   await expect(frame).toHaveCSS('animation-name', 'aig-button-scan');

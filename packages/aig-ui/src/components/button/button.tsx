@@ -131,58 +131,26 @@ function replayButtonFacets(element: SVGSVGElement | null) {
   element.dataset.playing = '';
 }
 
-/** 每次挂载固定细线的位置、长度和运动方向，随机范围保持在线框内部。 */
+/** 每次挂载选择一组协调布局，上下横线互补、两侧竖线错向移动。 */
 function initializeButtonLines(element: HTMLSpanElement | null) {
   if (!element || element.dataset.initialized) return;
   element.dataset.initialized = '';
-  element.querySelectorAll<HTMLElement>('.aig-button-line').forEach((line) => {
-    const growing = Math.random() < 0.5;
-    const direction = Math.random() < 0.5 ? -1 : 1;
-    line.style.setProperty('--aig-line-position', `${24 + Math.random() * 24}%`);
-    line.style.setProperty('--aig-line-length', `${12 + Math.random() * 10}%`);
-    line.style.setProperty('--aig-line-rest', growing ? '0.65' : '1');
-    line.style.setProperty('--aig-line-active', growing ? '1.35' : '0.5');
-    line.style.setProperty('--aig-line-shift', `${direction * (25 + Math.random() * 30)}%`);
-    line.style.setProperty('--aig-line-delay', `${Math.round(Math.random() * 70)}ms`);
+  const profiles = [
+    { start: 20, end: 54, length: 18, direction: 1 },
+    { start: 54, end: 20, length: 16, direction: -1 },
+    { start: 30, end: 48, length: 20, direction: 1 },
+  ];
+  const profile = profiles[Math.floor(Math.random() * profiles.length)]!;
+  const offset = Math.random() * 4 - 2;
+  element.querySelectorAll<HTMLElement>('.aig-button-line').forEach((line, index) => {
+    const leading = index % 2 === 0;
+    line.style.setProperty('--aig-line-position', `${(leading ? profile.start : profile.end) + offset}%`);
+    line.style.setProperty('--aig-line-length', `${profile.length + (leading ? 0 : 2)}%`);
+    line.style.setProperty('--aig-line-rest', leading ? '0.65' : '1');
+    line.style.setProperty('--aig-line-active', leading ? '1.25' : '0.65');
+    line.style.setProperty('--aig-line-shift', `${profile.direction * (leading ? 35 : -35)}%`);
+    line.style.setProperty('--aig-line-delay', `${index < 2 ? 0 : 60}ms`);
   });
-}
-
-/** 同批按钮按行从左到右错开播放，清理时取消对应排队项。 */
-const entranceQueue = new Map<SVGSVGElement, () => void>();
-const cancellations = new WeakMap<SVGSVGElement, () => void>();
-let entranceFrame = 0;
-function queueButtonEntrance(element: SVGSVGElement, play: () => void) {
-  entranceQueue.set(element, play);
-  if (!entranceFrame) {
-    entranceFrame = requestAnimationFrame(() => {
-      entranceFrame = 0;
-      const entries = [...entranceQueue].map(([node, callback]) => ({
-        node,
-        callback,
-        rect: node.getBoundingClientRect(),
-      }));
-      entranceQueue.clear();
-      entries.sort((a, b) => a.rect.top - b.rect.top);
-      const rows: (typeof entries)[] = [];
-      entries.forEach((entry) => {
-        const row = rows.find((items) => Math.abs(items[0]!.rect.top - entry.rect.top) <= 12);
-        if (row) row.push(entry);
-        else rows.push([entry]);
-      });
-      rows.forEach((row) => {
-        row.sort((a, b) => a.rect.left - b.rect.left);
-        row.forEach(({ node, callback }, index) => {
-          const timer = window.setTimeout(callback, index * 140);
-          cancellations.set(node, () => window.clearTimeout(timer));
-        });
-      });
-    });
-  }
-  return () => {
-    entranceQueue.delete(element);
-    cancellations.get(element)?.();
-    cancellations.delete(element);
-  };
 }
 
 /** 保留表单、键盘、ref 和可访问名称的按钮。 */
@@ -209,15 +177,11 @@ export function Button({
   const contentRef = useRef<HTMLSpanElement>(null);
   const contrastRef = useRef<HTMLSpanElement>(null);
   useButtonContrast(highlightRef, contentRef, contrastRef);
-  const enteredRef = useRef(false);
   const interactedRef = useRef(false);
   /** 首次交互播放刻面，后续交互直接保持稳定高亮。 */
   const activateHighlight = () => {
     const element = highlightRef.current;
     if (!element) return;
-    entranceQueue.delete(element);
-    cancellations.get(element)?.();
-    enteredRef.current = true;
     element.dataset.hovered = '';
     if (!interactedRef.current) {
       interactedRef.current = true;
@@ -231,20 +195,7 @@ export function Button({
       if (element) delete element.dataset.playing;
       return;
     }
-    if (enteredRef.current) return;
-    let cancelEntrance: (() => void) | undefined;
-    const play = () => {
-      if (!element || enteredRef.current) return;
-      cancelEntrance = queueButtonEntrance(element, () => {
-        replayButtonFacets(element);
-        enteredRef.current = true;
-      });
-    };
-    if (document.readyState === 'complete') play();
-    else window.addEventListener('load', play, { once: true });
     return () => {
-      window.removeEventListener('load', play);
-      cancelEntrance?.();
       if (element) delete element.dataset.playing;
     };
   }, [disabled, loading]);

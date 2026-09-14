@@ -7,18 +7,6 @@
   background: var(--aig-color-surface);
   box-shadow: var(--aig-material-shadow);
 }
-.aig-prompt-input::after {
-  content: '';
-  position: absolute;
-  inset: 6px;
-  background: var(--aig-frame-corner);
-  opacity: 0.7;
-  pointer-events: none;
-  transition: opacity 240ms linear;
-}
-.aig-prompt-input:focus-within::after {
-  opacity: 1;
-}
 .aig-prompt-input .aig-textarea {
   min-height: 56px;
 }

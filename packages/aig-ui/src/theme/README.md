@@ -28,13 +28,13 @@
 
 ## 字体
 
-`font` 的字符串按宿主写好的 CSS 原样使用，数组按优先级编译为字体栈：通用关键字原样输出，含空格的具体字体名加引号。省略的字段继承外层 Token，未声明的字体由浏览器沿字体栈回退；自定义字体文件由宿主自行加载。
+`font` 的字符串按宿主写好的 CSS 原样使用，数组按优先级编译为字体栈：通用关键字原样输出，含空格的具体字体名加引号。省略的字段继承外层 Token，未声明的字体由浏览器沿字体栈回退；字体文件由宿主加载；预览站通过本地 Fontsource 资源提供 Inter 与 JetBrains Mono，中文使用微软雅黑及系统回退。
 
-| 字段      | Token                | 用途与默认值                                                       |
-| --------- | -------------------- | ------------------------------------------------------------------ |
-| `family`  | `--aig-font-family`  | 正文、控件与浮层，默认 `system-ui, 'Microsoft YaHei', sans-serif`  |
-| `display` | `--aig-font-display` | 标题与展示文字，默认 `STSong, 'Songti SC', SimSun, Georgia, serif` |
-| `mono`    | `--aig-font-mono`    | 代码、路径与编号，默认 `ui-monospace, Consolas, monospace`         |
+| 字段      | Token                | 用途与默认值                                                                                     |
+| --------- | -------------------- | ------------------------------------------------------------------------------------------------ |
+| `family`  | `--aig-font-family`  | 正文、控件与浮层，默认 `Inter, 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif` |
+| `display` | `--aig-font-display` | 标题与展示文字，默认与正文使用相同的无衬线字体栈                                                 |
+| `mono`    | `--aig-font-mono`    | 代码、路径与编号，默认 `'JetBrains Mono', ui-monospace, Consolas, monospace`                     |
 
 ```tsx
 <AigProvider
@@ -68,19 +68,23 @@
 
 `AigProvider.palette` 统一配置语义颜色，独立于 `brand.color`。省略字段继承外层，浮层使用所属主题色，`style` 中的 Token 覆盖优先。
 
-| 字段 | 默认色 | 用途 |
-| --- | --- | --- |
-| danger | `#E60012` 鲜红 | 删除、移除、失败 |
+| 字段    | 默认色         | 用途             |
+| ------- | -------------- | ---------------- |
+| danger  | `#E60012` 鲜红 | 删除、移除、失败 |
 | success | `#15803D` 绿色 | 确认、完成、通过 |
-| warning | `#B45309` 琥珀 | 警告、需要留意 |
-| info | `#1D4ED8` 蓝色 | 信息、进度 |
-| neutral | `#52525B` 灰色 | 常规、中性 |
+| warning | `#B45309` 琥珀 | 警告、需要留意   |
+| info    | `#1D4ED8` 蓝色 | 信息、进度       |
+| neutral | `#52525B` 灰色 | 常规、中性       |
 
 ```tsx
-<AigProvider palette={{ danger: '#e60012', success: '#15803d', warning: '#b45309', info: '#1d4ed8', neutral: '#52525b' }}>
+<AigProvider
+  palette={{ danger: '#e60012', success: '#15803d', warning: '#b45309', info: '#1d4ed8', neutral: '#52525b' }}
+>
   <Button variant="danger">删除记录</Button>
   <Button tone="success">确认通过</Button>
-  <Button variant="outline" tone="warning">需要留意</Button>
+  <Button variant="outline" tone="warning">
+    需要留意
+  </Button>
 </AigProvider>
 ```
 

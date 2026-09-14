@@ -1,5 +1,4 @@
-/* 数据表：透明底 + 发丝行线；表头底线为用户玫瑰并带巡航光点，
-   悬停与选中用极淡玫瑰底。 */
+/* 数据表以细行线组织内容，表头保持稳定，悬停与选择强调当前行。 */
 .aig-table-scroll {
   width: 100%;
   overflow-x: auto;
@@ -46,7 +45,6 @@
   background-size: 42% 1px;
   background-repeat: no-repeat;
   background-position: var(--aig-glint-x) 100%;
-  animation: aig-glint-x var(--aig-motion-glint-period) linear infinite;
 }
 .aig-table tbody tr {
   transition:
