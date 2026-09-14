@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { expect, it, vi } from 'vitest';
 import { Button } from './button.js';
 
-it('刻面在挂载后固定，色块贯穿高度、梯形与多边形贴边拼接，局部快慢闪切支持宿主取消', () => {
+it('刻面在挂载后固定，色块贯穿高度、三角形与四边形贴边拼接，局部快慢闪切支持宿主取消', () => {
   const enter = vi.fn();
   const { rerender } = render(<Button onPointerEnter={enter}>保存</Button>);
   const button = screen.getByRole('button', { name: '保存' });
@@ -20,13 +20,13 @@ it('刻面在挂载后固定，色块贯穿高度、梯形与多边形贴边拼�
       .split(' ')
       .map((point) => point.split(',').map(Number)),
   );
-  expect(shapes.every((points) => points.length === 4 || points.length === 5)).toBe(true);
+  expect(shapes.every((points) => points.length === 3 || points.length === 4)).toBe(true);
   expect(
     shapes.every(
       (points) => points.some((point) => point[1] === 0) && points.some((point) => point[1] === 100),
     ),
   ).toBe(true);
-  expect(shapes.filter((points) => points.length === 4).length).toBeGreaterThanOrEqual(2);
+  expect(shapes.filter((points) => points.length === 3)).toHaveLength(1);
   expect(
     shapes
       .filter((points) => points.some((point) => point[0] === 0 || point[0] === 300))

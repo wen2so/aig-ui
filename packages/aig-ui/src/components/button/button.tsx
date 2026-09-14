@@ -33,12 +33,12 @@ function ButtonMark() {
   );
 }
 
-/** 色块贯穿按钮高度，以梯形和少量不规则多边形分散拼接，端部自然贴边。 */
+/** 三角形与四边形贯穿按钮高度拼接，端部以宽阔梯形贴边。 */
 function createButtonFacets() {
   const count = 4 + Math.floor(Math.random() * 2);
   const weights = Array.from({ length: count }, () => 0.85 + Math.random() * 0.3);
   const total = weights.reduce((sum, weight) => sum + weight, 0);
-  const kink = 1 + Math.floor(Math.random() * (count - 1));
+  const triangle = 1 + Math.floor(Math.random() * (count - 2));
   const turn = 2 + Math.floor(Math.random() * (count - 2));
   let consumed = 0;
   const boundaries: number[][][] = [
@@ -52,24 +52,28 @@ function createButtonFacets() {
     const x = (consumed / total) * 300;
     // 两组斜边在不同位置转向，宽窄变化形成舒展的梯形，避免重复平行条纹。
     const skew = (index < turn ? 1 : -1) * (10 + Math.random() * 10);
-    const points = [[x + skew, 0]];
-    if (index === kink) {
-      const ratio = 0.3 + Math.random() * 0.4;
-      points.push([x + skew * (1 - 2 * ratio) + (Math.random() < 0.5 ? -1 : 1) * 12, ratio * 100]);
-    }
-    points.push([x - skew, 100]);
-    boundaries.push(points);
+    boundaries.push([
+      [x + skew, 0],
+      [x - skew, 100],
+    ]);
   }
   boundaries.push([
     [300, 0],
     [300, 100],
   ]);
+  // 单块在上边缘收成顶点，底边保持原有宽度，相邻块共享顶点形成四边形。
+  const tip = (boundaries[triangle]![0]![0]! + boundaries[triangle + 1]![0]![0]!) / 2;
+  boundaries[triangle]![0]![0] = tip;
+  boundaries[triangle + 1]![0]![0] = tip;
   const flip = Math.random() < 0.5;
   return Array.from({ length: count }, (_, index) => {
     const start = boundaries[index]!;
     const end = boundaries[index + 1]!;
     // 每块均连接上下边缘，共享斜线直接拼接，避免半高色块单独消失。
-    const points = [start[0]!, ...end, ...start.slice(1).reverse()];
+    const points = [start[0]!, ...end, ...start.slice(1).reverse()].filter(
+      (point, position, vertices) =>
+        position === 0 || point[0] !== vertices[position - 1]![0] || point[1] !== vertices[position - 1]![1],
+    );
     return points.map(([x, y]) => `${x!.toFixed(2)},${(flip ? 100 - y! : y!).toFixed(2)}`).join(' ');
   });
 }
