@@ -33,35 +33,44 @@ function ButtonMark() {
   );
 }
 
-/** 两端直角收口，中部向内部节点汇聚，形成连续、不重复折返的刻面。 */
+/** 色块贯穿按钮高度，以梯形和少量不规则多边形分散拼接，端部自然贴边。 */
 function createButtonFacets() {
-  const left = 65 + Math.random() * 30;
-  const right = 220 + Math.random() * 25;
-  const center = [140 + Math.random() * 30, 38 + Math.random() * 24];
-  // 中部四边形沿周界连接内部节点，避免顶点在上下边缘交替形成锯齿。
-  const boundary = [[left, 0]];
-  if (Math.random() < 0.5) boundary.push([200 + Math.random() * 20, 0]);
-  boundary.push([300, 0], [right, 100]);
-  if (Math.random() < 0.5) boundary.push([85 + Math.random() * 25, 100]);
-  boundary.push([0, 100]);
-  const triangles = [
+  const count = 4 + Math.floor(Math.random() * 2);
+  const weights = Array.from({ length: count }, () => 0.85 + Math.random() * 0.3);
+  const total = weights.reduce((sum, weight) => sum + weight, 0);
+  const kink = 1 + Math.floor(Math.random() * (count - 1));
+  const turn = 2 + Math.floor(Math.random() * (count - 2));
+  let consumed = 0;
+  const boundaries: number[][][] = [
     [
       [0, 0],
       [0, 100],
-      [left, 0],
-    ],
-    ...boundary.map((point, index) => [point, boundary[(index + 1) % boundary.length]!, center]),
-    [
-      [300, 0],
-      [300, 100],
-      [right, 100],
     ],
   ];
+  for (let index = 1; index < count; index++) {
+    consumed += weights[index - 1]!;
+    const x = (consumed / total) * 300;
+    // 两组斜边在不同位置转向，宽窄变化形成舒展的梯形，避免重复平行条纹。
+    const skew = (index < turn ? 1 : -1) * (10 + Math.random() * 10);
+    const points = [[x + skew, 0]];
+    if (index === kink) {
+      const ratio = 0.3 + Math.random() * 0.4;
+      points.push([x + skew * (1 - 2 * ratio) + (Math.random() < 0.5 ? -1 : 1) * 12, ratio * 100]);
+    }
+    points.push([x - skew, 100]);
+    boundaries.push(points);
+  }
+  boundaries.push([
+    [300, 0],
+    [300, 100],
+  ]);
   const flip = Math.random() < 0.5;
-  return triangles.map((triangle) => {
-    const points = triangle.map(([x, y]) => [x!, flip ? 100 - y! : y!]);
-    // 共用同一组边界坐标，刻面直接拼接。
-    return points.map(([x, y]) => `${x!.toFixed(2)},${y!.toFixed(2)}`).join(' ');
+  return Array.from({ length: count }, (_, index) => {
+    const start = boundaries[index]!;
+    const end = boundaries[index + 1]!;
+    // 每块均连接上下边缘，共享斜线直接拼接，避免半高色块单独消失。
+    const points = [start[0]!, ...end, ...start.slice(1).reverse()];
+    return points.map(([x, y]) => `${x!.toFixed(2)},${(flip ? 100 - y! : y!).toFixed(2)}`).join(' ');
   });
 }
 

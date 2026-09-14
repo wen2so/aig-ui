@@ -3,43 +3,58 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { expect, it, vi } from 'vitest';
 import { Button } from './button.js';
 
-it('刻面在挂载后固定，两端直角、中间内部汇聚，局部快慢闪切支持宿主取消', () => {
+it('刻面在挂载后固定，色块贯穿高度、梯形与多边形贴边拼接，局部快慢闪切支持宿主取消', () => {
   const enter = vi.fn();
   const { rerender } = render(<Button onPointerEnter={enter}>保存</Button>);
   const button = screen.getByRole('button', { name: '保存' });
   fireEvent.pointerOver(button);
   expect(enter).toHaveBeenCalledOnce();
   const facets = [...button.querySelectorAll<SVGElement>('.aig-button-highlight polygon')];
-  expect([6, 7, 8]).toContain(facets.length);
+  expect([4, 5]).toContain(facets.length);
   const depths = facets.map((facet) => Number(facet.style.getPropertyValue('--aig-facet-depth')));
   expect(depths.every((depth) => [0.88, 0.94, 1].includes(depth))).toBe(true);
   expect(new Set(depths).size).toBeLessThanOrEqual(3);
-  for (const [index, facet] of facets.entries()) {
-    const points = facet
+  const shapes = facets.map((facet) =>
+    facet
       .getAttribute('points')!
       .split(' ')
-      .map((point) => point.split(',').map(Number));
-    const rightAngle = points.some((point, index) => {
-      const a = points[(index + 1) % 3]!;
-      const b = points[(index + 2) % 3]!;
-      return (
-        Math.abs((a[0]! - point[0]!) * (b[0]! - point[0]!) + (a[1]! - point[1]!) * (b[1]! - point[1]!)) < 0.01
-      );
-    });
-    if (index === 0 || index === facets.length - 1) expect(rightAngle).toBe(true);
-    else {
-      expect(points.some((point) => point[1]! > 30 && point[1]! < 70)).toBe(true);
-      expect(points.every((point, i) => point[0] !== points[(i + 1) % 3]![0])).toBe(true);
+      .map((point) => point.split(',').map(Number)),
+  );
+  expect(shapes.every((points) => points.length === 4 || points.length === 5)).toBe(true);
+  expect(
+    shapes.every(
+      (points) => points.some((point) => point[1] === 0) && points.some((point) => point[1] === 100),
+    ),
+  ).toBe(true);
+  expect(shapes.filter((points) => points.length === 4).length).toBeGreaterThanOrEqual(2);
+  expect(
+    shapes
+      .filter((points) => points.some((point) => point[0] === 0 || point[0] === 300))
+      .every((points) => points.length >= 4),
+  ).toBe(true);
+  // 每个内部节点最多连接三块，覆盖面积与按钮一致。
+  const incidence = new Map<string, number>();
+  for (const points of shapes) {
+    for (const point of points) {
+      if (point[1] === 0 || point[1] === 100) continue;
+      const key = point.join(',');
+      incidence.set(key, (incidence.get(key) ?? 0) + 1);
     }
   }
-  const area = facets.reduce((sum, facet) => {
-    const [a, b, c] = facet
-      .getAttribute('points')!
-      .split(' ')
-      .map((point) => point.split(',').map(Number));
-    return sum + Math.abs((b![0]! - a![0]!) * (c![1]! - a![1]!) - (c![0]! - a![0]!) * (b![1]! - a![1]!)) / 2;
-  }, 0);
-  expect(area).toBeCloseTo(30000, 0);
+  expect(Math.max(...incidence.values())).toBeLessThanOrEqual(3);
+  const area = shapes.reduce(
+    (sum, points) =>
+      sum +
+      Math.abs(
+        points.reduce((cross, point, index) => {
+          const next = points[(index + 1) % points.length]!;
+          return cross + point[0]! * next[1]! - next[0]! * point[1]!;
+        }, 0),
+      ) /
+        2,
+    0,
+  );
+  expect(Math.abs(area - 30000)).toBeLessThan(2);
   const geometry = facets.map((facet) => facet.getAttribute('points'));
   const flashes = facets.filter((facet) => facet.dataset.motion === 'flash');
   expect(flashes).toHaveLength(Math.round(facets.length * 0.4));

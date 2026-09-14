@@ -39,7 +39,7 @@ test('首轮收回，hover 复用刻面并局部闪切后保持三档高亮，�
   await primary.hover();
   const next = await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')));
   expect(next).toEqual(initial);
-  expect([6, 7, 8]).toContain(next.length);
+  expect([4, 5]).toContain(next.length);
   // 在同一轮中采样两次明灭与稳定时刻，核对真实 CSS 播放节奏。
   await expect(primary.locator('polygon[data-motion=flash]')).toHaveCount(Math.round(next.length * 0.4));
   const samples = await primary
