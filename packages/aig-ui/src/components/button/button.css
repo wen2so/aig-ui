@@ -19,7 +19,7 @@
   border: 0;
   border-radius: var(--aig-radius-control);
   background: transparent;
-  color: var(--aig-color-text);
+  color: var(--aig-color-accent);
   font: inherit;
   font-size: 13px;
   font-weight: 500;
@@ -38,6 +38,10 @@
   justify-content: center;
   gap: var(--aig-space-2);
   min-inline-size: 0;
+}
+/* 浅色刻面上使用正文深色，文字和图标在整轮闪切期间保持清晰。 */
+.aig-button:enabled:has(.aig-button-highlight:is([data-playing], [data-hovered])) .aig-button-content {
+  color: var(--aig-color-text);
 }
 .aig-button-content::before {
   content: '';
@@ -485,6 +489,9 @@
   }
 }
 @media (forced-colors: active) {
+  .aig-button .aig-button-content {
+    color: inherit !important;
+  }
   .aig-button {
     color: ButtonText !important;
     box-shadow: none !important;

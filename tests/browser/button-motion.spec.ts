@@ -107,6 +107,62 @@ test('首轮收回，hover 复用刻面并局部闪切后保持三档高亮，�
   await expect.poll(hidden).toBe(false);
 });
 
+test('各层级文字随刻面显示切换，三档背景均保持可读对比', async ({ page }) => {
+  await page.goto('http://127.0.0.1:5173/?component=Button');
+  await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
+  const buttons = page.locator('#example-variants .preview-actions > .aig-button');
+  for (const button of await buttons.all()) {
+    const highlight = button.locator('.aig-button-highlight');
+    const content = button.locator('.aig-button-content');
+    await expect(highlight).not.toHaveAttribute('data-playing', '');
+    const idle = await content.evaluate((el) => getComputedStyle(el).color);
+    await button.hover();
+    const ink = await content.evaluate((el) => getComputedStyle(el).color);
+    expect(ink).not.toBe(idle);
+    // 按实际计算色值合成三档刻面，覆盖空白区域和主题的三种浅色表面。
+    const minimum = await button.evaluate((el) => {
+      const style = getComputedStyle(el);
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = 1;
+      const context = canvas.getContext('2d')!;
+      const rgb = (color: string) => {
+        context.clearRect(0, 0, 1, 1);
+        context.fillStyle = color;
+        context.fillRect(0, 0, 1, 1);
+        return [...context.getImageData(0, 0, 1, 1).data].slice(0, 3).map((value) => value / 255);
+      };
+      const luminance = (values: number[]) =>
+        values
+          .map((value) => (value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4))
+          .reduce((sum, value, index) => sum + value * [0.2126, 0.7152, 0.0722][index]!, 0);
+      const text = luminance(rgb(getComputedStyle(el.querySelector('.aig-button-content')!).color));
+      const fill = rgb(getComputedStyle(el.querySelector('polygon')!).fill);
+      return Math.min(
+        ...['--aig-color-bg', '--aig-color-surface', '--aig-color-surface-muted'].flatMap((token) => {
+          const surface = rgb(style.getPropertyValue(token));
+          return [0, 0.14, 0.22, 0.3].map((alpha) => {
+            const background = luminance(
+              surface.map((value, index) => value * (1 - alpha) + fill[index]! * alpha),
+            );
+            return (Math.max(text, background) + 0.05) / (Math.min(text, background) + 0.05);
+          });
+        }),
+      );
+    });
+    expect(minimum).toBeGreaterThanOrEqual(4.5);
+    await expect(highlight).not.toHaveAttribute('data-playing', '');
+    await expect(content).toHaveCSS('color', ink);
+    await page.mouse.move(4, 4);
+    await expect(content).toHaveCSS('color', idle);
+  }
+  await page.emulateMedia({ forcedColors: 'active' });
+  const first = buttons.first();
+  await first.hover();
+  expect(await first.locator('.aig-button-content').evaluate((el) => getComputedStyle(el).color)).toBe(
+    await first.evaluate((el) => getComputedStyle(el).color),
+  );
+});
+
 test('悬停、按压、选中与加载分别使用对应反馈', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Button');
   // 本用例观察按钮状态，滚动定位即时完成，保持指针停在目标上。

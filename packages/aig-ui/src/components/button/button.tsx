@@ -87,6 +87,7 @@ function replayButtonFacets(element: SVGSVGElement | null) {
   if (!element) return;
   initializeButtonFacets(element);
   delete element.dataset.playing;
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
   const facets = [...element.querySelectorAll('polygon')];
   const order = [...facets];
   for (let index = order.length - 1; index > 0; index--) {
@@ -255,6 +256,15 @@ export function Button({
       <svg
         ref={highlightRef}
         className="aig-button-highlight"
+        onAnimationEnd={(event) => {
+          const element = event.currentTarget;
+          // 最后一块收回后恢复静止文字色；悬停时继续由高亮状态保持深色。
+          if (
+            element.getAnimations({ subtree: true }).every((animation) => animation.playState === 'finished')
+          ) {
+            delete element.dataset.playing;
+          }
+        }}
         viewBox="0 0 300 100"
         preserveAspectRatio="none"
         aria-hidden="true"
