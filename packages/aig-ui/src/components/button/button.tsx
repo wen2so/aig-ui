@@ -129,6 +129,22 @@ function replayButtonFacets(element: SVGSVGElement | null) {
   element.dataset.playing = '';
 }
 
+/** 每次挂载固定细线的位置、长度和运动方向，随机范围保持在线框内部。 */
+function initializeButtonLines(element: HTMLSpanElement | null) {
+  if (!element || element.dataset.initialized) return;
+  element.dataset.initialized = '';
+  element.querySelectorAll<HTMLElement>('.aig-button-line').forEach((line) => {
+    const growing = Math.random() < 0.5;
+    const direction = Math.random() < 0.5 ? -1 : 1;
+    line.style.setProperty('--aig-line-position', `${24 + Math.random() * 24}%`);
+    line.style.setProperty('--aig-line-length', `${12 + Math.random() * 10}%`);
+    line.style.setProperty('--aig-line-rest', growing ? '0.65' : '1');
+    line.style.setProperty('--aig-line-active', growing ? '1.35' : '0.5');
+    line.style.setProperty('--aig-line-shift', `${direction * (25 + Math.random() * 30)}%`);
+    line.style.setProperty('--aig-line-delay', `${Math.round(Math.random() * 70)}ms`);
+  });
+}
+
 /** 同批按钮按行从左到右错开播放，清理时取消对应排队项。 */
 const entranceQueue = new Map<SVGSVGElement, () => void>();
 const cancellations = new WeakMap<SVGSVGElement, () => void>();
@@ -191,6 +207,20 @@ export function Button({
   const contrastRef = useRef<HTMLSpanElement>(null);
   useButtonContrast(highlightRef, contentRef, contrastRef);
   const enteredRef = useRef(false);
+  const interactedRef = useRef(false);
+  /** 首次交互播放刻面，后续交互直接保持稳定高亮。 */
+  const activateHighlight = () => {
+    const element = highlightRef.current;
+    if (!element) return;
+    entranceQueue.delete(element);
+    cancellations.get(element)?.();
+    enteredRef.current = true;
+    element.dataset.hovered = '';
+    if (!interactedRef.current) {
+      interactedRef.current = true;
+      replayButtonFacets(element);
+    }
+  };
   useEffect(() => {
     const element = highlightRef.current;
     initializeButtonFacets(element);
@@ -228,14 +258,7 @@ export function Button({
       onPointerEnter={(event) => {
         onPointerEnter?.(event);
         if (event.defaultPrevented || disabled || loading || event.pointerType === 'touch') return;
-        const element = highlightRef.current;
-        if (element) {
-          entranceQueue.delete(element);
-          cancellations.get(element)?.();
-          enteredRef.current = true;
-          element.dataset.hovered = '';
-        }
-        replayButtonFacets(element);
+        activateHighlight();
       }}
       onPointerLeave={(event) => {
         onPointerLeave?.(event);
@@ -259,13 +282,7 @@ export function Button({
           !loading &&
           event.currentTarget.matches(':focus-visible')
         ) {
-          if (highlightRef.current) {
-            entranceQueue.delete(highlightRef.current);
-            cancellations.get(highlightRef.current)?.();
-            enteredRef.current = true;
-            highlightRef.current.dataset.hovered = '';
-          }
-          replayButtonFacets(highlightRef.current);
+          activateHighlight();
         }
       }}
     >
@@ -286,7 +303,7 @@ export function Button({
         aria-hidden="true"
         focusable="false"
       ></svg>
-      <span className="aig-button-frame" aria-hidden="true">
+      <span ref={initializeButtonLines} className="aig-button-frame" aria-hidden="true">
         <span className="aig-button-line" data-edge="top" />
         <span className="aig-button-line" data-edge="bottom" />
         <span className="aig-button-line" data-edge="start" />

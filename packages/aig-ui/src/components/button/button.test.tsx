@@ -72,6 +72,8 @@ it('刻面在挂载后固定，色块贯穿高度、三角形与四边形贴边�
   expect(Math.max(...finishes)).toBe(800);
   fireEvent.pointerLeave(button);
   fireEvent.pointerOver(button);
+  expect(button.querySelector('.aig-button-highlight')).toHaveAttribute('data-hovered');
+  expect(button.querySelector('.aig-button-highlight')).not.toHaveAttribute('data-playing');
   expect([...button.querySelectorAll('polygon')]).toEqual(facets);
   expect(facets.map((facet) => facet.getAttribute('points'))).toEqual(geometry);
   expect(facets.map((facet) => Number(facet.style.getPropertyValue('--aig-facet-depth')))).toEqual(depths);
@@ -82,6 +84,23 @@ it('刻面在挂载后固定，色块贯穿高度、三角形与四边形贴边�
   rerender(<Button onPointerEnter={(event) => event.preventDefault()}>保存</Button>);
   fireEvent.pointerOver(button);
   expect(button.querySelector('svg')!.innerHTML).toBe(before);
+});
+
+it('细线随机布局在重渲染和重复交互后保持固定', () => {
+  const { rerender } = render(<Button>保存</Button>);
+  const button = screen.getByRole('button', { name: '保存' });
+  const styles = () =>
+    [...button.querySelectorAll('.aig-button-line')].map((line) => line.getAttribute('style'));
+  const initial = styles();
+  expect(initial).toHaveLength(4);
+  expect(initial.every((style) => style?.includes('--aig-line-position'))).toBe(true);
+  fireEvent.pointerOver(button);
+  fireEvent.pointerLeave(button);
+  rerender(<Button loading>保存</Button>);
+  rerender(<Button>保存</Button>);
+  fireEvent.pointerOver(button);
+  expect(styles()).toEqual(initial);
+  expect(button.querySelector('.aig-button-highlight')).not.toHaveAttribute('data-playing');
 });
 
 it('默认使用普通按钮，加载时保留名称并阻止重复动作', () => {

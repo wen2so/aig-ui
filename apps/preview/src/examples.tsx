@@ -291,7 +291,7 @@ export const extraExamples: Record<string, Example[]> = {
       id: 'variants',
       title: '操作层级',
       description:
-        '入场和每次鼠标移入时，随机选取 1～2 块三角，各闪现一次后收回。出现时刻随机，文字与边框保持清晰。',
+        '首次悬停播放局部刻面闪切，后续悬停直接显示稳定高亮。边缘细线随机分布，伸缩与位移在每次交互中保持一致。',
       render: () => (
         <div className="preview-actions">
           {variants.map((variant, i) => (
@@ -324,7 +324,7 @@ export const extraExamples: Record<string, Example[]> = {
       id: 'states',
       title: '静止、加载与禁用',
       description:
-        '静止显示清晰边框，加载使用专用图标与基线扫描，禁用保持静态轮廓。三角切片在首次入场和每次鼠标移入时重播，选中和展开状态通过左侧标记与加厚底线表达。',
+        '静止显示清晰边框，加载使用专用图标与基线扫描，禁用保持静态轮廓。刻面在入场与首次交互时播放，后续交互保持稳定高亮，选中和展开状态通过左侧标记与加厚底线表达。',
       render: () => <ButtonStates />,
       code: '<Button>静止</Button>\n<Button loading>正在处理</Button>\n<Button disabled>等待开放</Button>',
       wide: true,

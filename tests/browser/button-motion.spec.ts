@@ -113,6 +113,10 @@ test('首轮收回，hover 复用刻面并局部闪切后保持三档高亮，�
   expect(await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')))).toEqual(
     next,
   );
+  await expect(primary.locator('.aig-button-highlight')).not.toHaveAttribute('data-playing', '');
+  expect(
+    await facets.evaluateAll((elements) => elements.every((el) => el.getAnimations().length === 0)),
+  ).toBe(true);
   await facets.evaluateAll((elements) =>
     elements.forEach((el) =>
       el.getAnimations().forEach((animation) => {
