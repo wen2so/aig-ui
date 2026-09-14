@@ -13,6 +13,24 @@ export function useButtonContrast(
     const contrast = contrastRef.current;
     const button = highlight?.closest('button');
     if (!highlight || !source || !contrast || !button) return;
+    const svgNamespace = 'http://www.w3.org/2000/svg';
+    const definitions = document.createElementNS(svgNamespace, 'svg');
+    definitions.setAttribute('width', '0');
+    definitions.setAttribute('height', '0');
+    definitions.setAttribute('aria-hidden', 'true');
+    definitions.style.position = 'absolute';
+    definitions.style.pointerEvents = 'none';
+    const mask = document.createElementNS(svgNamespace, 'mask');
+    mask.id = `aig-button-text-mask-${suffix}`;
+    mask.classList.add('aig-button-text-mask');
+    mask.setAttribute('maskUnits', 'userSpaceOnUse');
+    mask.setAttribute('maskContentUnits', 'userSpaceOnUse');
+    mask.setAttribute('x', '0');
+    mask.setAttribute('y', '0');
+    mask.style.maskType = 'alpha';
+    definitions.append(mask);
+    button.append(definitions);
+    contrast.style.maskImage = `url("#${mask.id}")`;
     let frame = 0;
     const copyContent = () => {
       const copy = source.cloneNode(true) as HTMLSpanElement;
@@ -38,21 +56,30 @@ export function useButtonContrast(
     };
     const update = () => {
       frame = 0;
-      let path = '';
       const active = !button.disabled && highlight.hasAttribute('data-hovered');
-      if (active) {
-        const layer = contrast.getBoundingClientRect();
-        const bounds = highlight.getBoundingClientRect();
-        highlight.querySelectorAll('polygon').forEach((polygon) => {
-          if (Number(getComputedStyle(polygon).fillOpacity) === 0) return;
-          const points = [...polygon.points].map(
-            (point) =>
-              `${(point.x * bounds.width) / 300 + bounds.left - layer.left},${(point.y * bounds.height) / 100 + bounds.top - layer.top}`,
-          );
-          path += `M${points.join(' L')} Z `;
-        });
+      const layer = contrast.getBoundingClientRect();
+      const bounds = highlight.getBoundingClientRect();
+      mask.setAttribute('width', String(layer.width));
+      mask.setAttribute('height', String(layer.height));
+      const facets = [...highlight.querySelectorAll('polygon')];
+      while (mask.childElementCount < facets.length) {
+        const path = document.createElementNS(svgNamespace, 'path');
+        path.setAttribute('fill', 'white');
+        mask.append(path);
       }
-      contrast.style.clipPath = path ? `path('${path}')` : 'inset(50%)';
+      facets.forEach((polygon, index) => {
+        const style = getComputedStyle(polygon);
+        const depth = Number(style.getPropertyValue('--aig-facet-depth')) || 1;
+        // 按本块的实际显示比例混合深浅字，渐显初期保留足够的深色文字。
+        const alpha = active ? Math.min(1, Math.max(0, Number(style.fillOpacity) / depth)) : 0;
+        const points = [...polygon.points].map(
+          (point) =>
+            `${(point.x * bounds.width) / 300 + bounds.left - layer.left},${(point.y * bounds.height) / 100 + bounds.top - layer.top}`,
+        );
+        const path = mask.children[index]!;
+        path.setAttribute('d', `M${points.join(' L')} Z`);
+        path.setAttribute('fill-opacity', String(alpha));
+      });
       // 只在刻面或外沿仍运动时跟随实际帧，稳定后由状态、内容和尺寸变化唤醒。
       if (
         active &&
@@ -86,6 +113,8 @@ export function useButtonContrast(
       contentObserver.disconnect();
       motionObserver.disconnect();
       resizeObserver?.disconnect();
+      definitions.remove();
+      contrast.style.removeProperty('mask-image');
     };
   }, [highlightRef, contentRef, contrastRef, suffix]);
 }

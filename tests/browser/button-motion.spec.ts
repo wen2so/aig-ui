@@ -50,7 +50,7 @@ test('首轮收回，hover 复用刻面并局部闪切后保持三档高亮，�
       animation.pause();
       const delay = Number(animation.effect!.getTiming().delay);
       const duration = Number(animation.effect!.getTiming().duration);
-      const values = [0.22, 0.35, 0.5, 0.9, 0.96].map((progress) => {
+      const values = [0.22, 0.45, 0.62, 0.85, 0.98].map((progress) => {
         animation.currentTime = delay + duration * progress;
         return Number(getComputedStyle(el).fillOpacity);
       });
@@ -132,6 +132,10 @@ test('浅字区域与实际闪切刻面同步，未覆盖区域保留深字', as
   const button = page.locator('#example-variants .preview-actions > .aig-button').first();
   const highlight = button.locator('.aig-button-highlight');
   const overlay = button.locator('.aig-button-contrast');
+  const alphas = () =>
+    button
+      .locator('.aig-button-text-mask path')
+      .evaluateAll((elements) => elements.map((el) => Number(el.getAttribute('fill-opacity'))));
   await expect(highlight).not.toHaveAttribute('data-playing', '');
   // 首次打开时等待字体完成排版，避免取样期间按钮移位导致 hover 退出。
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
@@ -146,7 +150,7 @@ test('浅字区域与实际闪切刻面同步，未覆盖区域保留深字', as
     );
     el.setAttribute('data-sample-time', '0');
   });
-  await expect(overlay).toHaveCSS('clip-path', 'inset(50%)');
+  await expect.poll(async () => (await alphas()).every((value) => value === 0)).toBe(true);
   await expect(button.locator('.aig-button-content')).toHaveCSS('color', idle);
   const flash = highlight.locator('polygon[data-motion=flash]').first();
   const sample = async (progress: number) => {
@@ -157,14 +161,21 @@ test('浅字区域与实际闪切刻面同步，未覆盖区域保留深字', as
       el.closest('svg')!.setAttribute('data-sample-time', String(progress));
     }, progress);
   };
+  await sample(0.09);
+  await expect.poll(async () => (await alphas()).some((value) => value > 0 && value < 1)).toBe(true);
+  const expectedAlpha = await flash.evaluate(
+    (el) =>
+      Number(getComputedStyle(el).fillOpacity) /
+      Number(getComputedStyle(el).getPropertyValue('--aig-facet-depth')),
+  );
+  expect(Math.max(...(await alphas()))).toBeCloseTo(expectedAlpha, 3);
   await sample(0.22);
-  await expect(overlay).toHaveCSS('clip-path', /^path\(/);
-  const path = await overlay.evaluate((el) => getComputedStyle(el).clipPath);
-  expect(path.match(/M/g)).toHaveLength(1);
-  await sample(0.35);
-  await expect(overlay).toHaveCSS('clip-path', 'inset(50%)');
+  await expect.poll(async () => (await alphas()).some((value) => value > 0)).toBe(true);
+  expect((await alphas()).filter((value) => value > 0)).toHaveLength(1);
+  await sample(0.45);
+  await expect.poll(async () => (await alphas()).every((value) => value === 0)).toBe(true);
   await sample(0.96);
-  await expect(overlay).toHaveCSS('clip-path', /^path\(/);
+  await expect.poll(async () => (await alphas()).some((value) => value > 0)).toBe(true);
   await highlight.evaluate((el) => {
     el.querySelectorAll('polygon').forEach((polygon) =>
       polygon.getAnimations().forEach((animation) => animation.finish()),
@@ -178,9 +189,8 @@ test('浅字区域与实际闪切刻面同步，未覆盖区域保留深字', as
         lit: [...el.querySelectorAll('polygon')].filter(
           (polygon) => Number(getComputedStyle(polygon).fillOpacity) > 0,
         ).length,
-        clipped: (
-          getComputedStyle(el.parentElement!.querySelector('.aig-button-contrast')!).clipPath.match(/M/g) ??
-          []
+        clipped: [...el.parentElement!.querySelectorAll('.aig-button-text-mask path')].filter(
+          (path) => Number(path.getAttribute('fill-opacity')) > 0,
         ).length,
       })),
     )
@@ -191,10 +201,10 @@ test('浅字区域与实际闪切刻面同步，未覆盖区域保留深字', as
     });
   await expect(button).toHaveAccessibleName('开始创作');
   await page.mouse.move(4, 4);
-  await expect(overlay).toHaveCSS('clip-path', 'inset(50%)');
+  await expect.poll(async () => (await alphas()).every((value) => value === 0)).toBe(true);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await button.hover();
-  await expect(overlay).toHaveCSS('clip-path', /^path\(/);
+  await expect.poll(async () => (await alphas()).some((value) => value > 0)).toBe(true);
   await page.emulateMedia({ forcedColors: 'active' });
   await expect(overlay).toHaveCSS('display', 'none');
 });
