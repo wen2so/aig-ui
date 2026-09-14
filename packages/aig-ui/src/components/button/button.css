@@ -219,6 +219,63 @@
   animation: aig-button-glint var(--aig-motion-glint-period) linear infinite;
   transition: inset 300ms cubic-bezier(0.34, 1.3, 0.64, 1);
 }
+/* 四段边缘细线错向伸缩与滑移，移出时沿当前进度平滑复位。 */
+.aig-button-line {
+  position: absolute;
+  background: var(--aig-button-trace);
+  opacity: 0.55;
+  pointer-events: none;
+  transition:
+    transform 380ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 220ms linear;
+}
+.aig-button-line[data-edge='top'] {
+  inset-block-start: 3px;
+  inset-inline-start: 12%;
+  inline-size: 24%;
+  block-size: 1px;
+  transform-origin: center;
+  transform: translateX(0) scaleX(0.5);
+}
+.aig-button-line[data-edge='bottom'] {
+  inset-block-end: 3px;
+  inset-inline-end: 12%;
+  inline-size: 30%;
+  block-size: 1px;
+  transform-origin: center;
+  transform: translateX(0) scaleX(1);
+  transition-delay: 40ms;
+}
+.aig-button-line[data-edge='start'],
+.aig-button-line[data-edge='end'] {
+  inline-size: 1px;
+  block-size: 24%;
+  transform: translateY(0) scaleY(1);
+  transition-delay: 70ms;
+}
+.aig-button-line[data-edge='start'] {
+  inset-inline-start: 3px;
+  inset-block-start: 16%;
+}
+.aig-button-line[data-edge='end'] {
+  inset-inline-end: 3px;
+  inset-block-end: 16%;
+}
+.aig-button:is(:hover, :focus-visible):enabled .aig-button-line {
+  opacity: 0.95;
+}
+.aig-button:is(:hover, :focus-visible):enabled .aig-button-line[data-edge='top'] {
+  transform: translateX(35%) scaleX(1.5);
+}
+.aig-button:is(:hover, :focus-visible):enabled .aig-button-line[data-edge='bottom'] {
+  transform: translateX(-30%) scaleX(0.45);
+}
+.aig-button:is(:hover, :focus-visible):enabled .aig-button-line[data-edge='start'] {
+  transform: translateY(110%) scaleY(1.25);
+}
+.aig-button:is(:hover, :focus-visible):enabled .aig-button-line[data-edge='end'] {
+  transform: translateY(-110%) scaleY(0.7);
+}
 /* 碎线与端封的承载层。 */
 .aig-button-frame::before {
   content: '';
@@ -502,6 +559,7 @@
   .aig-button,
   .aig-button-frame,
   .aig-button-frame::before,
+  .aig-button-line,
   .aig-button-highlight,
   .aig-button-highlight polygon,
   :is(.aig-button-content, .aig-button-contrast-content)::before {
@@ -541,6 +599,7 @@
     border-color: ButtonText;
   }
   .aig-button-frame::before,
+  .aig-button-line,
   .aig-button-highlight {
     display: none;
   }

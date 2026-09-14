@@ -286,7 +286,12 @@ export function Button({
         aria-hidden="true"
         focusable="false"
       ></svg>
-      <span className="aig-button-frame" aria-hidden="true" />
+      <span className="aig-button-frame" aria-hidden="true">
+        <span className="aig-button-line" data-edge="top" />
+        <span className="aig-button-line" data-edge="bottom" />
+        <span className="aig-button-line" data-edge="start" />
+        <span className="aig-button-line" data-edge="end" />
+      </span>
       {loading && (
         <span className="aig-button-loading" aria-hidden="true">
           {loadingIcon ?? brand.loadingIcon ?? <ButtonMark />}
