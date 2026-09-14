@@ -52,7 +52,13 @@ export function useButtonContrast(
           if (value !== attribute.value) node.setAttribute(attribute.name, value);
         }
       });
-      contrast.replaceChildren(copy);
+      // 浅色细线共享文字遮罩，复用挂载时确定的随机布局。
+      const lineFrame = button.querySelector('.aig-button-frame')?.cloneNode(true) as
+        HTMLSpanElement | undefined;
+      if (lineFrame) {
+        lineFrame.className = 'aig-button-contrast-frame';
+        contrast.replaceChildren(copy, lineFrame);
+      } else contrast.replaceChildren(copy);
     };
     const update = () => {
       frame = 0;
@@ -65,6 +71,9 @@ export function useButtonContrast(
       while (mask.childElementCount < facets.length) {
         const path = document.createElementNS(svgNamespace, 'path');
         path.setAttribute('fill', 'white');
+        path.setAttribute('stroke', 'white');
+        path.setAttribute('stroke-width', '1');
+        path.setAttribute('stroke-linejoin', 'bevel');
         mask.append(path);
       }
       facets.forEach((polygon, index) => {
@@ -79,6 +88,7 @@ export function useButtonContrast(
         const path = mask.children[index]!;
         path.setAttribute('d', `M${points.join(' L')} Z`);
         path.setAttribute('fill-opacity', String(alpha));
+        path.setAttribute('stroke-opacity', String(alpha));
       });
       // 只在刻面或外沿仍运动时跟随实际帧，稳定后由状态、内容和尺寸变化唤醒。
       if (

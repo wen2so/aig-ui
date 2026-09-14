@@ -83,12 +83,12 @@ function createButtonFacets() {
 /** 每次挂载只初始化一次结构和配色，重渲染与交互均复用原有刻面。 */
 function initializeButtonFacets(element: SVGSVGElement | null) {
   if (!element || element.childElementCount) return;
-  const depths = [0.88, 0.94, 1];
+  const depths = [0.88, 0.94, 1].sort(() => Math.random() - 0.5);
   element.replaceChildren(
-    ...createButtonFacets().map((points) => {
+    ...createButtonFacets().map((points, index) => {
       const facet = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
       facet.setAttribute('points', points);
-      facet.style.setProperty('--aig-facet-depth', String(depths[Math.floor(Math.random() * depths.length)]));
+      facet.style.setProperty('--aig-facet-depth', String(depths[index % depths.length]));
       return facet;
     }),
   );

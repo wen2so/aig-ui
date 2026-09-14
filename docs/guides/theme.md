@@ -119,4 +119,4 @@ LoadingMark 会规范化 path、line、circle、rect、ellipse、polyline、poly
 </AigProvider>
 ```
 
-Button 的 `variant` 表达操作层级，`tone` 表达语义色。`variant="danger"` 固定使用危险色，其余默认 `tone="brand"`。静止时文字、边框与细线使用语义色；稳定高亮使用实色和白字；加载与选中保留语义，禁用降低整体明度。全局主题抽屉提供可编辑色表和实时按钮示例。自定义颜色应结合文字和背景核对对比度。
+Button 的 `variant` 表达操作层级，`tone` 表达语义色。`variant="danger"` 固定使用危险色，其余默认 `tone="brand"`。静止时文字、边框与细线使用语义色；稳定高亮保留三档刻面深浅，文字与细线在覆盖区域切换为浅色；加载与选中保留语义，禁用降低整体明度。全局主题抽屉提供可编辑色表和实时按钮示例。自定义颜色应结合文字和背景核对对比度。

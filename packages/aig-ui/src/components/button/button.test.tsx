@@ -90,7 +90,9 @@ it('细线随机布局在重渲染和重复交互后保持固定', () => {
   const { rerender } = render(<Button>保存</Button>);
   const button = screen.getByRole('button', { name: '保存' });
   const styles = () =>
-    [...button.querySelectorAll('.aig-button-line')].map((line) => line.getAttribute('style'));
+    [...button.querySelectorAll('.aig-button-frame .aig-button-line')].map((line) =>
+      line.getAttribute('style'),
+    );
   const initial = styles();
   expect(initial).toHaveLength(4);
   expect(initial.every((style) => style?.includes('--aig-line-position'))).toBe(true);
