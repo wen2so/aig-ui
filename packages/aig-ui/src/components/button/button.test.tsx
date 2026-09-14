@@ -3,40 +3,25 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { expect, it, vi } from 'vitest';
 import { Button } from './button.js';
 
-it('每次移入随机选取部分切片单次闪切，并保留宿主取消行为', () => {
+it('移入时重新分配刻面明度并保持层次跨度，宿主取消时不分配', () => {
   const enter = vi.fn();
-  const animations = Array.from({ length: 4 }, () => ({
-    currentTime: 480,
-    play: vi.fn(),
-    finish: vi.fn(),
-    effect: { setKeyframes: vi.fn(), updateTiming: vi.fn() },
-  }));
   const { rerender } = render(<Button onPointerEnter={enter}>保存</Button>);
   const button = screen.getByRole('button', { name: '保存' });
-  Object.defineProperty(button.querySelector('.aig-button-enter'), 'getAnimations', {
-    value: () => [...animations],
-  });
-  const random = vi.spyOn(Math, 'random').mockReturnValue(0);
+  const facets = [...button.querySelectorAll<SVGElement>('.aig-button-highlight polygon')];
+  expect(facets).toHaveLength(8);
+  expect(facets.every((facet) => facet.style.getPropertyValue('--aig-facet-depth') === '')).toBe(true);
+
   fireEvent.pointerOver(button);
-  random.mockRestore();
   expect(enter).toHaveBeenCalledOnce();
-  expect(animations.map((animation) => animation.play.mock.calls.length)).toEqual([1, 0, 0, 0]);
-  expect(animations[0]!.currentTime).toBe(0);
-  const nextRandom = vi.spyOn(Math, 'random').mockReturnValue(0.999);
-  fireEvent.pointerOver(button);
-  nextRandom.mockRestore();
-  expect(animations.map((animation) => animation.play.mock.calls.length)).toEqual([1, 0, 1, 1]);
-  const timing = animations[3]!.effect.updateTiming.mock.calls[0]![0];
-  expect(timing.delay).toBeGreaterThanOrEqual(0);
-  expect(timing.delay + timing.duration).toBeLessThanOrEqual(480);
-  const frames = animations[3]!.effect.setKeyframes.mock.lastCall![0];
-  expect(frames.map((frame: Keyframe) => frame.opacity)).toEqual([0, 1, 0, 0]);
-  expect(frames.every((frame: Keyframe) => frame.easing === 'steps(1, end)')).toBe(true);
-  expect(animations[0]!.effect.setKeyframes.mock.lastCall![0]).toEqual([{ opacity: 0 }, { opacity: 0 }]);
+  const depths = facets.map((facet) => Number(facet.style.getPropertyValue('--aig-facet-depth')));
+  expect(depths.every((depth) => depth > 0.25 && depth < 0.75)).toBe(true);
+  expect(new Set(depths).size).toBeGreaterThanOrEqual(3);
+  expect(Math.max(...depths) - Math.min(...depths)).toBeGreaterThanOrEqual(0.22);
 
   rerender(<Button onPointerEnter={(event) => event.preventDefault()}>保存</Button>);
+  facets.forEach((facet) => facet.style.removeProperty('--aig-facet-depth'));
   fireEvent.pointerOver(button);
-  expect(animations.map((animation) => animation.play.mock.calls.length)).toEqual([1, 0, 1, 1]);
+  expect(facets.map((facet) => facet.style.getPropertyValue('--aig-facet-depth'))).toEqual(Array(8).fill(''));
 });
 
 it('默认使用普通按钮，加载时保留名称并阻止重复动作', () => {

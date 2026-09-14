@@ -26,6 +26,10 @@
 .aig-icon-button .aig-button-content::before {
   display: none;
 }
+/* 方形按钮会把横向的三角带压成细条，不参与悬停高亮。 */
+.aig-icon-button .aig-button-highlight {
+  display: none;
+}
 .aig-icon-button .aig-button-loading {
   inset-inline-start: 50%;
   translate: -50% -50%;

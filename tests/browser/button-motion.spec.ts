@@ -23,111 +23,99 @@ test('按钮视图切换和图标收藏支持键盘，并保留可见激活反�
   await expect(selection).toContainText('当前显示数据视图');
 });
 
-test('三角切片入场与每次悬停时重播，完成后保持文字与边框清晰', async ({ page }) => {
+test('悬停时三角刻面随机分配明度并闪切组装，静止与移出后全部收回', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Button');
+  // 本用例按 hover 取样，滚动定位即时完成，保持指针停在目标上。
+  await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
   const variants = page.locator('#example-variants');
   await variants.getByRole('button', { name: '重置操作层级', exact: true }).click();
-  const buttons = variants.locator('.preview-actions > .aig-button');
-  const sample = await buttons.evaluateAll((elements) => {
-    const slices = elements.flatMap((el) => Array.from(el.querySelectorAll('.aig-button-enter polygon')));
-    const animations = slices.map((el) => el.getAnimations()[0]!);
-    animations.forEach((animation) => animation.pause());
-    const frames = [0, 96, 180, 360, 600].map((time) => {
-      animations.forEach((animation) => {
-        animation.currentTime = time;
-      });
-      return slices.map((el) => Number(getComputedStyle(el).opacity));
-    });
-    animations.forEach((animation) => animation.finish());
-    return {
-      frames,
-      selectedCounts: elements.map(
-        (el) =>
-          Array.from(el.querySelectorAll('.aig-button-enter polygon')).filter((slice) =>
-            (slice.getAnimations()[0]!.effect as KeyframeEffect)
-              .getKeyframes()
-              .some((frame) => Number(frame.opacity) === 1),
-          ).length,
-      ),
-      singleFlash: animations.every(
-        (animation) =>
-          (animation.effect as KeyframeEffect).getKeyframes().filter((frame) => Number(frame.opacity) === 1)
-            .length <= 1,
-      ),
-      textVisible: elements.every(
-        (el) => getComputedStyle(el.querySelector('.aig-button-content')!).opacity === '1',
-      ),
-      contained: elements.every((el) => {
-        const frame = el.querySelector('.aig-button-frame')!.getBoundingClientRect();
-        const art = el.querySelector('.aig-button-enter')!.getBoundingClientRect();
-        return art.width === frame.width && art.height === frame.height;
+  const primary = variants.locator('.preview-actions > .aig-button').first();
+  const facets = primary.locator('.aig-button-highlight polygon');
+  const opacities = () =>
+    facets.evaluateAll((elements) => elements.map((el) => Number(getComputedStyle(el).fillOpacity)));
+
+  /* 静止态：按钮表面没有三角结构 */
+  expect(await opacities()).toEqual(Array(8).fill(0));
+
+  /* 每块都是三角面，拼合后铺满整个按钮 */
+  const shapes = await facets.evaluateAll((elements) =>
+    elements.map((el) => (el as SVGPolygonElement).getAttribute('points')!.trim().split(/\s+/).length),
+  );
+  expect(shapes).toEqual(Array(8).fill(3));
+
+  await primary.hover();
+  /* 闪切期间每块都会经过暗淡的一段，等待条件要看是否停在各自的明度上，而不是"大于零"。 */
+  const stable = () =>
+    facets.evaluateAll((elements) =>
+      elements.map((el) => {
+        const style = getComputedStyle(el);
+        return {
+          depth: Number(style.getPropertyValue('--aig-facet-depth')),
+          opacity: Number(style.fillOpacity),
+        };
       }),
-    };
-  });
-  expect(sample.frames[0]!.every((opacity) => opacity === 0)).toBe(true);
-  expect(sample.frames.flat().every((opacity) => opacity === 0 || opacity === 1)).toBe(true);
-  expect(sample.selectedCounts.every((count) => count >= 1 && count <= 2)).toBe(true);
-  expect(sample.singleFlash).toBe(true);
-  expect(sample.frames[3]!.every((opacity) => opacity === 0)).toBe(true);
-  expect(sample.frames[4]!.every((opacity) => opacity === 0)).toBe(true);
-  expect(sample.textVisible).toBe(true);
-  expect(sample.contained).toBe(true);
+    );
+  await expect
+    .poll(async () => (await stable()).every((facet) => Math.abs(facet.opacity - facet.depth) < 0.01))
+    .toBe(true);
 
-  for (const time of [96, 360, 600]) {
-    await buttons.locator('.aig-button-enter polygon').evaluateAll((elements, currentTime) => {
-      elements.forEach((el) => {
-        const animation = el.getAnimations()[0]!;
-        animation.pause();
-        animation.currentTime = currentTime;
-      });
-    }, time);
-    await variants.screenshot({ path: test.info().outputPath(`button-entry-${time}ms.png`) });
+  /* 明度随机分配：至少三档形成层次，整轮覆盖足够的深浅跨度 */
+  const settled = (await stable()).map((facet) => facet.opacity);
+  expect(new Set(settled).size).toBeGreaterThanOrEqual(3);
+  expect(Math.max(...settled)).toBeLessThan(0.75);
+  expect(Math.min(...settled)).toBeGreaterThan(0.25);
+  expect(Math.max(...settled) - Math.min(...settled)).toBeGreaterThanOrEqual(0.22);
+
+  /* 每块闪三下再稳定；明度同时决定时机，越深的刻面出现越早 */
+  const plan = await facets.evaluateAll((elements) =>
+    elements.map((el) => {
+      const style = getComputedStyle(el);
+      const frames = (el.getAnimations()[0]?.effect as KeyframeEffect)?.getKeyframes() ?? [];
+      return {
+        depth: Number(style.getPropertyValue('--aig-facet-depth')),
+        delay: Number.parseFloat(style.animationDelay),
+        frames: frames.length,
+      };
+    }),
+  );
+  expect(plan.every((facet) => facet.frames >= 6 && facet.delay >= 0)).toBe(true);
+  const deepestFirst = [...plan].sort((a, b) => b.depth - a.depth);
+  for (let index = 1; index < deepestFirst.length; index++) {
+    expect(deepestFirst[index]!.delay).toBeGreaterThanOrEqual(deepestFirst[index - 1]!.delay);
   }
-  await buttons.locator('.aig-button-enter polygon').evaluateAll((elements) => {
-    elements.forEach((el) => el.getAnimations()[0]!.finish());
-  });
 
-  const primary = buttons.first();
-  const settled = () =>
-    primary
-      .locator('.aig-button-enter polygon')
-      .evaluateAll((elements) =>
-        elements.every(
-          (el) => getComputedStyle(el).opacity === '0' && el.getAnimations()[0]?.playState === 'finished',
-        ),
-      );
-  for (let replay = 0; replay < 2; replay++) {
-    await page.mouse.move(0, 0);
-    expect(await settled()).toBe(true);
-    await primary.hover();
-    expect(await settled()).toBe(false);
-    await expect
-      .poll(
-        () =>
-          primary
-            .locator('.aig-button-enter polygon')
-            .evaluateAll((elements) => elements.some((el) => getComputedStyle(el).opacity === '1')),
-        { intervals: [16, 32] },
-      )
-      .toBe(true);
-    await expect.poll(settled).toBe(true);
-  }
-  await page.mouse.down();
-  expect(await settled()).toBe(true);
-  await page.mouse.up();
-  await primary.focus();
-  await primary.press('Enter');
-  expect(await settled()).toBe(true);
+  /* 悬停同时点亮左侧的固定三角指示，文字保持清晰 */
+  await expect
+    .poll(() =>
+      primary.evaluate(
+        (el) => getComputedStyle(el.querySelector('.aig-button-content')!, '::before').opacity,
+      ),
+    )
+    .toBe('1');
+  expect(
+    await primary.evaluate((el) => getComputedStyle(el.querySelector('.aig-button-content')!).opacity),
+  ).toBe('1');
+  await variants.screenshot({ path: test.info().outputPath('button-hover-facets.png') });
 
-  // 环境暂停和系统减少动态效果均直接展示稳定形态。
-  await page.getByRole('button', { name: '全局主题', exact: true }).click();
-  await page.getByRole('button', { name: '暂停环境动效', exact: true }).click();
-  await page.getByRole('button', { name: '完成设置', exact: true }).click();
-  await variants.getByRole('button', { name: '重置操作层级', exact: true }).click();
-  await expect(primary.locator('.aig-button-enter')).toHaveCSS('visibility', 'hidden');
+  /* 再次悬停会换一套明度分配 */
+  await page.mouse.move(4, 4);
+  await expect.poll(async () => (await opacities()).every((value) => value === 0)).toBe(true);
+  await primary.hover();
+  await expect
+    .poll(async () => (await stable()).every((facet) => Math.abs(facet.opacity - facet.depth) < 0.01))
+    .toBe(true);
+  expect((await stable()).map((facet) => facet.opacity)).not.toEqual(settled);
+
+  /* 移出：全部收回 */
+  await page.mouse.move(4, 4);
+  await expect.poll(async () => (await opacities()).every((value) => value === 0)).toBe(true);
+
+  /* 减少动态效果时直接给出稳定形态，不经过组装 */
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await expect(primary.locator('.aig-button-enter polygon').first()).toHaveCSS('animation-name', 'none');
-  await expect(primary.locator('.aig-button-enter polygon').first()).toHaveCSS('opacity', '0');
+  await primary.hover();
+  await expect.poll(async () => (await opacities()).every((value) => value > 0)).toBe(true);
+  await page.mouse.move(4, 4);
+  await expect.poll(async () => (await opacities()).every((value) => value === 0)).toBe(true);
 });
 
 test('悬停、按压、选中与加载分别使用对应反馈', async ({ page }) => {
@@ -144,7 +132,8 @@ test('悬停、按压、选中与加载分别使用对应反馈', async ({ page 
   await primary.hover();
   await expect(frame).toHaveCSS('animation-name', 'aig-button-scan');
   await expect(frame).toHaveCSS('inset', '-1px');
-  expect(await indicator()).toBe('0');
+  /* 悬停时左侧的固定三角指示点亮，与选中态共用同一个标记位。 */
+  expect(await indicator()).toBe('1');
   await page.mouse.down();
   await expect(frame).toHaveCSS('inset', '1px');
   await page.mouse.up();
@@ -161,9 +150,9 @@ test('悬停、按压、选中与加载分别使用对应反馈', async ({ page 
   const busy = matrix.locator('.aig-button[aria-busy="true"]').first();
   await expect(busy.locator('.aig-button-frame')).toHaveCSS('animation-name', 'aig-button-scan');
   await expect(busy.locator('.aig-button-frame')).toHaveCSS('animation-duration', '1.7s');
-  await expect(busy.locator('.aig-button-enter')).toHaveCSS('visibility', 'hidden');
+  await expect(busy.locator('.aig-button-highlight polygon').first()).toHaveCSS('fill-opacity', '0');
   const disabled = matrix.locator('.aig-button:disabled:not([aria-busy])').first();
-  await expect(disabled.locator('.aig-button-enter')).toHaveCSS('visibility', 'hidden');
+  await expect(disabled.locator('.aig-button-highlight polygon').first()).toHaveCSS('fill-opacity', '0');
   await expect(disabled.locator('.aig-button-frame')).toHaveCSS('animation-name', 'none');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(busy.locator('.aig-button-frame')).toHaveCSS('animation-name', 'none');
@@ -187,7 +176,7 @@ test('加载保留按钮尺寸，长文字与图标槽位在窄视口中保持�
   await expect(button.locator('.aig-button-loading')).toBeVisible();
   await playground.getByLabel('按钮状态').selectOption('idle');
   await expect(button.locator('.aig-button-loading')).toHaveCount(0);
-  await expect(button.locator('.aig-button-enter polygon').first()).toHaveCSS('opacity', '0');
+  await expect(button.locator('.aig-button-highlight polygon').first()).toHaveCSS('fill-opacity', '0');
   const sizes = page.locator('#example-sizes');
   await expect(sizes.locator('.aig-button[data-size=sm]').first()).toHaveCSS('min-height', '26px');
   const icon = sizes.locator('.aig-icon-button');

@@ -1,8 +1,10 @@
-/* 三角切片用于一次入场，稳定状态由矩形边界与基线表达。
-   切片共用顶点并覆盖完整衬底，硬切组装后收回；文字与图标始终位于上层。 */
+/* 稳定状态由矩形边界与基线表达；三角刻面只在悬停时组装成高亮面。
+   刻面静止不可见，按深度分组硬切点亮后稳定；文字与图标始终位于上层。 */
 .aig-button {
   --aig-button-edge: var(--aig-color-border-control);
   --aig-button-trace: var(--aig-color-mark);
+  /* 悬停高亮的基色：各层级保持同一强度，只有 danger 换成危险色。 */
+  --aig-button-facet: var(--aig-color-mark);
   --aig-button-cap: 5px;
   box-sizing: border-box;
   position: relative;
@@ -162,6 +164,7 @@
 .aig-button[data-variant='danger'] {
   --aig-button-edge: color-mix(in srgb, var(--aig-color-danger) 80%, transparent);
   --aig-button-trace: var(--aig-color-danger);
+  --aig-button-facet: var(--aig-color-danger);
   color: var(--aig-color-danger);
   box-shadow: inset 0 -2px color-mix(in srgb, var(--aig-color-danger) 26%, transparent);
 }
@@ -207,23 +210,52 @@
     inset 280ms cubic-bezier(0.22, 0.61, 0.36, 1),
     background-size 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
-/* 组件在入场和指针移入时随机选取部分切片，每块闪现一次。 */
-.aig-button-enter {
+/* 悬停高亮：由八块三角面拼成的亮面，静止时全部不可见。
+   每块按自身明度决定出现时机——越深越早；入场时硬切明灭三下，随后稳定为完整亮面。 */
+.aig-button-highlight {
   position: absolute;
+  z-index: 0;
   inset: 0;
   inline-size: 100%;
   block-size: 100%;
   overflow: hidden;
   pointer-events: none;
-  fill: color-mix(in srgb, var(--aig-button-edge) 24%, transparent);
+  border-radius: inherit;
+  fill: var(--aig-button-facet);
 }
-.aig-button-enter polygon {
-  opacity: 0;
-  animation: aig-button-enter 360ms steps(1, end) both;
+.aig-button-highlight polygon {
+  --aig-facet-depth: 0.48;
+  fill-opacity: 0;
 }
-/* 可见性独立于时间轴，加载结束或恢复可用时保留已完成的入场进度。 */
-.aig-button:disabled .aig-button-enter {
-  visibility: hidden;
+.aig-button:is(:hover, :focus-visible):enabled .aig-button-highlight polygon {
+  animation: aig-button-facet-in 380ms steps(1, end) calc((0.75 - var(--aig-facet-depth)) * 520ms) 1 forwards;
+}
+/* 亮、灭、亮、沉、稳定：每块闪三下，明度与出现时机都随本轮分配变化。 */
+@keyframes aig-button-facet-in {
+  0%,
+  11% {
+    fill-opacity: 0;
+  }
+  12%,
+  27% {
+    fill-opacity: var(--aig-facet-depth);
+  }
+  28%,
+  43% {
+    fill-opacity: 0;
+  }
+  44%,
+  59% {
+    fill-opacity: var(--aig-facet-depth);
+  }
+  60%,
+  75% {
+    fill-opacity: calc(var(--aig-facet-depth) * 0.28);
+  }
+  76%,
+  100% {
+    fill-opacity: var(--aig-facet-depth);
+  }
 }
 .aig-button:is(:hover, :focus-visible):enabled {
   color: var(--aig-color-accent);
@@ -236,6 +268,8 @@
 .aig-button:is(:hover, :focus-visible):enabled .aig-button-frame::before {
   inset: 2px;
 }
+/* 左侧的固定三角指示：指针停靠时点亮，选中与展开状态继续保留。 */
+.aig-button:is(:hover, :focus-visible):enabled .aig-button-content::before,
 .aig-button:is([aria-pressed='true'], [aria-expanded='true']) .aig-button-content::before {
   opacity: 1;
 }
@@ -327,13 +361,6 @@
   }
   to {
     --aig-glint-x: 130%;
-  }
-}
-/* 保留原生时间轴，由组件为抽中的切片写入单次闪切。 */
-@keyframes aig-button-enter {
-  from,
-  to {
-    opacity: 0;
   }
 }
 .aig-button-mark {
@@ -428,10 +455,14 @@
   .aig-button,
   .aig-button-frame,
   .aig-button-frame::before,
-  .aig-button-enter polygon,
+  .aig-button-highlight polygon,
   .aig-button-content::before {
     transition: none !important;
     animation: none !important;
+  }
+  /* 高亮面依赖动画完成组装，减少动态时直接给出稳定形态。 */
+  .aig-button:is(:hover, :focus-visible):enabled .aig-button-highlight polygon {
+    fill-opacity: var(--aig-facet-depth);
   }
   /* 光带依赖运动表达状态，静止时停在画面之外。 */
   .aig-button-loading *,
@@ -455,7 +486,7 @@
     border-color: ButtonText;
   }
   .aig-button-frame::before,
-  .aig-button-enter {
+  .aig-button-highlight {
     display: none;
   }
   .aig-button:is([aria-pressed='true'], [aria-expanded='true']) {
