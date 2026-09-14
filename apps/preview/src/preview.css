@@ -1332,10 +1332,10 @@ h1:focus,
   animation-play-state: paused !important;
 }
 /* 环境暂停时直接展示稳定按钮，入场切片保持收回。 */
-[data-ambient='paused'] .aig-button-enter {
+[data-ambient='paused'] .aig-button-highlight {
   visibility: hidden;
 }
-[data-ambient='paused'] .aig-button-enter polygon {
+[data-ambient='paused'] .aig-button-highlight polygon {
   animation-play-state: running !important;
 }
 [data-ambient='paused']

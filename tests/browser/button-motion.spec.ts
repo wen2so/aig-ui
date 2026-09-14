@@ -23,99 +23,68 @@ test('按钮视图切换和图标收藏支持键盘，并保留可见激活反�
   await expect(selection).toContainText('当前显示数据视图');
 });
 
-test('悬停时三角刻面随机分配明度并闪切组装，静止与移出后全部收回', async ({ page }) => {
+test('首轮收回，hover 生成直角刻面并保持三档高亮，移出收回', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Button');
-  // 本用例按 hover 取样，滚动定位即时完成，保持指针停在目标上。
   await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
-  const variants = page.locator('#example-variants');
-  await variants.getByRole('button', { name: '重置操作层级', exact: true }).click();
-  const primary = variants.locator('.preview-actions > .aig-button').first();
+  const primary = page.locator('#example-variants .preview-actions > .aig-button').first();
   const facets = primary.locator('.aig-button-highlight polygon');
-  const opacities = () =>
-    facets.evaluateAll((elements) => elements.map((el) => Number(getComputedStyle(el).fillOpacity)));
-
-  /* 静止态：按钮表面没有三角结构 */
-  expect(await opacities()).toEqual(Array(8).fill(0));
-
-  /* 每块都是三角面，拼合后铺满整个按钮 */
-  const shapes = await facets.evaluateAll((elements) =>
-    elements.map((el) => (el as SVGPolygonElement).getAttribute('points')!.trim().split(/\s+/).length),
-  );
-  expect(shapes).toEqual(Array(8).fill(3));
-
-  await primary.hover();
-  /* 闪切期间每块都会经过暗淡的一段，等待条件要看是否停在各自的明度上，而不是"大于零"。 */
-  const stable = () =>
-    facets.evaluateAll((elements) =>
-      elements.map((el) => {
-        const style = getComputedStyle(el);
-        return {
-          depth: Number(style.getPropertyValue('--aig-facet-depth')),
-          opacity: Number(style.fillOpacity),
-        };
-      }),
-    );
+  const hidden = () =>
+    facets.evaluateAll((elements) => elements.every((el) => getComputedStyle(el).fillOpacity === '0'));
+  await expect.poll(() => facets.count(), { timeout: 15000 }).toBeGreaterThan(0);
   await expect
-    .poll(async () => (await stable()).every((facet) => Math.abs(facet.opacity - facet.depth) < 0.01))
+    .poll(() => facets.evaluateAll((elements) => elements.every((el) => el.getAnimations().length === 0)))
     .toBe(true);
-
-  /* 明度随机分配：至少三档形成层次，整轮覆盖足够的深浅跨度 */
-  const settled = (await stable()).map((facet) => facet.opacity);
-  expect(new Set(settled).size).toBeGreaterThanOrEqual(3);
-  expect(Math.max(...settled)).toBeLessThan(0.75);
-  expect(Math.min(...settled)).toBeGreaterThan(0.25);
-  expect(Math.max(...settled) - Math.min(...settled)).toBeGreaterThanOrEqual(0.22);
-
-  /* 每块闪三下再稳定；明度同时决定时机，越深的刻面出现越早 */
-  const plan = await facets.evaluateAll((elements) =>
-    elements.map((el) => {
-      const style = getComputedStyle(el);
-      const frames = (el.getAnimations()[0]?.effect as KeyframeEffect)?.getKeyframes() ?? [];
-      return {
-        depth: Number(style.getPropertyValue('--aig-facet-depth')),
-        delay: Number.parseFloat(style.animationDelay),
-        frames: frames.length,
-      };
-    }),
-  );
-  expect(plan.every((facet) => facet.frames >= 6 && facet.delay >= 0)).toBe(true);
-  const deepestFirst = [...plan].sort((a, b) => b.depth - a.depth);
-  for (let index = 1; index < deepestFirst.length; index++) {
-    expect(deepestFirst[index]!.delay).toBeGreaterThanOrEqual(deepestFirst[index - 1]!.delay);
-  }
-
-  /* 悬停同时点亮左侧的固定三角指示，文字保持清晰 */
+  await expect.poll(hidden).toBe(true);
+  const initial = await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')));
+  await primary.hover();
+  const next = await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')));
+  expect(next).not.toEqual(initial);
+  expect([4, 6, 8]).toContain(next.length);
+  // 在同一轮中采样两次明灭与稳定时刻，核对真实 CSS 播放节奏。
+  const samples = await facets.first().evaluate((el) => {
+    const animation = el.getAnimations()[0]!;
+    animation.pause();
+    const delay = Number(animation.effect!.getTiming().delay);
+    const duration = Number(animation.effect!.getTiming().duration);
+    const values = [0.22, 0.35, 0.5, 0.68, 0.9].map((progress) => {
+      animation.currentTime = delay + duration * progress;
+      return Number(getComputedStyle(el).fillOpacity);
+    });
+    animation.play();
+    return values;
+  });
+  expect(samples[0]).toBeGreaterThan(0);
+  expect(samples[1]).toBe(0);
+  expect(samples[2]).toBeGreaterThan(0);
+  expect(samples[3]).toBe(0);
+  expect(samples[4]).toBeGreaterThan(0);
+  await expect
+    .poll(() => facets.evaluateAll((elements) => elements.every((el) => el.getAnimations().length === 0)))
+    .toBe(true);
   await expect
     .poll(() =>
-      primary.evaluate(
-        (el) => getComputedStyle(el.querySelector('.aig-button-content')!, '::before').opacity,
+      facets.evaluateAll((elements) =>
+        elements.every((el) => {
+          const style = getComputedStyle(el);
+          return Number(style.fillOpacity) === Number(style.getPropertyValue('--aig-facet-depth'));
+        }),
       ),
     )
-    .toBe('1');
-  expect(
-    await primary.evaluate((el) => getComputedStyle(el.querySelector('.aig-button-content')!).opacity),
-  ).toBe('1');
-  await variants.screenshot({ path: test.info().outputPath('button-hover-facets.png') });
-
-  /* 再次悬停会换一套明度分配 */
-  await page.mouse.move(4, 4);
-  await expect.poll(async () => (await opacities()).every((value) => value === 0)).toBe(true);
-  await primary.hover();
-  await expect
-    .poll(async () => (await stable()).every((facet) => Math.abs(facet.opacity - facet.depth) < 0.01))
     .toBe(true);
-  expect((await stable()).map((facet) => facet.opacity)).not.toEqual(settled);
-
-  /* 移出：全部收回 */
+  const depths = await facets.evaluateAll((elements) =>
+    elements.map((el) => Number(getComputedStyle(el).fillOpacity)),
+  );
+  expect(new Set(depths).size).toBeLessThanOrEqual(3);
+  expect(depths.every((depth) => [0.14, 0.22, 0.3].includes(depth))).toBe(true);
+  await primary.screenshot({ path: test.info().outputPath('button-facets.png') });
   await page.mouse.move(4, 4);
-  await expect.poll(async () => (await opacities()).every((value) => value === 0)).toBe(true);
-
-  /* 减少动态效果时直接给出稳定形态，不经过组装 */
-  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect.poll(hidden).toBe(true);
   await primary.hover();
-  await expect.poll(async () => (await opacities()).every((value) => value > 0)).toBe(true);
-  await page.mouse.move(4, 4);
-  await expect.poll(async () => (await opacities()).every((value) => value === 0)).toBe(true);
+  expect(await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')))).not.toEqual(
+    next,
+  );
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect.poll(hidden).toBe(false);
 });
 
 test('悬停、按压、选中与加载分别使用对应反馈', async ({ page }) => {
@@ -150,9 +119,9 @@ test('悬停、按压、选中与加载分别使用对应反馈', async ({ page 
   const busy = matrix.locator('.aig-button[aria-busy="true"]').first();
   await expect(busy.locator('.aig-button-frame')).toHaveCSS('animation-name', 'aig-button-scan');
   await expect(busy.locator('.aig-button-frame')).toHaveCSS('animation-duration', '1.7s');
-  await expect(busy.locator('.aig-button-highlight polygon').first()).toHaveCSS('fill-opacity', '0');
+  await expect(busy.locator('.aig-button-highlight')).not.toHaveAttribute('data-playing', '');
   const disabled = matrix.locator('.aig-button:disabled:not([aria-busy])').first();
-  await expect(disabled.locator('.aig-button-highlight polygon').first()).toHaveCSS('fill-opacity', '0');
+  await expect(disabled.locator('.aig-button-highlight')).not.toHaveAttribute('data-playing', '');
   await expect(disabled.locator('.aig-button-frame')).toHaveCSS('animation-name', 'none');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(busy.locator('.aig-button-frame')).toHaveCSS('animation-name', 'none');

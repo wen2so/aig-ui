@@ -1,5 +1,5 @@
-/* 稳定状态由矩形边界与基线表达；三角刻面只在悬停时组装成高亮面。
-   刻面静止不可见，按深度分组硬切点亮后稳定；文字与图标始终位于上层。 */
+/* 稳定状态由矩形边界与基线表达；三角刻面在页面就绪和悬停时短暂点亮。
+   刻面静止不可见，按三档深度硬切点亮后收回；文字与图标始终位于上层。 */
 .aig-button {
   --aig-button-edge: var(--aig-color-border-control);
   --aig-button-trace: var(--aig-color-mark);
@@ -210,8 +210,7 @@
     inset 280ms cubic-bezier(0.22, 0.61, 0.36, 1),
     background-size 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
-/* 悬停高亮：由八块三角面拼成的亮面，静止时全部不可见。
-   每块按自身明度决定出现时机——越深越早；入场时硬切明灭三下，随后稳定为完整亮面。 */
+/* 直角三角面每轮重新切分，首轮收回，悬停后保持三档高亮。 */
 .aig-button-highlight {
   position: absolute;
   z-index: 0;
@@ -224,36 +223,34 @@
   fill: var(--aig-button-facet);
 }
 .aig-button-highlight polygon {
-  --aig-facet-depth: 0.48;
-  fill-opacity: 0;
+  --aig-facet-depth: 0.22;
+  fill-opacity: var(--aig-facet-rest, 0);
 }
-.aig-button:is(:hover, :focus-visible):enabled .aig-button-highlight polygon {
-  animation: aig-button-facet-in 380ms steps(1, end) calc((0.75 - var(--aig-facet-depth)) * 520ms) 1 forwards;
+.aig-button:enabled .aig-button-highlight[data-hovered] polygon {
+  --aig-facet-rest: var(--aig-facet-depth);
 }
-/* 亮、灭、亮、沉、稳定：每块闪三下，明度与出现时机都随本轮分配变化。 */
+.aig-button:enabled .aig-button-highlight[data-playing] polygon {
+  animation: aig-button-facet-in var(--aig-facet-duration, 1000ms) steps(1, end) var(--aig-facet-delay, 0ms) 1
+    backwards;
+}
+/* 两次短促明灭后进入终态：入场收回，悬停保持高亮。 */
 @keyframes aig-button-facet-in {
   0%,
-  11% {
+  18%,
+  29%,
+  45%,
+  59%,
+  77% {
     fill-opacity: 0;
   }
-  12%,
-  27% {
-    fill-opacity: var(--aig-facet-depth);
-  }
-  28%,
-  43% {
-    fill-opacity: 0;
-  }
-  44%,
-  59% {
-    fill-opacity: var(--aig-facet-depth);
-  }
-  60%,
-  75% {
-    fill-opacity: calc(var(--aig-facet-depth) * 0.28);
-  }
-  76%,
+  78%,
   100% {
+    fill-opacity: var(--aig-facet-rest, 0);
+  }
+  19%,
+  28%,
+  46%,
+  58% {
     fill-opacity: var(--aig-facet-depth);
   }
 }
@@ -460,7 +457,7 @@
     transition: none !important;
     animation: none !important;
   }
-  /* 高亮面依赖动画完成组装，减少动态时直接给出稳定形态。 */
+  /* 减少动态时直接显示交互高亮与状态标记。 */
   .aig-button:is(:hover, :focus-visible):enabled .aig-button-highlight polygon {
     fill-opacity: var(--aig-facet-depth);
   }
