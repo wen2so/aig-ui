@@ -41,7 +41,7 @@ test('首轮收回，hover 复用刻面并局部闪切后保持三档高亮，�
   expect(next).toEqual(initial);
   expect([6, 7, 8]).toContain(next.length);
   // 在同一轮中采样两次明灭与稳定时刻，核对真实 CSS 播放节奏。
-  await expect(primary.locator('polygon[data-motion=flash]')).toHaveCount(2);
+  await expect(primary.locator('polygon[data-motion=flash]')).toHaveCount(Math.round(next.length * 0.6));
   const samples = await primary
     .locator('polygon[data-motion=flash]')
     .first()
@@ -50,7 +50,7 @@ test('首轮收回，hover 复用刻面并局部闪切后保持三档高亮，�
       animation.pause();
       const delay = Number(animation.effect!.getTiming().delay);
       const duration = Number(animation.effect!.getTiming().duration);
-      const values = [0.22, 0.35, 0.5, 0.68, 0.9].map((progress) => {
+      const values = [0.22, 0.35, 0.5, 0.9, 0.96].map((progress) => {
         animation.currentTime = delay + duration * progress;
         return Number(getComputedStyle(el).fillOpacity);
       });

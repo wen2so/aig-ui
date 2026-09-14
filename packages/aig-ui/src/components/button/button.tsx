@@ -82,7 +82,7 @@ function initializeButtonFacets(element: SVGSVGElement | null) {
   );
 }
 
-/** 两块刻面分别以快、慢节奏闪切，其余单次显现；整轮最长保持 1520ms。 */
+/** 约六成刻面快慢交错闪切，稳定时刻覆盖后半程；整轮最长保持 1520ms。 */
 function replayButtonFacets(element: SVGSVGElement | null) {
   if (!element) return;
   initializeButtonFacets(element);
@@ -93,16 +93,21 @@ function replayButtonFacets(element: SVGSVGElement | null) {
     const target = Math.floor(Math.random() * (index + 1));
     [order[index], order[target]] = [order[target]!, order[index]!];
   }
-  facets.forEach((facet) => {
-    const fast = facet === order[0];
-    const slow = facet === order[1];
-    facet.dataset.motion = fast || slow ? 'flash' : 'settle';
-    const delay = slow ? 280 : Math.round(Math.random() * (fast ? 80 : 180));
-    const duration = slow
-      ? 1240
-      : fast
-        ? 560 + Math.round(Math.random() * 140)
-        : 600 + Math.round(Math.random() * 450);
+  const flashCount = Math.round(facets.length * 0.6);
+  order.forEach((facet, index) => {
+    const flashes = index < flashCount;
+    facet.dataset.motion = flashes ? 'flash' : 'settle';
+    // 闪切结束时刻铺满后半程，短促和较慢的节奏交替出现。
+    const end = Math.round(900 + (620 * index) / (flashCount - 1));
+    const duration = flashes
+      ? Math.min(
+          end - 100,
+          index % 2 === 0 ? 560 + Math.round(Math.random() * 140) : 940 + Math.round(Math.random() * 140),
+        )
+      : 620;
+    const delay = flashes
+      ? end - duration
+      : 180 + Math.round((700 * (index - flashCount)) / Math.max(1, order.length - flashCount - 1));
     facet.style.setProperty('--aig-facet-delay', `${delay}ms`);
     facet.style.setProperty('--aig-facet-duration', `${duration}ms`);
   });

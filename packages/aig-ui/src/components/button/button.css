@@ -256,10 +256,10 @@
   29%,
   45%,
   59%,
-  77% {
+  93% {
     fill-opacity: 0;
   }
-  78%,
+  94%,
   100% {
     fill-opacity: var(--aig-facet-rest, 0);
   }

@@ -34,12 +34,19 @@ it('刻面在挂载后固定，两端直角、中间内部汇聚，局部快慢�
   }
   const geometry = facets.map((facet) => facet.getAttribute('points'));
   const flashes = facets.filter((facet) => facet.dataset.motion === 'flash');
-  expect(flashes).toHaveLength(2);
+  expect(flashes).toHaveLength(Math.round(facets.length * 0.6));
   const durations = flashes
     .map((facet) => parseFloat(facet.style.getPropertyValue('--aig-facet-duration')))
     .sort((a, b) => a - b);
   expect(durations[0]).toBeLessThanOrEqual(700);
-  expect(durations[1]).toBe(1240);
+  expect(durations.at(-1)).toBeGreaterThanOrEqual(900);
+  const finishes = flashes.map(
+    (facet) =>
+      parseFloat(facet.style.getPropertyValue('--aig-facet-delay')) +
+      parseFloat(facet.style.getPropertyValue('--aig-facet-duration')),
+  );
+  expect(Math.min(...finishes)).toBe(900);
+  expect(Math.max(...finishes)).toBe(1520);
   fireEvent.pointerLeave(button);
   fireEvent.pointerOver(button);
   expect([...button.querySelectorAll('polygon')]).toEqual(facets);
