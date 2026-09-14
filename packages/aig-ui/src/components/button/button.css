@@ -38,11 +38,11 @@
   justify-content: center;
   gap: var(--aig-space-2);
   min-inline-size: 0;
-}
-/* 品牌浅色刻面配深色文字，叠色随局部覆盖略微加深，保持连续可读。 */
-.aig-button:enabled:has(.aig-button-highlight:is([data-playing], [data-hovered])) .aig-button-content {
   color: var(--aig-color-text);
-  mix-blend-mode: multiply;
+}
+/* 文字由交互状态决定：静止深色，悬停与键盘聚焦浅色。 */
+.aig-button:is(:hover, :focus-visible):enabled .aig-button-content {
+  color: var(--aig-color-surface);
 }
 .aig-button-content::before {
   content: '';

@@ -126,7 +126,7 @@ test('首轮收回，hover 复用刻面并局部闪切后保持三档高亮，�
   await expect.poll(hidden).toBe(false);
 });
 
-test('各层级文字随刻面显示切换，三档背景均保持可读对比', async ({ page }) => {
+test('各层级无悬停使用深字，悬停与键盘聚焦使用浅字', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Button');
   await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
   const buttons = page.locator('#example-variants .preview-actions > .aig-button');
@@ -134,61 +134,34 @@ test('各层级文字随刻面显示切换，三档背景均保持可读对比',
     const highlight = button.locator('.aig-button-highlight');
     const content = button.locator('.aig-button-content');
     await expect(highlight).not.toHaveAttribute('data-playing', '');
-    const idle = await content.evaluate((el) => getComputedStyle(el).color);
-    await button.hover();
-    const ink = await content.evaluate((el) => getComputedStyle(el).color);
-    expect(ink).toBe(
-      await button.evaluate((el) => {
-        const probe = document.createElement('span');
-        probe.style.color = 'var(--aig-color-text)';
-        el.append(probe);
-        const value = getComputedStyle(probe).color;
-        probe.remove();
-        return value;
-      }),
-    );
-    expect(ink).not.toBe(idle);
-    await expect(content).toHaveCSS('mix-blend-mode', 'multiply');
-    await expect(button).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
-    // 合成品牌三角和浅色表面，再计算深色文字叠色后的实际输出色。
-    const minimum = await button.evaluate((el) => {
-      const style = getComputedStyle(el);
-      const canvas = document.createElement('canvas');
-      canvas.width = canvas.height = 1;
-      const context = canvas.getContext('2d')!;
-      const rgb = (color: string) => {
-        context.clearRect(0, 0, 1, 1);
-        context.fillStyle = color;
-        context.fillRect(0, 0, 1, 1);
-        return [...context.getImageData(0, 0, 1, 1).data].slice(0, 3).map((value) => value / 255);
-      };
-      const luminance = (values: number[]) =>
-        values
-          .map((value) => (value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4))
-          .reduce((sum, value, index) => sum + value * [0.2126, 0.7152, 0.0722][index]!, 0);
-      const fill = rgb(getComputedStyle(el.querySelector('polygon')!).fill);
-      const ink = rgb(getComputedStyle(el.querySelector('.aig-button-content')!).color);
-      return Math.min(
-        ...['--aig-color-bg', '--aig-color-surface', '--aig-color-surface-muted'].flatMap((token) => {
-          const surface = rgb(style.getPropertyValue(token));
-          return [0, 0.88, 0.94, 1].map((alpha) => {
-            const composite = surface.map((value, index) => value * (1 - alpha) + fill[index]! * alpha);
-            const background = luminance(composite);
-            const text = luminance(composite.map((value, index) => value * ink[index]!));
-            return (Math.max(text, background) + 0.05) / (Math.min(text, background) + 0.05);
-          });
-        }),
-      );
+    const colors = await button.evaluate((el) => {
+      const probe = document.createElement('span');
+      el.append(probe);
+      const colors = ['--aig-color-text', '--aig-color-surface'].map((token) => {
+        probe.style.color = `var(${token})`;
+        return getComputedStyle(probe).color;
+      });
+      probe.remove();
+      return colors;
     });
-    expect(minimum).toBeGreaterThanOrEqual(4.5);
+    const [idle, ink] = colors as [string, string];
+    await expect(content).toHaveCSS('color', idle);
+    await button.hover();
+    await expect(content).toHaveCSS('color', ink);
+    await expect(content).toHaveCSS('mix-blend-mode', 'normal');
+    await expect(button).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
     await expect(highlight).not.toHaveAttribute('data-playing', '');
     await expect(content).toHaveCSS('color', ink);
     await page.mouse.move(4, 4);
     await expect(content).toHaveCSS('color', idle);
     await expect(button).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   }
-  await page.emulateMedia({ forcedColors: 'active' });
   const first = buttons.first();
+  await first.focus();
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');
+  await expect(first.locator('.aig-button-content')).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await page.emulateMedia({ forcedColors: 'active' });
   await first.hover();
   expect(await first.locator('.aig-button-content').evaluate((el) => getComputedStyle(el).color)).toBe(
     await first.evaluate((el) => getComputedStyle(el).color),
