@@ -62,13 +62,10 @@
 .aig-checkbox::before {
   content: '';
   position: absolute;
-  inset-block-start: 6px;
-  inset-inline-start: 5px;
-  width: 7px;
-  height: 3.5px;
-  border-block-end: 1.5px solid var(--aig-color-accent);
-  border-inline-start: 1.5px solid var(--aig-color-accent);
-  transform: rotate(-45deg) scale(0.5);
+  inset: 2px;
+  background: var(--aig-color-accent);
+  mask: var(--aig-icon-check) center / contain no-repeat;
+  transform: scale(0.5);
   opacity: 0;
   transition:
     transform 220ms cubic-bezier(0.22, 0.61, 0.36, 1),
@@ -76,7 +73,12 @@
 }
 .aig-checkbox:checked::before {
   opacity: 1;
-  transform: rotate(-45deg) scale(1);
+  transform: scale(1);
+}
+.aig-checkbox:indeterminate::before {
+  mask-image: var(--aig-icon-minus);
+  opacity: 1;
+  transform: scale(1);
 }
 /* 节点与右上缺角对齐，选中后补全轮廓。 */
 .aig-checkbox:not(:indeterminate)::after {
@@ -96,13 +98,6 @@
 .aig-checkbox:checked::after {
   background: var(--aig-color-mark);
   scale: 1;
-}
-.aig-checkbox:indeterminate::after {
-  content: '';
-  position: absolute;
-  inset-inline: 3.5px;
-  inset-block-start: 8px;
-  border-block-start: 1.5px solid var(--aig-color-accent);
 }
 .aig-checkbox:disabled {
   cursor: default;

@@ -64,3 +64,8 @@ node scripts/preview-catalog.mjs
 根 README 与 `docs/` 未被现有 `format:check` glob 覆盖，文档改动另运行 `pnpm exec prettier --check README.md "docs/**/*.md"`。单测需要控制并发时使用 `pnpm exec vitest run --maxWorkers=2`。
 
 Playwright 会同时启动 4173 的 Vite 消费、5173 的预览和 4174 的 Next 消费服务；Next 的 dev 脚本实际运行 `next start`，需要已有生产构建。即使只跑动效场景，也先按[构建与分发](distribution.md)准备消费环境。当前默认浏览器覆盖以 Chromium 为主，真实设备和辅助技术验收见[项目状态](../progress.md)。
+
+
+图标统一通过 `Icon` 使用按需导入的 `lucide-react` 组件。原生复选框使用 `scripts/icons.mjs` 生成的 Check、Minus 遮罩，`pnpm tokens` 同步更新 `src/internal/icon-masks.css`，由样式总入口导入。
+
+jsdom 测试环境在 `tests/setup.ts` 补齐 SVG 点列表的属性读取，点坐标来自实际 `points` 属性，浏览器验收继续使用原生 SVG 接口。

@@ -1,4 +1,6 @@
 'use client';
+import { Check, ChevronDown } from 'lucide-react';
+import { Icon } from '../icon/icon.js';
 import { Select as BaseSelect } from '@base-ui/react/select';
 import type { ComponentPropsWithRef } from 'react';
 import { useAigPortalContainer } from '../../theme/aig-provider.js';
@@ -56,7 +58,7 @@ export function Select({
           }
         </BaseSelect.Value>
         <BaseSelect.Icon aria-hidden className="aig-select-caret">
-          ⌄
+          <Icon icon={ChevronDown} size={16} />
         </BaseSelect.Icon>
       </BaseSelect.Trigger>
       <BaseSelect.Portal container={container}>
@@ -71,7 +73,9 @@ export function Select({
                   className="aig-select-item"
                 >
                   <BaseSelect.ItemText>{option.label}</BaseSelect.ItemText>
-                  <BaseSelect.ItemIndicator aria-hidden>✓</BaseSelect.ItemIndicator>
+                  <BaseSelect.ItemIndicator aria-hidden>
+                    <Icon icon={Check} size={16} />
+                  </BaseSelect.ItemIndicator>
                 </BaseSelect.Item>
               ))}
             </BaseSelect.List>

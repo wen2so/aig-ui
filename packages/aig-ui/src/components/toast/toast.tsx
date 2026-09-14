@@ -1,4 +1,6 @@
 'use client';
+import { X } from 'lucide-react';
+import { Icon } from '../icon/icon.js';
 import { Toast as BaseToast } from '@base-ui/react/toast';
 import type { ComponentProps } from 'react';
 import { useAigPortalContainer } from '../../theme/aig-provider.js';
@@ -16,7 +18,7 @@ function Viewport() {
               <BaseToast.Description className="aig-toast-description" />
             </BaseToast.Content>
             <BaseToast.Close className="aig-toast-close" aria-hidden={false} aria-label="关闭提示">
-              ×
+              <Icon icon={X} size={16} />
             </BaseToast.Close>
           </BaseToast.Root>
         ))}

@@ -334,34 +334,13 @@
   );
 }
 
-/* 状态图形：环形轨迹与分层绘制。 */
+/* Lucide 状态图标使用统一尺寸，结果颜色继承语义色。 */
 .aig-status-glyph {
   display: inline-block;
   width: 88px;
   height: 88px;
   overflow: visible;
   color: var(--aig-color-mark);
-}
-.aig-status-glyph-orbit {
-  opacity: 0.45;
-  transform-origin: 60px 60px;
-  animation:
-    aig-orbit-establish 1200ms ease-out both,
-    aig-ambient-orbit var(--aig-motion-outer-period) 1200ms linear infinite;
-}
-.aig-status-glyph-arc {
-  color: var(--aig-color-accent);
-  opacity: 0.7;
-  transform-origin: 60px 60px;
-  animation: aig-ambient-orbit var(--aig-motion-inner-period) linear infinite reverse;
-}
-.aig-status-glyph-frame,
-.aig-status-glyph-detail {
-  stroke-dasharray: 1;
-  animation: aig-glyph-draw 850ms cubic-bezier(0.45, 0, 0.2, 1) both;
-}
-.aig-status-glyph-detail {
-  animation-delay: 200ms;
 }
 .aig-result-symbol .aig-status-glyph {
   color: inherit;
@@ -439,9 +418,6 @@
   .aig-page-header::before,
   .aig-status-glyph :is(circle, path) {
     animation: none;
-  }
-  .aig-status-glyph-orbit {
-    transform: rotate(0deg);
   }
   :is(
     .aig-dialog,

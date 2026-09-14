@@ -1,6 +1,8 @@
+import { ArrowRight, Bookmark, Plus, RotateCcw, LoaderCircle } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import {
   Button,
+  Icon,
   IconButton,
   Input,
   Textarea,
@@ -35,25 +37,12 @@ export interface Example {
 
 const variants = ['primary', 'secondary', 'outline', 'ghost', 'danger'] as const;
 const labels = ['开始创作', '保存草稿', '查看详情', '了解更多', '删除草稿'];
-const actionArrow = (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <path d="M4 12h15m-6-6 6 6-6 6" />
-  </svg>
-);
-const bookmarkIcon = (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <path d="M6 4h12v16l-6-4-6 4Z" />
-  </svg>
-);
+const actionArrow = <Icon icon={ArrowRight} />;
+const bookmarkIcon = <Icon icon={Bookmark} />;
 
-/** 自定义 SVG 保留清晰轮廓，运动只作用于外侧线段。 */
+/** 自定义加载图标沿用 Lucide 轮廓与现有旋转节奏。 */
 function CustomLoadingIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
-      <circle className="demo-loader-orbit" cx="12" cy="12" r="10" strokeDasharray="14 8" />
-      <path d="M12 7 17 12 12 17 7 12Z" />
-    </svg>
-  );
+  return <Icon icon={LoaderCircle} className="demo-loader-orbit" />;
 }
 
 /** 让层级、尺寸和实际执行反馈可以一起试用。 */
@@ -355,13 +344,15 @@ export const extraExamples: Record<string, Example[]> = {
           <Button size="sm">小尺寸</Button>
           <Button>中尺寸</Button>
           <Button size="lg">大尺寸</Button>
-          <IconButton aria-label="添加项目">＋</IconButton>
+          <IconButton aria-label="添加项目">
+            <Icon icon={Plus} />
+          </IconButton>
           <Button variant="outline" leadingIcon={bookmarkIcon} trailingIcon={actionArrow}>
             查看团队整理的全部设计资料与审阅记录
           </Button>
         </div>
       ),
-      code: '<Button size="sm">小尺寸</Button>\n<Button size="md">中尺寸</Button>\n<Button size="lg">大尺寸</Button>\n<IconButton aria-label="添加项目">＋</IconButton>\n<Button leadingIcon={bookmarkIcon} trailingIcon={actionArrow}>查看团队整理的全部设计资料与审阅记录</Button>',
+      code: '<Button size="sm">小尺寸</Button>\n<Button size="md">中尺寸</Button>\n<Button size="lg">大尺寸</Button>\n<IconButton aria-label="添加项目"><Icon icon={Plus} /></IconButton>\n<Button leadingIcon={bookmarkIcon} trailingIcon={actionArrow}>查看团队整理的全部设计资料与审阅记录</Button>',
       wide: true,
     },
     {
@@ -373,34 +364,25 @@ export const extraExamples: Record<string, Example[]> = {
         <AigProvider brand={{ loadingIcon: <CustomLoadingIcon /> }}>
           <div className="preview-actions">
             <Button loading>全局加载图标</Button>
-            <Button
-              loading
-              loadingIcon={
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path className="demo-loader-orbit" d="M5 5h14v14H5Z" strokeDasharray="9 5" />
-                </svg>
-              }
-            >
+            <Button loading loadingIcon={<Icon icon={LoaderCircle} className="demo-loader-orbit" />}>
               局部加载图标
             </Button>
             <IconButton loading aria-label="同步资料">
-              <span>↻</span>
+              <Icon icon={RotateCcw} />
             </IconButton>
           </div>
         </AigProvider>
       ),
-      code: `const loadingIcon = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-  <circle className="loading-orbit" cx="12" cy="12" r="10" strokeDasharray="14 8" />
-  <path d="M12 7 17 12 12 17 7 12Z" />
-</svg>;
+      code: `import { LoaderCircle } from 'lucide-react';
+const loadingIcon = <Icon icon={LoaderCircle} className="demo-loader-orbit" />;
 <AigProvider brand={{ loadingIcon }}>
   <Button loading>正在保存</Button>
-  <Button loading loadingIcon={<MyLoadingSvg />}>局部覆盖</Button>
+  <Button loading loadingIcon={<Icon icon={LoaderCircle} />}>局部覆盖</Button>
 </AigProvider>
 /* 宿主控制自定义 SVG 内部动效。 */
-.loading-orbit { transform-origin: 12px 12px; animation: orbit 7s linear infinite; }
+.demo-loader-orbit { transform-origin: 12px 12px; animation: orbit 7s linear infinite; }
 @keyframes orbit { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { .loading-orbit { animation: none; } }`,
+@media (prefers-reduced-motion: reduce) { .demo-loader-orbit { animation: none; } }`,
     },
   ],
   LoadingMark: [

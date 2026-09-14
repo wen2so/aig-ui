@@ -1,6 +1,18 @@
+import {
+  Code,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  Search,
+  X,
+  Plus,
+  Minus,
+  Grid2X2,
+  RotateCcw,
+} from 'lucide-react';
 import { useEffect, useRef, useState, StrictMode, type MouseEvent } from 'react';
 import { createRoot } from 'react-dom/client';
-import { AigProvider, Accordion, BrandMark, Button, CopyButton } from 'aig-ui';
+import { AigProvider, Icon, Accordion, BrandMark, Button, CopyButton } from 'aig-ui';
 import { LoadingMark } from 'aig-ui/motion';
 import { SafeMarkdown } from '../../../packages/aig-ui/src/ai/safe-markdown.js';
 import {
@@ -51,7 +63,7 @@ function ExampleCard({ example }: { example: Example }) {
       <div className="example-toolbar">
         <span>可交互示例</span>
         <button onClick={() => setRun(run + 1)} aria-label={`重置${example.title}`}>
-          ↻ <span>重置</span>
+          <Icon icon={RotateCcw} size={14} /> <span>重置</span>
         </button>
         <CopyButton
           value={example.code}
@@ -65,7 +77,7 @@ function ExampleCard({ example }: { example: Example }) {
           onClick={() => setCodeOpen(!codeOpen)}
           aria-label={`查看${example.title}代码`}
         >
-          {'</>'}
+          <Icon icon={Code} size={16} />
         </button>
       </div>
       <div
@@ -301,7 +313,7 @@ function Preview() {
           })}
         </nav>
         <label className="site-search">
-          <span aria-hidden="true">⌕</span>
+          <Icon icon={Search} size={16} />
           <input
             ref={searchInput}
             aria-label="查找组件"
@@ -315,7 +327,7 @@ function Preview() {
           <kbd>Ctrl K</kbd>
           {search && (
             <button onClick={() => setSearch('')} aria-label="清空搜索">
-              ×
+              <Icon icon={X} size={14} />
             </button>
           )}
         </label>
@@ -346,7 +358,7 @@ function Preview() {
           aria-controls="component-nav"
           onClick={() => setMenuOpen(!menuOpen)}
         >
-          组件目录 <span>{menuOpen ? '−' : '+'}</span>
+          组件目录 <Icon icon={menuOpen ? Minus : Plus} size={16} />
         </button>
       </header>
       {menuOpen && (
@@ -361,7 +373,7 @@ function Preview() {
       )}
       <aside ref={sidebar} className="preview-sidebar" data-open={menuOpen || undefined} id="component-nav">
         <a className="overview-link" {...link('')} aria-current={!entry ? 'page' : undefined}>
-          <span>▦</span> 组件总览 <small>{entries.length}</small>
+          <Icon icon={Grid2X2} size={16} /> 组件总览 <small>{entries.length}</small>
         </a>
         <nav aria-label="组件目录">
           {groups.map((group) => {
@@ -490,7 +502,17 @@ function Preview() {
                   const adjacent = entries[entries.indexOf(entry) + offset];
                   return adjacent ? (
                     <a key={offset} {...link(adjacent.name)}>
-                      <small>{offset === -1 ? '← 上一个组件' : '下一个组件 →'}</small>
+                      <small>
+                        {offset === -1 ? (
+                          <>
+                            <Icon icon={ArrowLeft} size={14} /> 上一个组件
+                          </>
+                        ) : (
+                          <>
+                            下一个组件 <Icon icon={ArrowRight} size={14} />
+                          </>
+                        )}
+                      </small>
                       <strong>
                         {adjacent.name} <span>{adjacent.label}</span>
                       </strong>
@@ -547,17 +569,23 @@ function Preview() {
                 <a {...link('Button')}>
                   <span>01 / FORM</span>
                   <strong>从一次行动开始</strong>
-                  <small>探索按钮的层级与状态 ↗</small>
+                  <small>
+                    探索按钮的层级与状态 <Icon icon={ArrowUpRight} size={14} />
+                  </small>
                 </a>
                 <a {...link('LoadingSequence')}>
                   <span>02 / MOTION</span>
                   <strong>让等待自然流动</strong>
-                  <small>体验完整的绘制与交接 ↗</small>
+                  <small>
+                    体验完整的绘制与交接 <Icon icon={ArrowUpRight} size={14} />
+                  </small>
                 </a>
                 <a {...link('ai-assistant')}>
                   <span>03 / INTELLIGENCE</span>
                   <strong>与智能一起工作</strong>
-                  <small>体验消息、任务与产物 ↗</small>
+                  <small>
+                    体验消息、任务与产物 <Icon icon={ArrowUpRight} size={14} />
+                  </small>
                 </a>
               </div>
             )}
@@ -608,7 +636,7 @@ function Preview() {
                               item.examples[0]!.render()
                             )}
                           </div>
-                          <span className="catalog-arrow">↗</span>
+                          <Icon icon={ArrowUpRight} className="catalog-arrow" size={16} />
                         </div>
                         <a
                           className="catalog-card-caption"
@@ -652,7 +680,7 @@ function Preview() {
             aig ui <small>精密线绘 · 柔和科技</small>
           </span>
           <a href="https://ant.design/components/overview-cn/" target="_blank" rel="noreferrer">
-            展示结构参考 Ant Design ↗
+            展示结构参考 Ant Design <Icon icon={ArrowUpRight} size={14} />
           </a>
         </footer>
       </main>

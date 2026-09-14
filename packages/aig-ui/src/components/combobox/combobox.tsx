@@ -1,4 +1,6 @@
 'use client';
+import { Check } from 'lucide-react';
+import { Icon } from '../icon/icon.js';
 import { Combobox as BaseCombobox } from '@base-ui/react/combobox';
 import type { ComponentPropsWithRef } from 'react';
 import type { SelectOption } from '../select/select.js';
@@ -57,7 +59,9 @@ export function Combobox({
                   className="aig-combobox-item"
                 >
                   {labelOf(item)}
-                  <BaseCombobox.ItemIndicator aria-hidden>✓</BaseCombobox.ItemIndicator>
+                  <BaseCombobox.ItemIndicator aria-hidden>
+                    <Icon icon={Check} size={16} />
+                  </BaseCombobox.ItemIndicator>
                 </BaseCombobox.Item>
               )}
             </BaseCombobox.List>
