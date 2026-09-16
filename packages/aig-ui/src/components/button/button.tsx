@@ -43,28 +43,6 @@ function ButtonMark() {
   );
 }
 
-/** 每次挂载选择一组协调布局，上下横线互补、两侧竖线错向移动。 */
-function initializeButtonLines(element: HTMLSpanElement | null) {
-  if (!element || element.dataset.initialized) return;
-  element.dataset.initialized = '';
-  const profiles = [
-    { start: 20, end: 54, length: 18, direction: 1 },
-    { start: 54, end: 20, length: 16, direction: -1 },
-    { start: 30, end: 48, length: 20, direction: 1 },
-  ];
-  const profile = profiles[Math.floor(Math.random() * profiles.length)]!;
-  const offset = Math.random() * 4 - 2;
-  element.querySelectorAll<HTMLElement>('.aig-button-line').forEach((line, index) => {
-    const leading = index % 2 === 0;
-    line.style.setProperty('--aig-line-position', `${(leading ? profile.start : profile.end) + offset}%`);
-    line.style.setProperty('--aig-line-length', `${profile.length + (leading ? 0 : 2)}%`);
-    line.style.setProperty('--aig-line-rest', leading ? '0.65' : '1');
-    line.style.setProperty('--aig-line-active', leading ? '1.25' : '0.65');
-    line.style.setProperty('--aig-line-shift', `${profile.direction * (leading ? 35 : -35)}%`);
-    line.style.setProperty('--aig-line-delay', `${index < 2 ? 0 : 60}ms`);
-  });
-}
-
 /** 保留表单、键盘、ref 和可访问名称的按钮。 */
 export function Button({
   variant = 'primary',
@@ -197,11 +175,12 @@ export function Button({
         aria-hidden="true"
         focusable="false"
       ></svg>
-      <span ref={initializeButtonLines} className="aig-button-frame" aria-hidden="true">
-        <span className="aig-button-line" data-edge="top" />
-        <span className="aig-button-line" data-edge="bottom" />
-        <span className="aig-button-line" data-edge="start" />
-        <span className="aig-button-line" data-edge="end" />
+      <span className="aig-button-frame" aria-hidden="true">
+        <svg className="aig-button-perimeter" aria-hidden="true" focusable="false">
+          {[0, 1, 2, 3].map((index) => (
+            <rect key={index} className="aig-button-line" pathLength={100} />
+          ))}
+        </svg>
       </span>
       {loading && (
         <span className="aig-button-loading" aria-hidden="true">

@@ -52,12 +52,20 @@ export function useButtonContrast(
           if (value !== attribute.value) node.setAttribute(attribute.name, value);
         }
       });
-      // 浅色细线共享文字遮罩，复用挂载时确定的随机布局。
+      // 浅色细线共享文字遮罩，并与原始轮廓保持相同的循环进度。
       const lineFrame = button.querySelector('.aig-button-frame')?.cloneNode(true) as
         HTMLSpanElement | undefined;
       if (lineFrame) {
         lineFrame.className = 'aig-button-contrast-frame';
         contrast.replaceChildren(copy, lineFrame);
+        const originals = button.querySelectorAll('.aig-button-frame .aig-button-line');
+        lineFrame.querySelectorAll('.aig-button-line').forEach((line, index) => {
+          const original = originals[index]?.getAnimations?.()[0];
+          const duplicate = line.getAnimations?.()[0];
+          if (!original || !duplicate) return;
+          if (original.startTime != null) duplicate.startTime = original.startTime;
+          else duplicate.currentTime = original.currentTime ?? 0;
+        });
       } else contrast.replaceChildren(copy);
     };
     const update = () => {

@@ -460,7 +460,10 @@ test('悬停、按压、选中与加载分别使用对应反馈', async ({ page 
   await expect(frame).toHaveCSS('animation-name', 'none');
   expect(await indicator()).toBe('0');
   await primary.hover();
-  await expect(frame).toHaveCSS('animation-name', 'aig-button-scan');
+  await expect(primary.locator('.aig-button-frame .aig-button-line').first()).toHaveCSS(
+    'animation-name',
+    'aig-button-perimeter',
+  );
   await expect(frame).toHaveCSS('inset', '-1px');
   await expect.poll(edgeDifference).toBeLessThan(0.1);
   /* 悬停时左侧的固定三角指示点亮，与选中态共用同一个标记位。 */
@@ -472,17 +475,15 @@ test('悬停、按压、选中与加载分别使用对应反馈', async ({ page 
   await expect(frame).toHaveCSS('inset', '-1px');
   await expect.poll(edgeDifference).toBeLessThan(0.1);
 
-  const ghost = matrix.locator('.aig-button[data-variant=ghost]:enabled').first();
-  await ghost.hover();
-  await expect
-    .poll(() =>
-      ghost.locator('.aig-button-frame').evaluate((el) => getComputedStyle(el, '::before').backgroundSize),
-    )
-    .toContain('11px');
-
   const busy = matrix.locator('.aig-button[aria-busy="true"]').first();
-  await expect(busy.locator('.aig-button-frame')).toHaveCSS('animation-name', 'aig-button-scan');
-  await expect(busy.locator('.aig-button-frame')).toHaveCSS('animation-duration', '1.7s');
+  await expect(busy.locator('.aig-button-frame .aig-button-line').first()).toHaveCSS(
+    'animation-name',
+    'aig-button-perimeter',
+  );
+  await expect(busy.locator('.aig-button-frame .aig-button-line').first()).toHaveCSS(
+    'animation-duration',
+    '16s',
+  );
   await expect(busy.locator('.aig-button-highlight')).not.toHaveAttribute('data-playing', '');
   const disabled = matrix.locator('.aig-button:disabled:not([aria-busy])').first();
   await expect(disabled.locator('.aig-button-highlight')).not.toHaveAttribute('data-playing', '');
@@ -546,4 +547,42 @@ test('加载保留按钮尺寸，长文字与图标槽位在窄视口中保持�
       .evaluate((element) => getComputedStyle(element, '::before').display),
   ).toBe('none');
   await expect(longButton.locator('.aig-button-frame')).toHaveCSS('border-style', 'solid');
+});
+
+test('所有边缘短线持续绕行，闭环连续且减少动态时停止', async ({ page }) => {
+  await page.goto('http://127.0.0.1:5173/?component=Button');
+  const button = page.locator('#example-variants .preview-actions > .aig-button').first();
+  const lines = button.locator('.aig-button-frame .aig-button-line');
+  await expect(lines).toHaveCount(4);
+  const sample = async (time: number) =>
+    lines.evaluateAll(
+      (elements, time) =>
+        elements.map((el) => {
+          const animation = el.getAnimations()[0]!;
+          animation.pause();
+          animation.currentTime = time;
+          const style = getComputedStyle(el);
+          return {
+            offset: parseFloat(style.strokeDashoffset),
+            duration: style.animationDuration,
+            iterations: style.animationIterationCount,
+            width: parseFloat(style.width),
+            height: parseFloat(style.height),
+          };
+        }),
+      time,
+    );
+  const start = await sample(0);
+  const middle = await sample(8000);
+  const end = await sample(16000);
+  start.forEach((line, index) => {
+    expect(line.duration).toBe('16s');
+    expect(line.iterations).toBe('infinite');
+    expect(line.width).toBeGreaterThan(20);
+    expect(line.height).toBeGreaterThan(20);
+    expect(middle[index]!.offset).toBeCloseTo(line.offset - 50);
+    expect(end[index]!.offset).toBeCloseTo(line.offset);
+  });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  for (const line of await lines.all()) await expect(line).toHaveCSS('animation-name', 'none');
 });

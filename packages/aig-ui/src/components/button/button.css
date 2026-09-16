@@ -118,58 +118,26 @@
 }
 .aig-button[data-variant='secondary'] .aig-button-frame {
   background-image:
-    linear-gradient(
-      90deg,
-      transparent,
-      color-mix(in srgb, var(--aig-button-trace) 72%, transparent),
-      transparent
-    ),
     linear-gradient(var(--aig-button-edge), var(--aig-button-edge)),
     linear-gradient(var(--aig-button-edge), var(--aig-button-edge));
   background-size:
-    26% 1px,
     100% 1px,
     100% 1px;
   background-position:
-    var(--aig-glint-x) calc(100% - 1px),
     center top,
     center bottom;
 }
 /* 普通操作：连续矩形细框。 */
-/* 幽灵操作：带端封的基线，端封随悬停立起。 */
+/* 幽灵操作：底部基线。 */
 .aig-button[data-variant='ghost'] {
   --aig-button-edge: color-mix(in srgb, var(--aig-color-text) 16%, transparent);
   --aig-button-trace: color-mix(in srgb, var(--aig-color-mark) 55%, transparent);
   color: var(--aig-color-accent);
 }
 .aig-button[data-variant='ghost'] .aig-button-frame {
-  background-image:
-    linear-gradient(
-      90deg,
-      transparent,
-      color-mix(in srgb, var(--aig-button-trace) 72%, transparent),
-      transparent
-    ),
-    linear-gradient(var(--aig-button-edge), var(--aig-button-edge));
-  background-size:
-    26% 1px,
-    100% 1px;
-  background-position:
-    var(--aig-glint-x) calc(100% - 1px),
-    center bottom;
-}
-.aig-button[data-variant='ghost'] .aig-button-frame::before {
-  --aig-button-tick: color-mix(in srgb, var(--aig-color-border-control) 72%, transparent);
-  inset: 0 3px;
-  background:
-    linear-gradient(var(--aig-button-tick), var(--aig-button-tick)) left bottom / 1px var(--aig-button-cap),
-    linear-gradient(var(--aig-button-tick), var(--aig-button-tick)) right bottom / 1px var(--aig-button-cap);
-  background-repeat: no-repeat;
-}
-.aig-button[data-variant='ghost']:is(:hover, :focus-visible):enabled .aig-button-frame::before,
-.aig-button[data-variant='ghost']:is([aria-pressed='true'], [aria-expanded='true'])
-  .aig-button-frame::before {
-  --aig-button-cap: 11px;
+  background-image: linear-gradient(var(--aig-button-edge), var(--aig-button-edge));
+  background-size: 100% 1px;
+  background-position: center bottom;
 }
 /* 危险操作：危险色边界配合加厚的底线。 */
 .aig-button[data-variant='danger'] {
@@ -209,31 +177,23 @@
 .aig-button[data-tone]:not([data-tone='brand']) .aig-button-contrast-content {
   color: white;
 }
-/* 框线：完整矩形四边加一条停在基线上的扫描光带。 */
+/* 各层级的静态边界承载循环短线。 */
 .aig-button-frame {
   position: absolute;
   z-index: 0;
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(
-      90deg,
-      transparent,
-      color-mix(in srgb, var(--aig-button-trace) 72%, transparent),
-      transparent
-    ),
     linear-gradient(var(--aig-button-edge), var(--aig-button-edge)),
     linear-gradient(var(--aig-button-edge), var(--aig-button-edge)),
     linear-gradient(var(--aig-button-edge), var(--aig-button-edge)),
     linear-gradient(var(--aig-button-edge), var(--aig-button-edge));
   background-size:
-    26% 1px,
     100% 1px,
     100% 1px,
     1px 100%,
     1px 100%;
   background-position:
-    var(--aig-glint-x) calc(100% - 1px),
     center top,
     center bottom,
     left center,
@@ -241,81 +201,45 @@
   background-repeat: no-repeat;
   transition: inset 300ms cubic-bezier(0.34, 1.3, 0.64, 1);
 }
-/* 每个按钮的细线布局在挂载时固定，交互沿各自方向伸缩与复位。 */
-.aig-button-line {
+/* 四段细线沿同一闭合轮廓匀速绕行，拐角处连续折转；尺寸由按钮实时决定。 */
+.aig-button-perimeter {
   position: absolute;
-  background: var(--aig-button-trace);
-  opacity: 0.32;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: visible;
+  fill: none;
   pointer-events: none;
-  transition:
-    transform 380ms cubic-bezier(0.22, 0.61, 0.36, 1),
-    opacity 220ms linear;
-  transition-delay: var(--aig-line-delay, 0ms);
 }
-.aig-button-line:is([data-edge='top'], [data-edge='bottom']) {
-  inset-inline-start: var(--aig-line-position, 24%);
-  inline-size: var(--aig-line-length, 18%);
-  block-size: 1px;
-  transform: translateX(0) scaleX(var(--aig-line-rest, 1));
-}
-.aig-button-line[data-edge='top'] {
-  inset-block-start: 3px;
-}
-.aig-button-line[data-edge='bottom'] {
-  inset-block-end: 3px;
-}
-.aig-button-line:is([data-edge='start'], [data-edge='end']) {
-  opacity: 0.08;
-  inset-block-start: var(--aig-line-position, 24%);
-  inline-size: 1px;
-  block-size: var(--aig-line-length, 18%);
-  transform: translateY(0) scaleY(var(--aig-line-rest, 1));
-}
-.aig-button-line[data-edge='start'] {
-  inset-inline-start: 3px;
-}
-.aig-button-line[data-edge='end'] {
-  inset-inline-end: 3px;
-}
-/* 主操作的四个定位短标位于边界外，避免画成框内装饰条纹。 */
-.aig-button[data-variant='primary'] .aig-button-line {
+.aig-button-line {
+  x: 0.5px;
+  y: 0.5px;
+  width: calc(100% - 1px);
+  height: calc(100% - 1px);
+  stroke: var(--aig-button-trace);
+  stroke-width: 1px;
+  stroke-dasharray: 3 97;
+  stroke-dashoffset: var(--aig-line-phase, 0px);
   opacity: 0.48;
+  animation: aig-button-perimeter 16s linear infinite;
+  transition: opacity 220ms linear;
 }
-.aig-button[data-variant='primary'] .aig-button-line:is([data-edge='top'], [data-edge='bottom']) {
-  inline-size: 5px;
+.aig-button-line:nth-child(2) {
+  --aig-line-phase: -25px;
 }
-.aig-button[data-variant='primary'] .aig-button-line[data-edge='top'] {
-  inset-block-start: -2px;
+.aig-button-line:nth-child(3) {
+  --aig-line-phase: -50px;
 }
-.aig-button[data-variant='primary'] .aig-button-line[data-edge='bottom'] {
-  inset-block-end: -2px;
-}
-.aig-button[data-variant='primary'] .aig-button-line:is([data-edge='start'], [data-edge='end']) {
-  block-size: 5px;
-}
-.aig-button[data-variant='primary'] .aig-button-line[data-edge='start'] {
-  inset-inline-start: -2px;
-}
-.aig-button[data-variant='primary'] .aig-button-line[data-edge='end'] {
-  inset-inline-end: -2px;
+.aig-button-line:nth-child(4) {
+  --aig-line-phase: -75px;
 }
 .aig-button:is(:hover, :focus-visible):enabled .aig-button-line {
   opacity: 0.95;
 }
-.aig-button:is(:hover, :focus-visible):enabled .aig-button-line:is([data-edge='top'], [data-edge='bottom']) {
-  transform: translateX(var(--aig-line-shift, 35%)) scaleX(var(--aig-line-active, 1.35));
-}
-.aig-button:is(:hover, :focus-visible):enabled .aig-button-line:is([data-edge='start'], [data-edge='end']) {
-  transform: translateY(var(--aig-line-shift, 35%)) scaleY(var(--aig-line-active, 1.35));
-}
-/* 碎线与端封的承载层。 */
-.aig-button-frame::before {
-  content: '';
-  position: absolute;
-  inset: 3px;
-  transition:
-    inset 280ms cubic-bezier(0.22, 0.61, 0.36, 1),
-    background-size 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
+@keyframes aig-button-perimeter {
+  to {
+    stroke-dashoffset: calc(var(--aig-line-phase, 0px) - 100px);
+  }
 }
 /* 同一轮保持网格稳定，采样点更换组合，最终收束成完整底色。 */
 .aig-button-highlight {
@@ -443,10 +367,9 @@
 .aig-button:is(:hover, :focus-visible):enabled {
   color: var(--aig-color-accent);
 }
-/* 悬停与聚焦：外围打开 1px，光带沿基线读取一次。 */
+/* 悬停与聚焦：外围打开 1px，循环短线保持原有进度。 */
 .aig-button:is(:hover, :focus-visible):enabled .aig-button-frame {
   inset: -1px;
-  animation: aig-button-scan var(--aig-motion-scan-duration) cubic-bezier(0.3, 0.55, 0.35, 1) 1;
 }
 .aig-button:is(:hover, :focus-visible):enabled .aig-button-frame::before {
   inset: 2px;
@@ -493,15 +416,7 @@
   opacity: 0.85;
   cursor: progress;
 }
-/* 加载：扫描基线与加载图标表达任务状态，选择标记让出状态位。 */
-.aig-button[aria-busy='true'] .aig-button-frame {
-  animation: aig-button-scan var(--aig-motion-sweep-period) linear infinite;
-}
-.aig-button[aria-busy='true'][data-variant='primary'] .aig-button-frame {
-  background-image: linear-gradient(90deg, transparent, var(--aig-button-trace), transparent);
-  background-size: 26% 1px;
-  background-position: var(--aig-glint-x) calc(100% - 1px);
-}
+/* 加载图标表达任务状态，边缘短线保持缓慢循环。 */
 .aig-button[aria-busy='true'] :is(.aig-button-content, .aig-button-contrast-content)::before {
   opacity: 0;
 }
@@ -537,28 +452,6 @@
 }
 .aig-button .aig-brand-mark {
   color: inherit;
-}
-/* 待机：光带驶过一遍后驻留，等待下一轮。 */
-@keyframes aig-button-glint {
-  0%,
-  8% {
-    --aig-glint-x: -30%;
-  }
-  55% {
-    --aig-glint-x: 130%;
-  }
-  100% {
-    --aig-glint-x: 130%;
-  }
-}
-/* 扫描：光带从基线的左端读到右端。 */
-@keyframes aig-button-scan {
-  from {
-    --aig-glint-x: -30%;
-  }
-  to {
-    --aig-glint-x: 130%;
-  }
 }
 .aig-button-mark {
   inline-size: 1.15em;
@@ -739,8 +632,8 @@
   display: none;
 }
 .aig-button-contrast-frame .aig-button-line {
-  background: var(--aig-color-surface);
+  stroke: var(--aig-color-surface);
 }
 .aig-button[data-tone]:not([data-tone='brand']) .aig-button-contrast-frame .aig-button-line {
-  background: white;
+  stroke: white;
 }
