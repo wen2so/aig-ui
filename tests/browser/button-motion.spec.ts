@@ -30,7 +30,7 @@ test('规则刻面按实际宽高适配，窄屏保留对称三角和一致斜�
         triangle.some((other) => other !== point && other.y === point.y),
       );
       const band = shapes[1]!;
-      const edgeDifference = Math.abs(band[1]!.x - band[0]!.x - Math.abs(base[1]!.x - base[0]!.x));
+      const edgeDifference = Math.abs(Math.abs(band[1]!.x - band[0]!.x) - Math.abs(base[1]!.x - base[0]!.x));
       const target =
         (Math.atan2(host.clientHeight, Math.min(host.clientHeight / Math.sqrt(3), host.clientWidth / 8)) *
           180) /
@@ -90,7 +90,7 @@ test('按钮视图切换和图标收藏支持键盘，并保留可见激活反�
   await expect(selection).toContainText('当前显示数据视图');
 });
 
-test('入场收回，首次 hover 按帧硬切后稳定，重复交互复用几何', async ({ page }) => {
+test('入场收回，每轮 hover 更换规则分区与闪切顺序，轮内按帧硬切后稳定', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Button');
   await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
@@ -106,6 +106,11 @@ test('入场收回，首次 hover 按帧硬切后稳定，重复交互复用几�
   expect(initial).toHaveLength(5);
   await primary.hover();
   await expect(highlight).toHaveAttribute('data-playing', 'interaction');
+  const firstGeometry = await facets.evaluateAll((elements) =>
+    elements.map((el) => el.getAttribute('points')),
+  );
+  const firstSequence = await highlight.getAttribute('data-sequence');
+  expect(firstGeometry).not.toEqual(initial);
   // 40ms 帧格上的实测值：整块先显现，斜带和三角再分别留空，后段连续填回。
   const sample = await highlight.evaluate((el) => {
     return [...el.querySelectorAll('polygon')].map((polygon) => {
@@ -117,7 +122,7 @@ test('入场收回，首次 hover 按帧硬切后稳定，重复交互复用几�
       });
       animation.play();
       return {
-        role: polygon.dataset.motion,
+        role: (animation as CSSAnimation).animationName.replace('aig-button-facet-', ''),
         depth: Number(getComputedStyle(polygon).getPropertyValue('--aig-facet-depth')),
         values,
       };
@@ -144,12 +149,23 @@ test('入场收回，首次 hover 按帧硬切后稳定，重复交互复用几�
   await page.mouse.move(4, 4);
   await expect.poll(hidden).toBe(true);
   await primary.hover();
-  await expect(highlight).not.toHaveAttribute('data-playing');
-  expect(await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')))).toEqual(
-    initial,
+  await expect(highlight).toHaveAttribute('data-playing', 'interaction');
+  await expect(highlight).not.toHaveAttribute('data-sequence', firstSequence!);
+  expect(await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')))).not.toEqual(
+    firstGeometry,
   );
+  await expect(highlight).not.toHaveAttribute('data-playing');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect.poll(hidden).toBe(false);
+  const reducedGeometry = await facets.evaluateAll((elements) =>
+    elements.map((el) => el.getAttribute('points')),
+  );
+  await page.mouse.move(4, 4);
+  await primary.hover();
+  await expect(highlight).not.toHaveAttribute('data-playing');
+  expect(await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')))).toEqual(
+    reducedGeometry,
+  );
 });
 
 test('参考菜单同排错峰，只有选中项保持实底，键盘可切换选择', async ({ page }) => {
@@ -217,7 +233,8 @@ test('浅字区域与实际闪切刻面同步，未覆盖区域保留深字', as
   });
   await expect.poll(async () => (await alphas()).every((value) => value === 0)).toBe(true);
   await expect(button.locator('.aig-button-content')).toHaveCSS('color', idle);
-  const flash = highlight.locator('polygon[data-motion=tip]').first();
+  const flashRole = (await highlight.getAttribute('data-sequence')) === 'reverse' ? 'cut' : 'tip';
+  const flash = highlight.locator(`polygon[data-motion=${flashRole}]`).first();
   const sample = async (progress: number) => {
     await flash.evaluate((el, progress) => {
       const animation = el.getAnimations()[0]!;

@@ -2,7 +2,7 @@ import { createRef } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { expect, it, vi } from 'vitest';
 import { Button } from './button.js';
-import { createButtonFacets } from './button-motion.js';
+import { BUTTON_FACET_LAYOUT_COUNT, createButtonFacets } from './button-motion.js';
 
 it.each([
   [80, 32],
@@ -11,37 +11,52 @@ it.each([
   [160, 80],
 ])('规则刻面在 %s×%s 下共用斜率，三角对称、斜带平行且无交叉', (width, height) => {
   for (const flip of [false, true]) {
-    const shapes = createButtonFacets(width!, height!, flip).map(({ points }) =>
-      points.split(' ').map((point) => point.split(',').map(Number)),
+    const layouts = Array.from({ length: BUTTON_FACET_LAYOUT_COUNT }, (_, layout) =>
+      createButtonFacets(width!, height!, flip, layout),
     );
-    const runs: number[] = [];
-    for (const points of shapes) {
-      const crosses: number[] = [];
-      points.forEach((point, index) => {
-        const next = points[(index + 1) % points.length]!;
-        const after = points[(index + 2) % points.length]!;
-        const dx = next[0]! - point[0]!;
-        const dy = next[1]! - point[1]!;
-        if (dx && dy) runs.push(Math.abs(dx));
-        crosses.push(dx * (after[1]! - next[1]!) - dy * (after[0]! - next[0]!));
-      });
-      expect(crosses.every((cross) => cross > 0) || crosses.every((cross) => cross < 0)).toBe(true);
+    expect(new Set(layouts.map((facets) => facets.map(({ points }) => points).join('|'))).size).toBe(
+      BUTTON_FACET_LAYOUT_COUNT,
+    );
+    for (const facets of layouts) {
+      const shapes = facets.map(({ points }) =>
+        points.split(' ').map((point) => point.split(',').map(Number)),
+      );
+      const runs: number[] = [];
+      let area = 0;
+      for (const points of shapes) {
+        const crosses: number[] = [];
+        let twiceArea = 0;
+        points.forEach((point, index) => {
+          const next = points[(index + 1) % points.length]!;
+          const after = points[(index + 2) % points.length]!;
+          expect(point[0]).toBeGreaterThanOrEqual(0);
+          expect(point[0]).toBeLessThanOrEqual(300);
+          twiceArea += point[0]! * next[1]! - next[0]! * point[1]!;
+          const dx = next[0]! - point[0]!;
+          const dy = next[1]! - point[1]!;
+          if (dx && dy) runs.push(Math.abs(dx));
+          crosses.push(dx * (after[1]! - next[1]!) - dy * (after[0]! - next[0]!));
+        });
+        area += Math.abs(twiceArea) / 2;
+        expect(crosses.every((cross) => cross > 0) || crosses.every((cross) => cross < 0)).toBe(true);
+      }
+      expect(area).toBeCloseTo(30000, 2);
+      expect(Math.max(...runs) - Math.min(...runs)).toBeLessThan(0.02);
+      const triangle = shapes.find((points) => points.length === 3)!;
+      const apex = triangle.find((point) => triangle.filter((other) => other[1] === point[1]).length === 1)!;
+      const base = triangle.filter((point) => point !== apex);
+      expect(apex[0]).toBeCloseTo((base[0]![0]! + base[1]![0]!) / 2, 2);
+      const band = shapes[1]!;
+      expect(band[1]![0]! - band[0]![0]!).toBeCloseTo(band[2]![0]! - band[3]![0]!, 2);
+      const triangleBase = Math.abs(base[1]![0]! - base[0]![0]!);
+      expect(Math.abs(band[1]![0]! - band[0]![0]!)).toBeCloseTo(triangleBase, 2);
+      const physicalRun = (runs[0]! * width!) / 300;
+      expect(physicalRun).toBeCloseTo(Math.min(height! / Math.sqrt(3), width! / 8), 2);
     }
-    expect(Math.max(...runs) - Math.min(...runs)).toBeLessThan(0.02);
-    const triangle = shapes.find((points) => points.length === 3)!;
-    const apex = triangle.find((point) => triangle.filter((other) => other[1] === point[1]).length === 1)!;
-    const base = triangle.filter((point) => point !== apex);
-    expect(apex[0]).toBeCloseTo((base[0]![0]! + base[1]![0]!) / 2, 2);
-    const band = shapes[1]!;
-    expect(band[1]![0]! - band[0]![0]!).toBeCloseTo(band[2]![0]! - band[3]![0]!, 2);
-    const triangleBase = Math.abs(base[1]![0]! - base[0]![0]!);
-    expect(band[1]![0]! - band[0]![0]!).toBeCloseTo(triangleBase, 2);
-    const physicalRun = (runs[0]! * width!) / 300;
-    expect(physicalRun).toBeCloseTo(Math.min(height! / Math.sqrt(3), width! / 8), 2);
   }
 });
 
-it('刻面在挂载后固定，色块贯穿高度、三角形与四边形贴边拼接，局部快慢闪切支持宿主取消', () => {
+it('每次重新进入切换规则分区，轮内复用节点和色阶，闪切支持宿主取消', () => {
   const enter = vi.fn();
   const { rerender } = render(<Button onPointerEnter={enter}>保存</Button>);
   const button = screen.getByRole('button', { name: '保存' });
@@ -97,16 +112,19 @@ it('刻面在挂载后固定，色块贯穿高度、三角形与四边形贴边�
   expect(facets.filter((facet) => facet.dataset.motion === 'cut')).toHaveLength(1);
   expect(facets.filter((facet) => facet.dataset.motion === 'tip')).toHaveLength(1);
   expect(button.querySelector('.aig-button-highlight')).toHaveAttribute('data-playing', 'interaction');
+  fireEvent.pointerOver(button);
+  expect(facets.map((facet) => facet.getAttribute('points'))).toEqual(geometry);
   fireEvent.pointerLeave(button);
   fireEvent.pointerOver(button);
   expect(button.querySelector('.aig-button-highlight')).toHaveAttribute('data-hovered');
-  expect(button.querySelector('.aig-button-highlight')).not.toHaveAttribute('data-playing');
+  expect(button.querySelector('.aig-button-highlight')).toHaveAttribute('data-playing', 'interaction');
   expect([...button.querySelectorAll('polygon')]).toEqual(facets);
-  expect(facets.map((facet) => facet.getAttribute('points'))).toEqual(geometry);
+  const nextGeometry = facets.map((facet) => facet.getAttribute('points'));
+  expect(nextGeometry).not.toEqual(geometry);
   expect(facets.map((facet) => Number(facet.style.getPropertyValue('--aig-facet-depth')))).toEqual(depths);
   rerender(<Button loading>保存</Button>);
   rerender(<Button>保存</Button>);
-  expect(facets.map((facet) => facet.getAttribute('points'))).toEqual(geometry);
+  expect(facets.map((facet) => facet.getAttribute('points'))).toEqual(nextGeometry);
   const before = button.querySelector('svg')!.innerHTML;
   rerender(<Button onPointerEnter={(event) => event.preventDefault()}>保存</Button>);
   fireEvent.pointerOver(button);
@@ -129,7 +147,7 @@ it('细线随机布局在重渲染和重复交互后保持固定', () => {
   rerender(<Button>保存</Button>);
   fireEvent.pointerOver(button);
   expect(styles()).toEqual(initial);
-  expect(button.querySelector('.aig-button-highlight')).not.toHaveAttribute('data-playing');
+  expect(button.querySelector('.aig-button-highlight')).toHaveAttribute('data-playing', 'interaction');
 });
 
 it('默认使用普通按钮，加载时保留名称并阻止重复动作', () => {

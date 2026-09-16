@@ -2,6 +2,16 @@
 const entranceQueue = new Map<SVGSVGElement, () => void>();
 let entranceFrame = 0;
 
+/** 只调整规则主体的分配比例；斜带边长、三角底边与斜率继续共用约束。 */
+const facetProfiles = [
+  [1, 1, 1],
+  [1.35, 0.65, 1],
+  [0.7, 1.45, 0.85],
+  [1.1, 1.15, 0.75],
+] as const;
+export const BUTTON_FACET_LAYOUT_COUNT = facetProfiles.length * 2;
+let nextButtonLayout = 0;
+
 export function queueButtonEntrance(element: SVGSVGElement, play: () => void) {
   entranceQueue.set(element, play);
   if (!entranceFrame) {
@@ -46,29 +56,33 @@ export function queueButtonEntrance(element: SVGSVGElement, play: () => void) {
  * 通常使用 60°；紧凑按钮统一加陡，给主体留出足够宽度。
  * 按实际宽高换算到 300×100 坐标，避免固定 viewBox 任意拉伸斜角。
  */
-export function createButtonFacets(width: number, height: number, flip = false) {
+export function createButtonFacets(width: number, height: number, flip = false, layout = 0) {
   const run = (Math.min(height / Math.sqrt(3), width / 8) * 300) / width;
   const body = (300 - 5 * run) / 3;
+  const profile = facetProfiles[layout % facetProfiles.length]!;
+  const left = body * profile[0];
+  const middle = body * profile[1];
+  const mirror = layout >= facetProfiles.length;
   const boundaries = [
     [
       [0, 0],
       [0, 100],
     ],
     [
-      [body, 0],
-      [body + run, 100],
+      [left, 0],
+      [left + run, 100],
     ],
     [
-      [body + 2 * run, 0],
-      [body + 3 * run, 100],
+      [left + 2 * run, 0],
+      [left + 3 * run, 100],
     ],
     [
-      [2 * body + 4 * run, 0],
-      [2 * body + 3 * run, 100],
+      [left + middle + 4 * run, 0],
+      [left + middle + 3 * run, 100],
     ],
     [
-      [2 * body + 4 * run, 0],
-      [2 * body + 5 * run, 100],
+      [left + middle + 4 * run, 0],
+      [left + middle + 5 * run, 100],
     ],
     [
       [300, 0],
@@ -83,7 +97,9 @@ export function createButtonFacets(width: number, height: number, flip = false) 
         position === 0 || point[0] !== vertices[position - 1]![0] || point[1] !== vertices[position - 1]![1],
     );
     return {
-      points: points.map(([x, y]) => `${x!.toFixed(4)},${(flip ? 100 - y! : y!).toFixed(4)}`).join(' '),
+      points: points
+        .map(([x, y]) => `${(mirror ? 300 - x! : x!).toFixed(4)},${(flip ? 100 - y! : y!).toFixed(4)}`)
+        .join(' '),
       motion: index === 3 ? 'tip' : index === 1 ? 'cut' : 'body',
     };
   });
@@ -94,16 +110,24 @@ function layoutButtonFacets(element: SVGSVGElement) {
   const button = element.closest('button');
   const width = button?.clientWidth || 300;
   const height = button?.clientHeight || 100;
-  createButtonFacets(width, height, element.dataset.facetFlip === 'true').forEach(({ points }, index) => {
+  createButtonFacets(
+    width,
+    height,
+    element.dataset.facetFlip === 'true',
+    Number(element.dataset.facetLayout),
+  ).forEach(({ points }, index) => {
     const facet = element.children[index]!;
     if (facet.getAttribute('points') !== points) facet.setAttribute('points', points);
   });
 }
 
-/** 仅随机选择整体上下镜像，顶点、角度和比例不再分别随机化。 */
+/** 相邻挂载从不同规则分区起步，尺寸与普通重渲染复用当前方案。 */
 export function initializeButtonFacets(element: SVGSVGElement | null) {
   if (!element || element.childElementCount) return;
   element.dataset.facetFlip = String(Math.random() < 0.5);
+  const layout = nextButtonLayout++ % BUTTON_FACET_LAYOUT_COUNT;
+  element.dataset.facetLayout = String(layout);
+  element.dataset.sequence = layout % 2 ? 'reverse' : 'forward';
   const depths = [1, 0.88, 0.94];
   element.replaceChildren(
     ...createButtonFacets(300, 100).map(({ motion }, index) => {
@@ -116,7 +140,7 @@ export function initializeButtonFacets(element: SVGSVGElement | null) {
   layoutButtonFacets(element);
 }
 
-/** 字体、宽度或换行改变时同步规则几何；普通 hover 复用原有布局。 */
+/** 字体、宽度或换行改变时适配当前分区，保留本轮几何关系和动画进度。 */
 export function observeButtonFacets(element: SVGSVGElement | null) {
   initializeButtonFacets(element);
   const button = element?.closest('button');
@@ -132,7 +156,17 @@ export function replayButtonFacets(element: SVGSVGElement | null, entrance = fal
   initializeButtonFacets(element);
   delete element.dataset.playing;
   if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-  if (!entrance) element.parentElement?.style.setProperty('--aig-button-enter-delay', '0ms');
+  if (!entrance) {
+    // 排除上一轮分区，避免随机抽到同一构图；序列同步交替，先出现的图形随轮次变化。
+    const previous = Number(element.dataset.facetLayout);
+    element.dataset.facetLayout = String(
+      (previous + 1 + Math.floor(Math.random() * (BUTTON_FACET_LAYOUT_COUNT - 1))) %
+        BUTTON_FACET_LAYOUT_COUNT,
+    );
+    element.dataset.sequence = element.dataset.sequence === 'forward' ? 'reverse' : 'forward';
+    layoutButtonFacets(element);
+    element.parentElement?.style.setProperty('--aig-button-enter-delay', '0ms');
+  }
   void element.getBoundingClientRect();
   element.dataset.playing = entrance ? 'entrance' : 'interaction';
 }

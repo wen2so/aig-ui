@@ -90,21 +90,17 @@ export function Button({
   const contentRef = useRef<HTMLSpanElement>(null);
   const contrastRef = useRef<HTMLSpanElement>(null);
   useButtonContrast(highlightRef, contentRef, contrastRef);
-  const interactedRef = useRef(false);
   const entranceConsumedRef = useRef(false);
   const cancelEntranceRef = useRef<(() => void) | undefined>(undefined);
   const finishFrameRef = useRef(0);
   useEffect(() => observeButtonFacets(highlightRef.current), []);
-  /** 首次交互播放刻面，后续交互直接保持稳定高亮。 */
+  /** 每次重新进入播放新分区；同一次悬停内的聚焦不会重复触发。 */
   const activateHighlight = () => {
     const element = highlightRef.current;
-    if (!element) return;
+    if (!element || element.hasAttribute('data-hovered')) return;
     cancelEntranceRef.current?.();
     element.dataset.hovered = '';
-    if (!interactedRef.current) {
-      interactedRef.current = true;
-      replayButtonFacets(element);
-    }
+    replayButtonFacets(element);
   };
   useEffect(() => {
     const element = highlightRef.current;

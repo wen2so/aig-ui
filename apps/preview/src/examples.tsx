@@ -323,7 +323,7 @@ export const extraExamples: Record<string, Example[]> = {
       id: 'variants',
       title: '操作层级',
       description:
-        '挂载时按行从左到右错峰入场，前段硬切、后段淡出。首次悬停重播，后续悬停直接显示稳定高亮，刻面与细线布局保持固定。',
+        '挂载时按行从左到右错峰入场，前段硬切、后段淡出。每次移出再进入时更换规则分区与闪切顺序，停留期间保持高亮。',
       render: () => (
         <div className="preview-actions">
           {variants.map((variant, i) => (
@@ -356,7 +356,7 @@ export const extraExamples: Record<string, Example[]> = {
       id: 'states',
       title: '静止、加载与禁用',
       description:
-        '静止保留边界，加载使用专用图标与基线扫描，禁用保持静态。入场与首次交互播放刻面，后续交互直接高亮，选中和展开保留实底、左侧标记与底线。',
+        '静止保留边界，加载使用专用图标与基线扫描，禁用保持静态。入场和每次重新悬停时播放一轮闪切，选中和展开保留实底、左侧标记与底线。',
       render: () => <ButtonStates />,
       code: '<Button>静止</Button>\n<Button loading>正在处理</Button>\n<Button disabled>等待开放</Button>',
       wide: true,
