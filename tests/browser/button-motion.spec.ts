@@ -588,6 +588,7 @@ test('所有边缘短线持续绕行，闭环连续且减少动态时停止', as
 });
 
 test('三根等距线随速度增长闭合并形成炽热渐变，离开后恢复', async ({ page }) => {
+  test.setTimeout(45000);
   await page.goto('http://127.0.0.1:5173/?component=Button');
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
   await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
@@ -654,6 +655,9 @@ test('三根等距线随速度增长闭合并形成炽热渐变，离开后恢�
   const growingLengths = await lengths();
   growingLengths.forEach((length) => expect(length).toBeGreaterThan(3));
   await page.clock.runFor(3000);
+  // 9 秒时仍保留间隔，给持续加速绕行留出更长时间。
+  (await lengths()).forEach((length) => expect(length).toBeLessThan(100 / 3));
+  await page.clock.runFor(6000);
   (await lengths()).forEach((length) => expect(length).toBeCloseTo(100 / 3, 3));
   await expect(button.locator('.aig-button-heat')).toHaveCSS('opacity', '1');
   const phases = await button
@@ -676,7 +680,13 @@ test('三根等距线随速度增长闭合并形成炽热渐变，离开后恢�
   await page.clock.runFor(300);
   expect(await rate()).toBeLessThan(beforeLeaveRate);
   expect(await rate()).toBeGreaterThan(1);
-  await page.clock.runFor(700);
+  await page.clock.runFor(1700);
+  expect(await rate()).toBeGreaterThan(1);
+  (await lengths()).forEach((length) => {
+    expect(length).toBeGreaterThan(3);
+    expect(length).toBeLessThan(100 / 3);
+  });
+  await page.clock.runFor(1100);
   expect(await rate()).toBe(1);
   expect(await lengths()).toEqual(initial);
   expect((await light()).opacity).toBeCloseTo(idleLight.opacity);
