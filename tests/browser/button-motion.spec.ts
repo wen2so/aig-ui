@@ -549,11 +549,17 @@ test('加载保留按钮尺寸，长文字与图标槽位在窄视口中保持�
   await expect(longButton.locator('.aig-button-frame')).toHaveCSS('border-style', 'solid');
 });
 
-test('所有边缘短线持续绕行，闭环连续且减少动态时停止', async ({ page }) => {
+test('边线默认隐藏，hover 绕行闭环连续且减少动态时停止', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Button');
   const button = page.locator('#example-variants .preview-actions > .aig-button').first();
   const lines = button.locator('.aig-button-frame .aig-button-line');
   await expect(lines).toHaveCount(3);
+  await expect(button.locator('.aig-button-frame .aig-button-perimeter')).toBeHidden();
+  expect(await lines.evaluateAll((elements) => elements.flatMap((el) => el.getAnimations()).length)).toBe(0);
+  await page.evaluate(() => document.fonts.ready.then(() => undefined));
+  await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
+  await button.hover();
+  await expect(button.locator('.aig-button-frame .aig-button-perimeter')).toBeVisible();
   const sample = async (time: number) =>
     lines.evaluateAll(
       (elements, time) =>
@@ -566,8 +572,8 @@ test('所有边缘短线持续绕行，闭环连续且减少动态时停止', as
             offset: parseFloat(style.strokeDashoffset),
             duration: style.animationDuration,
             iterations: style.animationIterationCount,
-            width: parseFloat(style.width),
-            height: parseFloat(style.height),
+            width: el.getBoundingClientRect().width,
+            height: el.getBoundingClientRect().height,
           };
         }),
       time,
@@ -587,7 +593,7 @@ test('所有边缘短线持续绕行，闭环连续且减少动态时停止', as
   for (const line of await lines.all()) await expect(line).toHaveCSS('animation-name', 'none');
 });
 
-test('三根等距线随速度增长闭合并形成炽热渐变，离开后恢复', async ({ page }) => {
+test('三个等距亮头带渐隐尾迹加速绕行，高速连成光边并在离开后恢复', async ({ page }) => {
   test.setTimeout(45000);
   await page.goto('http://127.0.0.1:5173/?component=Button');
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
@@ -606,7 +612,7 @@ test('三根等距线随速度增长闭合并形成炽热渐变，离开后恢�
     button
       .locator('.aig-button-frame .aig-button-line')
       .first()
-      .evaluate((line) => line.getAnimations()[0]!.playbackRate);
+      .evaluate((line) => line.getAnimations()[0]?.playbackRate ?? 1);
   const light = () =>
     button
       .locator('.aig-button-frame .aig-button-line')
@@ -652,6 +658,32 @@ test('三根等距线随速度增长闭合并形成炽热渐变，离开后恢�
   expect(fastLight.opacity).toBeGreaterThan(laterLight.opacity);
   expect(fastLight.filter).toContain('drop-shadow');
   expect(fastLight.filter).not.toBe(idleLight.filter);
+  const trail = button.locator('.aig-button-frame .aig-button-line').first();
+  await expect(trail.locator('.aig-button-tail')).toHaveCount(16);
+  const profile = await trail.locator('rect').evaluateAll((elements) =>
+    elements.map((el) => {
+      const style = getComputedStyle(el);
+      return {
+        width: parseFloat(style.strokeWidth),
+        opacity: Number(style.strokeOpacity),
+        dash: style.strokeDasharray,
+      };
+    }),
+  );
+  expect(profile[0]!.width).toBeLessThan(profile[15]!.width);
+  expect(profile[0]!.opacity).toBeLessThan(profile[16]!.opacity);
+  expect(parseFloat(profile[16]!.dash)).toBeCloseTo(1.2);
+  const midwayBounds = (await button.boundingBox())!;
+  await page.screenshot({
+    path: test.info().outputPath('button-trail-midway.png'),
+    animations: 'allow',
+    clip: {
+      x: midwayBounds.x - 12,
+      y: midwayBounds.y - 12,
+      width: midwayBounds.width + 24,
+      height: midwayBounds.height + 24,
+    },
+  });
   const growingLengths = await lengths();
   growingLengths.forEach((length) => expect(length).toBeGreaterThan(3));
   await page.clock.runFor(3000);
@@ -691,4 +723,10 @@ test('三根等距线随速度增长闭合并形成炽热渐变，离开后恢�
   expect(await lengths()).toEqual(initial);
   expect((await light()).opacity).toBeCloseTo(idleLight.opacity);
   expect((await light()).filter).toBe(idleLight.filter);
+  await expect(button.locator('.aig-button-frame .aig-button-perimeter')).toBeHidden();
+  expect(
+    await button
+      .locator('.aig-button-line')
+      .evaluateAll((lines) => lines.flatMap((line) => line.getAnimations()).length),
+  ).toBe(0);
 });

@@ -203,6 +203,8 @@
 }
 /* 三段细线沿同一闭合轮廓匀速绕行，拐角处连续折转；尺寸由按钮实时决定。 */
 .aig-button-perimeter {
+  /* 默认不参与绘制，隐藏子树的 CSS 动画也不运行。 */
+  display: none;
   position: absolute;
   inset: 0;
   inline-size: 100%;
@@ -211,12 +213,17 @@
   fill: none;
   pointer-events: none;
 }
-.aig-button-line {
+.aig-button[data-perimeter-visible] .aig-button-perimeter {
+  display: block;
+}
+.aig-button-line > rect {
   /* 向内留出线芯宽度，避免 hover 外扩后白色线芯落在文字遮罩之外。 */
   x: 2px;
   y: 2px;
   width: calc(100% - 4px);
   height: calc(100% - 4px);
+}
+.aig-button-line {
   /* 线芯使用中性对比色，避免继承按钮品牌色后融入刻面底色。 */
   --aig-line-glow-color: var(--aig-color-text);
   --aig-line-glow-strength: var(--aig-perimeter-energy, 0);
@@ -238,7 +245,17 @@
     drop-shadow(0 0 calc(var(--aig-line-glow-strength) * 16px) var(--aig-line-glow));
   animation: aig-button-perimeter 48s linear infinite;
 }
-/* hover 立即显示清晰实线，速度继续增强光晕与剩余亮度。 */
+/* 尾迹向运动方向的后方延伸；叠加透明度形成亮头、细弱尾端，亮头长度始终固定。 */
+.aig-button-tail {
+  stroke-opacity: 0.11;
+  stroke-linecap: butt;
+}
+.aig-button-head {
+  stroke-dasharray: 1.2 98.8;
+  stroke-linecap: round;
+  stroke-opacity: 1;
+}
+/* hover 立即显示清晰亮头，速度继续增强光晕与剩余亮度。 */
 .aig-button:is(:hover, :focus-visible):enabled .aig-button-line {
   --aig-line-glow-strength: calc(0.55 + var(--aig-perimeter-energy, 0) * 0.45);
   stroke-width: 2px;

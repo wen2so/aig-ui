@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, type RefObject } from 'react';
 
-/** 三段线等距绕行并随速度同步增长；仅在加减速期间逐帧调整速率，避免重启循环造成跳位。 */
+/** 三个亮头等距绕行，后方尾迹随速度延展；仅在加减速期间逐帧调整速率，避免重启循环造成跳位。 */
 export function useButtonPerimeter(frameRef: RefObject<HTMLSpanElement | null>, disabled: boolean) {
   const changeRate = useRef<(active: boolean) => void>(() => undefined);
   useEffect(() => {
@@ -9,6 +9,8 @@ export function useButtonPerimeter(frameRef: RefObject<HTMLSpanElement | null>, 
     if (!frame || !button) return;
     let raf = 0;
     let rate = 1;
+    let trailLength = 3;
+    let lastSample = performance.now();
     const media = window.matchMedia?.('(prefers-reduced-motion: reduce)');
     const animations = () =>
       (button.getAnimations?.({ subtree: true }) ?? []).filter(
@@ -22,17 +24,31 @@ export function useButtonPerimeter(frameRef: RefObject<HTMLSpanElement | null>, 
       const progress = Math.min(1, Math.max(0, (value - 1) / 48));
       const heat = progress * progress * (3 - 2 * progress);
       button.style.setProperty('--aig-perimeter-heat', String(heat));
-      button.style.setProperty('--aig-perimeter-length', String(3 + (100 / 3 - 3) * heat));
+      // 尾长追随速度并保留短暂余迹；固定亮头只由位移动画驱动，增长不会把亮头向前推。
+      const now = performance.now();
+      const elapsed = Math.max(0, now - lastSample);
+      lastSample = now;
+      const targetLength = 3 + (100 / 3 - 3) * heat;
+      trailLength += (targetLength - trailLength) * (1 - Math.exp(-elapsed / 180));
+      if (value === 1) trailLength = 3;
+      button.style.setProperty('--aig-perimeter-length', String(trailLength));
       animations().forEach((animation) => {
         animation.playbackRate = value;
       });
     };
     changeRate.current = (active) => {
       cancelAnimationFrame(raf);
-      if (media?.matches) return;
-      const from = rate;
       const accelerating = active && !button.disabled;
-      if (!accelerating && from === 1) return;
+      if (accelerating) button.setAttribute('data-perimeter-visible', '');
+      if (media?.matches) {
+        if (!accelerating) button.removeAttribute('data-perimeter-visible');
+        return;
+      }
+      const from = rate;
+      if (!accelerating && from === 1) {
+        button.removeAttribute('data-perimeter-visible');
+        return;
+      }
       const started = performance.now();
       const step = (now: number) => {
         const elapsed = Math.max(0, (now - started) / 1000);
@@ -47,6 +63,7 @@ export function useButtonPerimeter(frameRef: RefObject<HTMLSpanElement | null>, 
           const eased = progress * progress * (3 - 2 * progress);
           setRate(from + (1 - from) * eased);
           if (progress < 1) raf = requestAnimationFrame(step);
+          else button.removeAttribute('data-perimeter-visible');
         }
       };
       raf = requestAnimationFrame(step);
@@ -58,6 +75,7 @@ export function useButtonPerimeter(frameRef: RefObject<HTMLSpanElement | null>, 
     media?.addEventListener('change', reset);
     return () => {
       reset();
+      button.removeAttribute('data-perimeter-visible');
       button.style.removeProperty('--aig-perimeter-energy');
       button.style.removeProperty('--aig-perimeter-heat');
       button.style.removeProperty('--aig-perimeter-length');
