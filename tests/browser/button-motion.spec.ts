@@ -23,111 +23,105 @@ test('按钮视图切换和图标收藏支持键盘，并保留可见激活反�
   await expect(selection).toContainText('当前显示数据视图');
 });
 
-test('初始稳定，首次 hover 局部闪切后保持三档高亮，重复交互复用刻面', async ({ page }) => {
+test('入场收回，首次 hover 按帧硬切后稳定，重复交互复用几何', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Button');
   await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
+  await page.evaluate(() => document.fonts.ready.then(() => undefined));
   const primary = page.locator('#example-variants .preview-actions > .aig-button').first();
   const facets = primary.locator('.aig-button-highlight polygon');
+  const highlight = primary.locator('.aig-button-highlight');
   const hidden = () =>
     facets.evaluateAll((elements) => elements.every((el) => getComputedStyle(el).fillOpacity === '0'));
-  await expect.poll(() => facets.count(), { timeout: 15000 }).toBeGreaterThan(0);
-  await expect
-    .poll(() => facets.evaluateAll((elements) => elements.every((el) => el.getAnimations().length === 0)))
-    .toBe(true);
+  await expect.poll(() => facets.count()).toBeGreaterThan(0);
+  await expect(highlight).not.toHaveAttribute('data-playing');
   await expect.poll(hidden).toBe(true);
   const initial = await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')));
+  expect([4, 5]).toContain(initial.length);
   await primary.hover();
-  const next = await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')));
-  expect(next).toEqual(initial);
-  expect([4, 5]).toContain(next.length);
-  // 在同一轮中采样两次明灭与稳定时刻，核对真实 CSS 播放节奏。
-  await expect(primary.locator('polygon[data-motion=flash]')).toHaveCount(Math.round(next.length * 0.4));
-  const samples = await primary
-    .locator('polygon[data-motion=flash]')
-    .first()
-    .evaluate((el) => {
-      const animation = el.getAnimations()[0]!;
+  await expect(highlight).toHaveAttribute('data-playing', 'interaction');
+  // 40ms 帧格上的实测值：整块先显现，斜带和三角再分别留空，后段连续填回。
+  const sample = await highlight.evaluate((el) => {
+    return [...el.querySelectorAll('polygon')].map((polygon) => {
+      const animation = polygon.getAnimations()[0]!;
       animation.pause();
-      const delay = Number(animation.effect!.getTiming().delay);
-      const duration = Number(animation.effect!.getTiming().duration);
-      const values = [0.22, 0.45, 0.62, 0.85, 0.98].map((progress) => {
-        animation.currentTime = delay + duration * progress;
-        return Number(getComputedStyle(el).fillOpacity);
+      const values = [79, 80, 119, 120, 239, 240, 279, 280, 359, 360, 439, 440, 680, 760, 999].map((ms) => {
+        animation.currentTime = ms;
+        return Number(getComputedStyle(polygon).fillOpacity);
       });
       animation.play();
-      return values;
+      return {
+        role: polygon.dataset.motion,
+        depth: Number(getComputedStyle(polygon).getPropertyValue('--aig-facet-depth')),
+        values,
+      };
     });
-  expect(samples[0]).toBeGreaterThan(0);
-  expect(samples[1]).toBe(0);
-  expect(samples[2]).toBeGreaterThan(0);
-  expect(samples[3]).toBe(0);
-  expect(samples[4]).toBeGreaterThan(0);
-  const quiet = await primary
-    .locator('polygon[data-motion=settle]')
-    .first()
-    .evaluate((el) => {
-      const animation = el.getAnimations()[0]!;
-      animation.pause();
-      const timing = animation.effect!.getTiming();
-      const values = [0.22, 0.35, 0.5, 0.68, 0.9].map((progress) => {
-        animation.currentTime = Number(timing.delay) + Number(timing.duration) * progress;
-        return Number(getComputedStyle(el).fillOpacity);
-      });
-      animation.play();
-      return values;
-    });
-  expect(new Set(quiet).size).toBe(1);
-  expect(quiet[0]).toBeGreaterThan(0);
-  await expect
-    .poll(() => facets.evaluateAll((elements) => elements.every((el) => el.getAnimations().length === 0)))
-    .toBe(true);
-  await expect
-    .poll(() =>
-      primary.evaluate((el) => ({
-        hovered: el.querySelector('.aig-button-highlight')!.hasAttribute('data-hovered'),
-        opacity: [...el.querySelectorAll('polygon')].map((facet) => {
-          const style = getComputedStyle(facet);
-          return [style.fillOpacity, style.getPropertyValue('--aig-facet-depth')];
-        }),
-      })),
-    )
-    .toMatchObject({ hovered: true });
+  });
+  const body = sample.find((facet) => facet.role === 'body')!;
+  const cut = sample.find((facet) => facet.role === 'cut')!;
+  const tip = sample.find((facet) => facet.role === 'tip')!;
+  expect(body.values.slice(0, 8)).toEqual([0, 0.16, 0.16, 0, 0, 0, 0, body.depth]);
+  expect(cut.values[8]).toBe(cut.depth);
+  expect(cut.values[9]).toBe(0);
+  expect(tip.values[4]).toBe(0);
+  expect(tip.values[5]).toBe(tip.depth);
+  expect(tip.values[10]).toBe(tip.depth);
+  expect(tip.values[11]).toBe(0);
+  expect(tip.values[12]).toBeCloseTo(tip.depth / 2, 3);
+  await expect(highlight).not.toHaveAttribute('data-playing');
   await expect
     .poll(() =>
       facets.evaluateAll((elements) => elements.map((el) => Number(getComputedStyle(el).fillOpacity))),
     )
-    .toEqual(
-      await facets.evaluateAll((elements) =>
-        elements.map((el) => Number(getComputedStyle(el).getPropertyValue('--aig-facet-depth'))),
-      ),
-    );
-  const depths = await facets.evaluateAll((elements) =>
-    elements.map((el) => Number(getComputedStyle(el).fillOpacity)),
-  );
-  expect(new Set(depths).size).toBeLessThanOrEqual(3);
-  expect(depths.every((depth) => [0.88, 0.94, 1].includes(depth))).toBe(true);
+    .toEqual(sample.map((facet) => facet.depth));
   await primary.screenshot({ path: test.info().outputPath('button-facets.png') });
   await page.mouse.move(4, 4);
   await expect.poll(hidden).toBe(true);
   await primary.hover();
+  await expect(highlight).not.toHaveAttribute('data-playing');
   expect(await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')))).toEqual(
-    next,
+    initial,
   );
-  await expect(primary.locator('.aig-button-highlight')).not.toHaveAttribute('data-playing', '');
-  expect(
-    await facets.evaluateAll((elements) => elements.every((el) => el.getAnimations().length === 0)),
-  ).toBe(true);
-  await facets.evaluateAll((elements) =>
-    elements.forEach((el) =>
-      el.getAnimations().forEach((animation) => {
-        animation.pause();
-        animation.currentTime = 1100;
-      }),
-    ),
-  );
-  await primary.screenshot({ path: test.info().outputPath('button-partial-facets.png') });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect.poll(hidden).toBe(false);
+});
+
+test('参考菜单同排错峰，只有选中项保持实底，键盘可切换选择', async ({ page }) => {
+  await page.goto('http://127.0.0.1:5173/?component=Button');
+  await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
+  const demo = page.locator('#example-reference');
+  await page.evaluate(() => document.fonts.ready.then(() => undefined));
+  await demo.scrollIntoViewIfNeeded();
+  await demo.getByRole('button', { name: '重置菜单入场与选中' }).click();
+  const buttons = demo.getByRole('group', { name: '菜单入场演示' }).getByRole('button');
+  await expect(buttons).toHaveCount(4);
+  await expect
+    .poll(() =>
+      buttons.evaluateAll((elements) =>
+        elements.map((el) => getComputedStyle(el).getPropertyValue('--aig-button-enter-delay')),
+      ),
+    )
+    .toEqual(['0ms', '120ms', '240ms', '360ms']);
+  await expect(demo.locator('.aig-button-highlight[data-playing]')).toHaveCount(0);
+  const fills = () =>
+    buttons.evaluateAll((elements) =>
+      elements.map((el) =>
+        [...el.querySelectorAll('polygon')].some((facet) => Number(getComputedStyle(facet).fillOpacity) > 0),
+      ),
+    );
+  await expect.poll(fills).toEqual([true, false, false, false]);
+  await buttons.nth(1).focus();
+  await page.keyboard.press('Enter');
+  await expect(buttons.nth(1)).toHaveAttribute('aria-pressed', 'true');
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Tab');
+  await expect(demo.locator('.aig-button-highlight[data-playing]')).toHaveCount(0);
+  await expect.poll(fills).toEqual([false, true, false, false]);
+  await demo.screenshot({ path: test.info().outputPath('button-reference.png') });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await demo.getByRole('button', { name: '重置菜单入场与选中' }).click();
+  await expect(demo.locator('.aig-button-highlight[data-playing]')).toHaveCount(0);
+  await expect.poll(fills).toEqual([true, false, false, false]);
 });
 
 test('浅字区域与实际闪切刻面同步，未覆盖区域保留深字', async ({ page }) => {
@@ -156,7 +150,7 @@ test('浅字区域与实际闪切刻面同步，未覆盖区域保留深字', as
   });
   await expect.poll(async () => (await alphas()).every((value) => value === 0)).toBe(true);
   await expect(button.locator('.aig-button-content')).toHaveCSS('color', idle);
-  const flash = highlight.locator('polygon[data-motion=flash]').first();
+  const flash = highlight.locator('polygon[data-motion=tip]').first();
   const sample = async (progress: number) => {
     await flash.evaluate((el, progress) => {
       const animation = el.getAnimations()[0]!;
@@ -173,7 +167,7 @@ test('浅字区域与实际闪切刻面同步，未覆盖区域保留深字', as
       Number(getComputedStyle(el).getPropertyValue('--aig-facet-depth')),
   );
   expect(Math.max(...(await alphas()))).toBeCloseTo(expectedAlpha, 3);
-  await sample(0.22);
+  await sample(0.24);
   await expect.poll(async () => (await alphas()).some((value) => value > 0)).toBe(true);
   expect((await alphas()).filter((value) => value > 0)).toHaveLength(1);
   await sample(0.45);
@@ -230,6 +224,7 @@ test('悬停、按压、选中与加载分别使用对应反馈', async ({ page 
     });
   const indicator = () =>
     primary.evaluate((el) => getComputedStyle(el.querySelector('.aig-button-content')!, '::before').opacity);
+  await expect(primary.locator('.aig-button-highlight')).not.toHaveAttribute('data-playing');
   await expect(frame).toHaveCSS('animation-name', 'none');
   expect(await indicator()).toBe('0');
   await primary.hover();
@@ -286,6 +281,7 @@ test('加载保留按钮尺寸，长文字与图标槽位在窄视口中保持�
   const sizes = page.locator('#example-sizes');
   await expect(sizes.locator('.aig-button[data-size=sm]').first()).toHaveCSS('min-height', '26px');
   const icon = sizes.locator('.aig-icon-button');
+  await expect(icon.locator('.aig-button-frame')).toHaveCSS('border-style', 'solid');
   expect(await icon.evaluate((element) => element.clientWidth === element.clientHeight)).toBe(true);
 
   await page.setViewportSize({ width: 360, height: 900 });

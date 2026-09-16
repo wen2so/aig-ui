@@ -4,9 +4,15 @@ export interface IconButtonProps extends Omit<ButtonProps, 'aria-label' | 'leadi
   'aria-label': string;
 }
 /** 保留 Button 的加载、键盘和尺寸行为。 */
-export function IconButton({ className = '', loading, children, ...props }: IconButtonProps) {
+export function IconButton({
+  className = '',
+  loading,
+  entrance = false,
+  children,
+  ...props
+}: IconButtonProps) {
   return (
-    <Button {...props} loading={loading} className={`aig-icon-button ${className}`}>
+    <Button {...props} loading={loading} entrance={entrance} className={`aig-icon-button ${className}`}>
       {loading ? null : children}
     </Button>
   );

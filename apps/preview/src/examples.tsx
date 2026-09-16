@@ -45,6 +45,23 @@ function CustomLoadingIcon() {
   return <Icon icon={LoaderCircle} className="demo-loader-orbit" />;
 }
 
+/** 用独立选中状态复现参考菜单的入场收束，不将焦点、悬停当作业务选择。 */
+function ButtonReference() {
+  const [selected, setSelected] = useState(0);
+  return (
+    <div className="button-reference" role="group" aria-label="菜单入场演示">
+      {['音频语言', '文字语言', '字幕', '字幕大小'].map((label, index) => (
+        <div className="button-reference-item" key={label}>
+          <Button size="sm" aria-pressed={selected === index} onClick={() => setSelected(index)}>
+            {label}
+          </Button>
+          <span aria-hidden="true">{['中文', '中文', '开启', '标准'][index]}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /** 让层级、尺寸和实际执行反馈可以一起试用。 */
 function ButtonPlayground() {
   const [variant, setVariant] = useState<(typeof variants)[number]>('primary');
@@ -277,6 +294,15 @@ const toneLabels = ['草稿', '进行中', '已完成', '待确认', '处理失�
 export const extraExamples: Record<string, Example[]> = {
   Button: [
     {
+      id: 'reference',
+      title: '菜单入场与选中',
+      description:
+        '短线先建立，宽阔块面错峰闪切后收束。点击切换选中项，只有选中项持续保留底色；右下角重置可重播入场。',
+      render: () => <ButtonReference />,
+      code: '<Button size="sm" aria-pressed={selected} onClick={handleSelect}>音频语言</Button>\n<Button entrance={false}>关闭入场动画</Button>',
+      wide: true,
+    },
+    {
       id: 'semantic-colors',
       title: '语义色系',
       description:
@@ -297,7 +323,7 @@ export const extraExamples: Record<string, Example[]> = {
       id: 'variants',
       title: '操作层级',
       description:
-        '首次悬停播放局部刻面闪切，后续悬停直接显示稳定高亮。边缘细线随机分布，伸缩与位移在每次交互中保持一致。',
+        '挂载时按行从左到右错峰入场，前段硬切、后段淡出。首次悬停重播，后续悬停直接显示稳定高亮，刻面与细线布局保持固定。',
       render: () => (
         <div className="preview-actions">
           {variants.map((variant, i) => (
@@ -330,7 +356,7 @@ export const extraExamples: Record<string, Example[]> = {
       id: 'states',
       title: '静止、加载与禁用',
       description:
-        '静止显示清晰边框，加载使用专用图标与基线扫描，禁用保持静态轮廓。刻面在入场与首次交互时播放，后续交互保持稳定高亮，选中和展开状态通过左侧标记与加厚底线表达。',
+        '静止保留边界，加载使用专用图标与基线扫描，禁用保持静态。入场与首次交互播放刻面，后续交互直接高亮，选中和展开保留实底、左侧标记与底线。',
       render: () => <ButtonStates />,
       code: '<Button>静止</Button>\n<Button loading>正在处理</Button>\n<Button disabled>等待开放</Button>',
       wide: true,

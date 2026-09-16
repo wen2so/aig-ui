@@ -12,9 +12,11 @@ import 'aig-ui/styles.css';
 <Button type="submit" loading={saving}>提交设置</Button>
 ```
 
-默认 `variant="primary"`、`size="md"`、`type="button"`、`loading={false}`。小、中、大尺寸的最小高度分别为 26、32、40px。
+默认 `variant="primary"`、`size="md"`、`type="button"`、`loading={false}`、`entrance={true}`。小、中、大尺寸的最小高度分别为 26、32、40px。
 
-初始显示稳定轮廓，首次悬停或键盘聚焦播放局部刻面闪切，后续交互直接显示稳定高亮。四段边缘细线在挂载时从三组协调布局中随机选择，并加入小幅位置偏移，重复交互复用配置。静态以横线为主，两侧竖线弱化；悬停时共同伸缩和移动。按压收拢边框，松开回位；选中与展开状态保留左侧标记和加厚底线。
+挂载时播放一次入场：同一批按钮按视觉行从左到右间隔 120ms，最多延迟 360ms。单按钮前 600ms 按 40ms 帧格闪切，后段收束，总长 1000ms；选中项保留底色，其他项退回透明。密集列表或静态预览可设置 `entrance={false}`。方形 IconButton 默认关闭入场，保留完整操作边界。
+
+首次悬停或键盘聚焦独立重播，后续交互直接高亮。几何与四段边线在挂载期间固定。primary 使用外围短标，outline 保留完整细框；按压收拢，选中与展开保留实底、左侧标记和底线。
 
 `tone` 支持 brand、neutral、info、success、warning、danger，默认 brand；`variant="danger"` 固定使用危险色。语义色统一作用于文字、边框、细线和高亮，主题通过 `AigProvider.palette` 配置，完整色表见[主题说明](../../theme/README.md)。
 
@@ -54,7 +56,7 @@ import 'aig-ui/styles.css';
 
 ## 品牌与交互
 
-`AigProvider.brand.color` 设置装饰色，`accentColor` 设置文字和焦点色，`mark` 设置品牌 SVG 节点。`style` 中的 `--aig-` Token 具有更高优先级。
+`AigProvider.brand.color` 设置装饰色，`accentColor` 设置文字、焦点与品牌衬底颜色，`mark` 设置品牌 SVG 节点。`style` 中的 `--aig-` Token 具有更高优先级。
 
 支持原生属性、ref、Enter、Space 和可见焦点。环境线条保持稳定亮度。系统减少动态效果时直接展示稳定轮廓、悬停高亮与实际状态；强制颜色模式使用系统边框和选中色。
 

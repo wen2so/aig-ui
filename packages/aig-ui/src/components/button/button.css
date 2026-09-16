@@ -1,11 +1,10 @@
-/* 稳定状态由矩形边界与基线表达；多边形刻面在页面就绪和悬停时短暂点亮。
-   刻面静止不可见，按三档深度硬切点亮后收回；文字与图标始终位于上层。 */
+/* 挂载时错峰组装，首次交互重播；前段整帧闪切，后段收束到实际选择状态。 */
 .aig-button {
   --aig-button-edge: color-mix(in srgb, var(--aig-color-text) 26%, transparent);
   --aig-button-trace: var(--aig-color-mark);
   /* 悬停高亮的基色：各层级保持同一强度，只有 danger 换成危险色。 */
-  --aig-button-facet: var(--aig-color-mark);
-  --aig-button-paint: color-mix(in srgb, var(--aig-button-facet) 64%, var(--aig-color-surface));
+  --aig-button-facet: var(--aig-color-accent);
+  --aig-button-paint: var(--aig-button-facet);
   --aig-button-cap: 5px;
   box-sizing: border-box;
   position: relative;
@@ -18,7 +17,7 @@
   min-block-size: 32px;
   padding: 5px 24px;
   border: 0;
-  border-radius: var(--aig-radius-control);
+  border-radius: 0;
   background: transparent;
   color: var(--aig-color-accent);
   font: inherit;
@@ -51,7 +50,7 @@
   padding: inherit;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: inherit;
   pointer-events: none;
   mask-image: linear-gradient(transparent, transparent);
 }
@@ -101,24 +100,17 @@
   padding: 8px 28px;
   font-size: 14px;
 }
-/* 主操作：矩形框内保留端部刻线。 */
+/* 主操作通过边缘短标定位，大片留白交给入场和选中衬底。 */
 .aig-button[data-variant='primary'] {
   --aig-button-edge: color-mix(in srgb, var(--aig-color-border-control) 52%, var(--aig-color-accent) 48%);
   color: var(--aig-color-accent);
   font-weight: 600;
 }
 .aig-button[data-variant='primary'] .aig-button-frame::before {
-  --aig-button-fragment: color-mix(in srgb, var(--aig-button-edge) 55%, transparent);
-  background-image:
-    linear-gradient(var(--aig-button-fragment), var(--aig-button-fragment)),
-    linear-gradient(var(--aig-button-fragment), var(--aig-button-fragment));
-  background-size:
-    1px 42%,
-    1px 42%;
-  background-position:
-    left center,
-    right center;
-  background-repeat: no-repeat;
+  display: none;
+}
+.aig-button[data-variant='primary'] .aig-button-frame {
+  background-image: none;
 }
 /* 次操作：上下双横轨。 */
 .aig-button[data-variant='secondary'] {
@@ -285,6 +277,28 @@
 .aig-button-line[data-edge='end'] {
   inset-inline-end: 3px;
 }
+/* 主操作的四个定位短标位于边界外，避免画成框内装饰条纹。 */
+.aig-button[data-variant='primary'] .aig-button-line {
+  opacity: 0.48;
+}
+.aig-button[data-variant='primary'] .aig-button-line:is([data-edge='top'], [data-edge='bottom']) {
+  inline-size: 5px;
+}
+.aig-button[data-variant='primary'] .aig-button-line[data-edge='top'] {
+  inset-block-start: -2px;
+}
+.aig-button[data-variant='primary'] .aig-button-line[data-edge='bottom'] {
+  inset-block-end: -2px;
+}
+.aig-button[data-variant='primary'] .aig-button-line:is([data-edge='start'], [data-edge='end']) {
+  block-size: 5px;
+}
+.aig-button[data-variant='primary'] .aig-button-line[data-edge='start'] {
+  inset-inline-start: -2px;
+}
+.aig-button[data-variant='primary'] .aig-button-line[data-edge='end'] {
+  inset-inline-end: -2px;
+}
 .aig-button:is(:hover, :focus-visible):enabled .aig-button-line {
   opacity: 0.95;
 }
@@ -342,52 +356,116 @@
   vector-effect: non-scaling-stroke;
   paint-order: stroke fill;
 }
-.aig-button:enabled .aig-button-highlight[data-hovered] polygon {
+/* 选中项保持实底，其余入场结束回到透明；悬停使用同一稳定状态。 */
+.aig-button:enabled .aig-button-highlight[data-hovered] polygon,
+.aig-button:is([aria-pressed='true'], [aria-expanded='true']):enabled .aig-button-highlight polygon {
   --aig-facet-rest: var(--aig-facet-depth);
 }
 .aig-button:enabled .aig-button-highlight[data-playing] polygon {
-  animation: aig-button-facet-settle var(--aig-facet-duration, 1000ms) cubic-bezier(0.4, 0, 0.2, 1)
-    var(--aig-facet-delay, 0ms) 1 backwards;
+  animation: aig-button-facet-body 1000ms steps(1, end) var(--aig-button-enter-delay, 0ms) 1 backwards;
 }
-.aig-button:enabled .aig-button-highlight[data-playing] polygon[data-motion='flash'] {
-  animation-name: aig-button-facet-in;
+.aig-button:enabled .aig-button-highlight[data-playing] polygon[data-motion='cut'] {
+  animation-name: aig-button-facet-cut;
 }
-/* 普通刻面渐显后保持，首轮结束时柔和收回。 */
-@keyframes aig-button-facet-settle {
-  0% {
+.aig-button:enabled .aig-button-highlight[data-playing] polygon[data-motion='tip'] {
+  animation-name: aig-button-facet-tip;
+}
+/* 时间落在 40ms 的帧格上：低亮预闪、整块显现、斜切留空，最后线性收束。 */
+@keyframes aig-button-facet-body {
+  0%,
+  12% {
     fill-opacity: 0;
     stroke-opacity: 0;
   }
-  20%,
+  8% {
+    fill-opacity: 0.16;
+    stroke-opacity: 0.16;
+  }
+  28% {
+    fill-opacity: var(--aig-facet-depth);
+    stroke-opacity: var(--aig-facet-depth);
+  }
   60% {
     fill-opacity: var(--aig-facet-depth);
     stroke-opacity: var(--aig-facet-depth);
+    animation-timing-function: linear;
   }
   100% {
     fill-opacity: var(--aig-facet-rest, 0);
     stroke-opacity: var(--aig-facet-rest, 0);
   }
 }
-/* 两次有过渡的明灭后收束，保留局部闪切节奏。 */
-@keyframes aig-button-facet-in {
+@keyframes aig-button-facet-cut {
   0%,
-  40%,
-  48%,
-  82%,
-  88% {
+  12%,
+  36% {
     fill-opacity: 0;
     stroke-opacity: 0;
   }
-  18%,
-  28%,
-  60%,
-  68% {
+  8% {
+    fill-opacity: 0.16;
+    stroke-opacity: 0.16;
+  }
+  28% {
     fill-opacity: var(--aig-facet-depth);
     stroke-opacity: var(--aig-facet-depth);
+  }
+  60% {
+    fill-opacity: 0;
+    stroke-opacity: 0;
+    animation-timing-function: linear;
+  }
+  76% {
+    fill-opacity: var(--aig-facet-depth);
+    stroke-opacity: var(--aig-facet-depth);
+    animation-timing-function: linear;
   }
   100% {
     fill-opacity: var(--aig-facet-rest, 0);
     stroke-opacity: var(--aig-facet-rest, 0);
+  }
+}
+@keyframes aig-button-facet-tip {
+  0%,
+  12%,
+  44% {
+    fill-opacity: 0;
+    stroke-opacity: 0;
+  }
+  8% {
+    fill-opacity: 0.16;
+    stroke-opacity: 0.16;
+  }
+  24%,
+  28% {
+    fill-opacity: var(--aig-facet-depth);
+    stroke-opacity: var(--aig-facet-depth);
+  }
+  60% {
+    fill-opacity: 0;
+    stroke-opacity: 0;
+    animation-timing-function: linear;
+  }
+  76% {
+    fill-opacity: var(--aig-facet-depth);
+    stroke-opacity: var(--aig-facet-depth);
+    animation-timing-function: linear;
+  }
+  100% {
+    fill-opacity: var(--aig-facet-rest, 0);
+    stroke-opacity: var(--aig-facet-rest, 0);
+  }
+}
+/* 辅助线先于块面建立，内容的位置在整轮入场中保持不变。 */
+.aig-button:has(> .aig-button-highlight[data-playing='entrance']) > .aig-button-frame {
+  animation: aig-button-frame-in 240ms linear var(--aig-button-enter-delay, 0ms) both;
+}
+@keyframes aig-button-frame-in {
+  from {
+    opacity: 0.25;
+  }
+  to {
+    opacity: 1;
   }
 }
 .aig-button:is(:hover, :focus-visible):enabled {
@@ -446,6 +524,11 @@
 /* 加载：扫描基线与加载图标表达任务状态，选择标记让出状态位。 */
 .aig-button[aria-busy='true'] .aig-button-frame {
   animation: aig-button-scan var(--aig-motion-sweep-period) linear infinite;
+}
+.aig-button[aria-busy='true'][data-variant='primary'] .aig-button-frame {
+  background-image: linear-gradient(90deg, transparent, var(--aig-button-trace), transparent);
+  background-size: 26% 1px;
+  background-position: var(--aig-glint-x) calc(100% - 1px);
 }
 .aig-button[aria-busy='true'] :is(.aig-button-content, .aig-button-contrast-content)::before {
   opacity: 0;

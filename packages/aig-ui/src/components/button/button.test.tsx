@@ -56,20 +56,9 @@ it('刻面在挂载后固定，色块贯穿高度、三角形与四边形贴边�
   );
   expect(Math.abs(area - 30000)).toBeLessThan(2);
   const geometry = facets.map((facet) => facet.getAttribute('points'));
-  const flashes = facets.filter((facet) => facet.dataset.motion === 'flash');
-  expect(flashes).toHaveLength(Math.round(facets.length * 0.4));
-  const durations = flashes
-    .map((facet) => parseFloat(facet.style.getPropertyValue('--aig-facet-duration')))
-    .sort((a, b) => a - b);
-  expect(durations[0]).toBeLessThanOrEqual(369);
-  expect(durations.at(-1)).toBeGreaterThanOrEqual(474);
-  const finishes = flashes.map(
-    (facet) =>
-      parseFloat(facet.style.getPropertyValue('--aig-facet-delay')) +
-      parseFloat(facet.style.getPropertyValue('--aig-facet-duration')),
-  );
-  expect(Math.min(...finishes)).toBe(474);
-  expect(Math.max(...finishes)).toBe(800);
+  expect(facets.filter((facet) => facet.dataset.motion === 'cut')).toHaveLength(1);
+  expect(facets.filter((facet) => facet.dataset.motion === 'tip')).toHaveLength(1);
+  expect(button.querySelector('.aig-button-highlight')).toHaveAttribute('data-playing', 'interaction');
   fireEvent.pointerLeave(button);
   fireEvent.pointerOver(button);
   expect(button.querySelector('.aig-button-highlight')).toHaveAttribute('data-hovered');
@@ -150,4 +139,30 @@ it('前后图标保持装饰语义，加载保留内容槽位与切换状态', (
   expect(button).toBeDisabled();
   expect(button.querySelectorAll('.aig-button-content .aig-button-icon[aria-hidden="true"]')).toHaveLength(2);
   expect(button.querySelector('.aig-button-label')).toHaveTextContent('保存当前工作区');
+});
+
+it('加载中断刻面并清除悬停，恢复可用后不自动重播入场', () => {
+  const { rerender } = render(<Button>保存</Button>);
+  const button = screen.getByRole('button', { name: '保存' });
+  fireEvent.pointerOver(button);
+  const highlight = button.querySelector('.aig-button-highlight');
+  expect(highlight).toHaveAttribute('data-playing', 'interaction');
+  rerender(<Button loading>保存</Button>);
+  expect(highlight).not.toHaveAttribute('data-playing');
+  expect(highlight).not.toHaveAttribute('data-hovered');
+  rerender(<Button>保存</Button>);
+  expect(highlight).not.toHaveAttribute('data-playing');
+});
+
+it('首次交互可由宿主取消，entrance 不透传到原生按钮', () => {
+  render(
+    <Button entrance={false} onPointerEnter={(event) => event.preventDefault()}>
+      取消预览
+    </Button>,
+  );
+  const button = screen.getByRole('button', { name: '取消预览' });
+  fireEvent.pointerOver(button);
+  expect(button).not.toHaveAttribute('entrance');
+  expect(button.querySelector('.aig-button-highlight')).not.toHaveAttribute('data-hovered');
+  expect(button.querySelector('.aig-button-highlight')).not.toHaveAttribute('data-playing');
 });

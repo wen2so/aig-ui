@@ -642,8 +642,10 @@ function Preview() {
                               </>
                             ) : item.name === 'Button' ? (
                               <div className="preview-actions">
-                                <Button>开始创作</Button>
-                                <Button variant="ghost">了解更多</Button>
+                                <Button entrance={false}>开始创作</Button>
+                                <Button entrance={false} variant="ghost">
+                                  了解更多
+                                </Button>
                               </div>
                             ) : (
                               item.examples[0]!.render()

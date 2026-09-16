@@ -62,7 +62,12 @@ export function useButtonContrast(
     };
     const update = () => {
       frame = 0;
-      const active = !button.disabled && highlight.hasAttribute('data-hovered');
+      const active =
+        !button.disabled &&
+        (highlight.hasAttribute('data-hovered') ||
+          highlight.hasAttribute('data-playing') ||
+          button.getAttribute('aria-pressed') === 'true' ||
+          button.getAttribute('aria-expanded') === 'true');
       const layer = contrast.getBoundingClientRect();
       const bounds = highlight.getBoundingClientRect();
       mask.setAttribute('width', String(layer.width));
@@ -114,6 +119,10 @@ export function useButtonContrast(
     });
     const motionObserver = new MutationObserver(schedule);
     motionObserver.observe(highlight, { attributes: true, childList: true, subtree: true });
+    motionObserver.observe(button, {
+      attributes: true,
+      attributeFilter: ['aria-pressed', 'aria-expanded', 'disabled'],
+    });
     const resizeObserver = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(schedule);
     resizeObserver?.observe(button);
     resizeObserver?.observe(highlight);

@@ -2,6 +2,7 @@
 import { useEffect, useRef, type ComponentPropsWithRef, type ReactNode } from 'react';
 import { BrandMark, useAigBrand } from '../../theme/aig-provider.js';
 import { useButtonContrast } from './button-contrast.js';
+import { initializeButtonFacets, queueButtonEntrance, replayButtonFacets } from './button-motion.js';
 
 /** 执行动作的原生按钮。 */
 export interface ButtonProps extends ComponentPropsWithRef<'button'> {
@@ -13,6 +14,8 @@ export interface ButtonProps extends ComponentPropsWithRef<'button'> {
   size?: 'sm' | 'md' | 'lg';
   /** 保留名称和尺寸，并禁用重复激活。 */
   loading?: boolean;
+  /** 挂载时播放一次错峰入场，默认 true；密集列表或静态缩略图可关闭。 */
+  entrance?: boolean;
   /** 本按钮的加载 SVG，优先于 AigProvider.brand.loadingIcon；使用 currentColor 继承颜色。 */
   loadingIcon?: ReactNode;
   /** 文字前的装饰图标，按钮名称由 children 或 aria-label 提供。 */
@@ -33,102 +36,6 @@ function ButtonMark() {
       <line className="aig-button-mark-bar" pathLength={1} x1="7.2" y1="13.4" x2="16.8" y2="13.4" />
     </svg>
   );
-}
-
-/** 三角形与四边形贯穿按钮高度拼接，端部以宽阔梯形贴边。 */
-function createButtonFacets() {
-  const count = 4 + Math.floor(Math.random() * 2);
-  const weights = Array.from({ length: count }, () => 0.85 + Math.random() * 0.3);
-  const total = weights.reduce((sum, weight) => sum + weight, 0);
-  const triangle = 1 + Math.floor(Math.random() * (count - 2));
-  const turn = 2 + Math.floor(Math.random() * (count - 2));
-  let consumed = 0;
-  const boundaries: number[][][] = [
-    [
-      [0, 0],
-      [0, 100],
-    ],
-  ];
-  for (let index = 1; index < count; index++) {
-    consumed += weights[index - 1]!;
-    const x = (consumed / total) * 300;
-    // 两组斜边在不同位置转向，宽窄变化形成舒展的梯形，避免重复平行条纹。
-    const skew = (index < turn ? 1 : -1) * (10 + Math.random() * 10);
-    boundaries.push([
-      [x + skew, 0],
-      [x - skew, 100],
-    ]);
-  }
-  boundaries.push([
-    [300, 0],
-    [300, 100],
-  ]);
-  // 单块在上边缘收成顶点，底边保持原有宽度，相邻块共享顶点形成四边形。
-  const tip = (boundaries[triangle]![0]![0]! + boundaries[triangle + 1]![0]![0]!) / 2;
-  boundaries[triangle]![0]![0] = tip;
-  boundaries[triangle + 1]![0]![0] = tip;
-  const flip = Math.random() < 0.5;
-  return Array.from({ length: count }, (_, index) => {
-    const start = boundaries[index]!;
-    const end = boundaries[index + 1]!;
-    // 每块均连接上下边缘，共享斜线直接拼接，避免半高色块单独消失。
-    const points = [start[0]!, ...end, ...start.slice(1).reverse()].filter(
-      (point, position, vertices) =>
-        position === 0 || point[0] !== vertices[position - 1]![0] || point[1] !== vertices[position - 1]![1],
-    );
-    return points.map(([x, y]) => `${x!.toFixed(2)},${(flip ? 100 - y! : y!).toFixed(2)}`).join(' ');
-  });
-}
-
-/** 每次挂载只初始化一次结构和配色，重渲染与交互均复用原有刻面。 */
-function initializeButtonFacets(element: SVGSVGElement | null) {
-  if (!element || element.childElementCount) return;
-  const depths = [0.88, 0.94, 1].sort(() => Math.random() - 0.5);
-  element.replaceChildren(
-    ...createButtonFacets().map((points, index) => {
-      const facet = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-      facet.setAttribute('points', points);
-      facet.style.setProperty('--aig-facet-depth', String(depths[index % depths.length]));
-      return facet;
-    }),
-  );
-}
-
-/** 约四成刻面快慢交错闪切，稳定时刻覆盖后半程；整轮最长 800ms。 */
-function replayButtonFacets(element: SVGSVGElement | null) {
-  if (!element) return;
-  initializeButtonFacets(element);
-  delete element.dataset.playing;
-  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-  const facets = [...element.querySelectorAll('polygon')];
-  const order = [...facets];
-  for (let index = order.length - 1; index > 0; index--) {
-    const target = Math.floor(Math.random() * (index + 1));
-    [order[index], order[target]] = [order[target]!, order[index]!];
-  }
-  const flashCount = Math.round(facets.length * 0.4);
-  order.forEach((facet, index) => {
-    const flashes = index < flashCount;
-    facet.dataset.motion = flashes ? 'flash' : 'settle';
-    // 闪切结束时刻铺满后半程，短促和较慢的节奏交替出现。
-    const end = Math.round(900 + (620 * index) / (flashCount - 1));
-    const duration = flashes
-      ? Math.min(
-          end - 100,
-          index % 2 === 0 ? 560 + Math.round(Math.random() * 140) : 940 + Math.round(Math.random() * 140),
-        )
-      : 620;
-    const delay = flashes
-      ? end - duration
-      : 180 + Math.round((700 * (index - flashCount)) / Math.max(1, order.length - flashCount - 1));
-    // 统一缩放到 800ms，先确定结束时刻，避免独立取整造成超时。
-    const scaledDuration = Math.round((duration * 800) / 1520);
-    const scaledEnd = Math.round(((delay + duration) * 800) / 1520);
-    facet.style.setProperty('--aig-facet-delay', `${scaledEnd - scaledDuration}ms`);
-    facet.style.setProperty('--aig-facet-duration', `${scaledDuration}ms`);
-  });
-  void element.getBoundingClientRect();
-  element.dataset.playing = '';
 }
 
 /** 每次挂载选择一组协调布局，上下横线互补、两侧竖线错向移动。 */
@@ -159,6 +66,7 @@ export function Button({
   tone = 'brand',
   size = 'md',
   loading = false,
+  entrance = true,
   loadingIcon,
   leadingIcon,
   trailingIcon,
@@ -178,10 +86,14 @@ export function Button({
   const contrastRef = useRef<HTMLSpanElement>(null);
   useButtonContrast(highlightRef, contentRef, contrastRef);
   const interactedRef = useRef(false);
+  const entranceConsumedRef = useRef(false);
+  const cancelEntranceRef = useRef<(() => void) | undefined>(undefined);
+  const finishFrameRef = useRef(0);
   /** 首次交互播放刻面，后续交互直接保持稳定高亮。 */
   const activateHighlight = () => {
     const element = highlightRef.current;
     if (!element) return;
+    cancelEntranceRef.current?.();
     element.dataset.hovered = '';
     if (!interactedRef.current) {
       interactedRef.current = true;
@@ -192,13 +104,25 @@ export function Button({
     const element = highlightRef.current;
     initializeButtonFacets(element);
     if (disabled || loading) {
-      if (element) delete element.dataset.playing;
+      entranceConsumedRef.current = true;
+      if (element) {
+        delete element.dataset.playing;
+        delete element.dataset.hovered;
+      }
       return;
     }
+    if (element && entrance && !entranceConsumedRef.current) {
+      cancelEntranceRef.current = queueButtonEntrance(element, () => {
+        entranceConsumedRef.current = true;
+        replayButtonFacets(element, true);
+      });
+    }
     return () => {
+      cancelEntranceRef.current?.();
+      cancelAnimationFrame(finishFrameRef.current);
       if (element) delete element.dataset.playing;
     };
-  }, [disabled, loading]);
+  }, [disabled, loading, entrance]);
   return (
     <button
       {...props}
@@ -219,14 +143,16 @@ export function Button({
         onPointerLeave?.(event);
         if (highlightRef.current && !event.currentTarget.matches(':focus-visible')) {
           delete highlightRef.current.dataset.hovered;
-          delete highlightRef.current.dataset.playing;
+          if (highlightRef.current.dataset.playing === 'interaction')
+            delete highlightRef.current.dataset.playing;
         }
       }}
       onBlur={(event) => {
         onBlur?.(event);
         if (highlightRef.current && !event.currentTarget.matches(':hover')) {
           delete highlightRef.current.dataset.hovered;
-          delete highlightRef.current.dataset.playing;
+          if (highlightRef.current.dataset.playing === 'interaction')
+            delete highlightRef.current.dataset.playing;
         }
       }}
       onFocus={(event) => {
@@ -246,12 +172,19 @@ export function Button({
         className="aig-button-highlight"
         onAnimationEnd={(event) => {
           const element = event.currentTarget;
-          // 最后一块播放结束后清理播放标记，稳定刻面继续决定浅字覆盖区域。
-          if (
-            element.getAnimations({ subtree: true }).every((animation) => animation.playState === 'finished')
-          ) {
-            delete element.dataset.playing;
-          }
+          // 等本帧所有块面提交结束状态；外沿 CSS transition 不参与刻面的完成判断。
+          cancelAnimationFrame(finishFrameRef.current);
+          finishFrameRef.current = requestAnimationFrame(() => {
+            const pending = element
+              .getAnimations({ subtree: true })
+              .some(
+                (animation) =>
+                  animation instanceof CSSAnimation &&
+                  animation.animationName.startsWith('aig-button-facet-') &&
+                  animation.playState !== 'finished',
+              );
+            if (!pending) delete element.dataset.playing;
+          });
         }}
         viewBox="0 0 300 100"
         preserveAspectRatio="none"

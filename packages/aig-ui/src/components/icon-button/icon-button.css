@@ -22,6 +22,10 @@
 .aig-icon-button[data-variant='primary'] .aig-button-frame::before {
   inset: 2px;
 }
+/* 横向主按钮改用外围短标，图标操作继续保留方形的可见边界。 */
+.aig-icon-button[data-variant='primary'] .aig-button-frame {
+  border: 1px solid var(--aig-button-edge);
+}
 /* 图标按钮的内容就是图形，不叠加三角标记。 */
 .aig-icon-button .aig-button-content::before {
   display: none;

@@ -1810,3 +1810,32 @@ h1:focus,
 .example-caption {
   background: transparent;
 }
+.button-reference {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  inline-size: 100%;
+  padding-block: 32px;
+}
+.button-reference-item {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-inline-size: 0;
+}
+.button-reference-item > .aig-button {
+  inline-size: 100%;
+  justify-content: flex-start;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+.button-reference-item > span {
+  padding-inline-start: 20px;
+  font-size: 24px;
+  font-weight: 300;
+}
+@media (max-width: 720px) {
+  .button-reference {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
