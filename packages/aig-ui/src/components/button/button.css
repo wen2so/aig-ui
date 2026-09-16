@@ -216,13 +216,21 @@
   y: 0.5px;
   width: calc(100% - 1px);
   height: calc(100% - 1px);
-  stroke: var(--aig-button-trace);
+  --aig-line-glow-color: var(--aig-button-trace);
+  --aig-line-glow: color-mix(
+    in srgb,
+    var(--aig-line-glow-color) calc(var(--aig-perimeter-energy, 0) * 80%),
+    transparent
+  );
+  stroke: color-mix(in srgb, var(--aig-line-glow-color), white calc(var(--aig-perimeter-energy, 0) * 35%));
   stroke-width: 1px;
   stroke-dasharray: 3 97;
   stroke-dashoffset: var(--aig-line-phase, 0px);
-  opacity: 0.18;
+  opacity: calc(0.18 + var(--aig-perimeter-energy, 0) * 0.82);
+  /* 窄光晕保留清晰线芯，宽光晕向按钮外扩散；静止基速时透明。 */
+  filter: drop-shadow(0 0 calc(var(--aig-perimeter-energy, 0) * 2px) var(--aig-line-glow))
+    drop-shadow(0 0 calc(var(--aig-perimeter-energy, 0) * 6px) var(--aig-line-glow));
   animation: aig-button-perimeter 48s linear infinite;
-  transition: opacity 220ms linear;
 }
 .aig-button-line:nth-child(2) {
   --aig-line-phase: -25px;
@@ -232,9 +240,6 @@
 }
 .aig-button-line:nth-child(4) {
   --aig-line-phase: -75px;
-}
-.aig-button:is(:hover, :focus-visible):enabled .aig-button-line {
-  opacity: 0.65;
 }
 @keyframes aig-button-perimeter {
   to {
@@ -632,8 +637,8 @@
   display: none;
 }
 .aig-button-contrast-frame .aig-button-line {
-  stroke: var(--aig-color-surface);
+  --aig-line-glow-color: var(--aig-color-surface);
 }
 .aig-button[data-tone]:not([data-tone='brand']) .aig-button-contrast-frame .aig-button-line {
-  stroke: white;
+  --aig-line-glow-color: white;
 }

@@ -587,8 +587,10 @@ test('所有边缘短线持续绕行，闭环连续且减少动态时停止', as
   for (const line of await lines.all()) await expect(line).toHaveCSS('animation-name', 'none');
 });
 
-test('边线随机长度保持稳定，hover 连续加速并在离开后减速', async ({ page }) => {
+test('边线随机长度保持稳定，hover 持续无上限加速并在离开后减速', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Button');
+  await page.evaluate(() => document.fonts.ready.then(() => undefined));
+  await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
   const button = page.locator('#example-variants .preview-actions > .aig-button').first();
   await button.scrollIntoViewIfNeeded();
   await page.mouse.move(0, 0);
@@ -608,22 +610,53 @@ test('边线随机长度保持稳定，hover 连续加速并在离开后减速',
       .locator('.aig-button-frame .aig-button-line')
       .first()
       .evaluate((line) => line.getAnimations()[0]!.playbackRate);
+  const light = () =>
+    button
+      .locator('.aig-button-frame .aig-button-line')
+      .first()
+      .evaluate((line) => {
+        const style = getComputedStyle(line);
+        return { opacity: Number(style.opacity), filter: style.filter };
+      });
+  const idleLight = await light();
+  expect(idleLight.opacity).toBeCloseTo(0.18);
   expect(await rate()).toBe(1);
   await button.hover();
   await page.clock.runFor(300);
   expect(await rate()).toBeGreaterThan(1.1);
   expect(await rate()).toBeLessThan(3);
   await page.clock.runFor(700);
-  expect(await rate()).toBe(3);
+  const firstRate = await rate();
+  expect(firstRate).toBeGreaterThan(1.5);
+  await page.clock.runFor(2000);
+  const laterRate = await rate();
+  const laterLight = await light();
+  expect(laterRate).toBeGreaterThan(3);
+  await page.clock.runFor(3000);
+  const fastestRate = await rate();
+  expect(fastestRate).toBeGreaterThan(laterRate);
+  const fastLight = await light();
+  expect(laterLight.opacity).toBeGreaterThan(idleLight.opacity);
+  expect(fastLight.opacity).toBeGreaterThan(laterLight.opacity);
+  expect(fastLight.filter).toContain('drop-shadow');
+  expect(fastLight.filter).not.toBe(idleLight.filter);
+  const bounds = (await button.boundingBox())!;
+  await page.screenshot({
+    path: test.info().outputPath('button-speed-glow.png'),
+    animations: 'allow',
+    clip: { x: bounds.x - 12, y: bounds.y - 12, width: bounds.width + 24, height: bounds.height + 24 },
+  });
   const rates = await button
     .locator('.aig-button-line')
     .evaluateAll((lines) => lines.map((line) => line.getAnimations()[0]!.playbackRate));
-  expect(rates).toEqual(Array(8).fill(3));
+  expect(rates).toEqual(Array(8).fill(rates[0]));
   await page.mouse.move(0, 0);
   await page.clock.runFor(300);
-  expect(await rate()).toBeLessThan(2.9);
+  expect(await rate()).toBeLessThan(fastestRate);
   expect(await rate()).toBeGreaterThan(1);
   await page.clock.runFor(700);
   expect(await rate()).toBe(1);
   expect(await lengths()).toEqual(initial);
+  expect((await light()).opacity).toBeCloseTo(idleLight.opacity);
+  expect((await light()).filter).toBe(idleLight.filter);
 });

@@ -22,6 +22,8 @@ export function useButtonPerimeter(frameRef: RefObject<HTMLSpanElement | null>, 
       );
     const setRate = (value: number) => {
       rate = value;
+      // 亮度与光晕随实际速率连续增强，视觉强度渐近饱和，速度仍可持续增长。
+      button.style.setProperty('--aig-perimeter-energy', String(1 - Math.exp(-(value - 1) / 12)));
       animations().forEach((animation) => {
         animation.playbackRate = value;
       });
@@ -30,15 +32,22 @@ export function useButtonPerimeter(frameRef: RefObject<HTMLSpanElement | null>, 
       cancelAnimationFrame(raf);
       if (media?.matches) return;
       const from = rate;
-      const to = active && !button.disabled ? 3 : 1;
-      if (from === to) return;
+      const accelerating = active && !button.disabled;
+      if (!accelerating && from === 1) return;
       const started = performance.now();
       const step = (now: number) => {
-        const progress = Math.min(1, (now - started) / 900);
-        // 平滑起停；中途离开时从当前速率减速，不重置动画位置。
-        const eased = progress * progress * (3 - 2 * progress);
-        setRate(from + (to - from) * eased);
-        if (progress < 1) raf = requestAnimationFrame(step);
+        const elapsed = Math.max(0, (now - started) / 1000);
+        if (accelerating) {
+          // 加速度从零平滑趋近每秒增加 4 倍速，速度随停留时间持续增长，不设上限。
+          // 不写入 Infinity，保证浏览器始终接收有限速率并保留当前运动位置。
+          setRate(from + 4 * (elapsed - 0.9 * (1 - Math.exp(-elapsed / 0.9))));
+          raf = requestAnimationFrame(step);
+        } else {
+          const progress = Math.min(1, elapsed / 0.9);
+          const eased = progress * progress * (3 - 2 * progress);
+          setRate(from + (1 - from) * eased);
+          if (progress < 1) raf = requestAnimationFrame(step);
+        }
       };
       raf = requestAnimationFrame(step);
     };
@@ -49,6 +58,7 @@ export function useButtonPerimeter(frameRef: RefObject<HTMLSpanElement | null>, 
     media?.addEventListener('change', reset);
     return () => {
       reset();
+      button.style.removeProperty('--aig-perimeter-energy');
       media?.removeEventListener('change', reset);
       changeRate.current = () => undefined;
     };
