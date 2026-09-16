@@ -1,4 +1,4 @@
-/* 挂载时错峰组装，每轮在规则网格上随机拼块；前段整帧闪切，后段收束。 */
+/* 挂载与首次交互播放随机组合；组合主体保持完整，独立小块按帧闪切。 */
 .aig-button {
   --aig-button-edge: color-mix(in srgb, var(--aig-color-text) 26%, transparent);
   --aig-button-trace: var(--aig-color-mark);
@@ -327,6 +327,8 @@
   overflow: hidden;
   pointer-events: none;
   border-radius: inherit;
+  /* 在透明层内累加共边覆盖率，避免逐块 source-over 合成留下浅色斜缝。 */
+  isolation: isolate;
   fill: var(--aig-button-paint);
   transition:
     inset 300ms cubic-bezier(0.34, 1.3, 0.64, 1),
@@ -349,12 +351,9 @@
 .aig-button-highlight polygon {
   --aig-facet-depth: 1;
   fill-opacity: var(--aig-facet-rest, 0);
-  stroke: var(--aig-button-paint);
-  stroke-opacity: var(--aig-facet-rest, 0);
-  stroke-width: 1px;
-  stroke-linejoin: bevel;
-  vector-effect: non-scaling-stroke;
-  paint-order: stroke fill;
+  /* 轮廓由填充产生，避免半透明描边叠深或在闪切空白处留下斜线。 */
+  stroke: none;
+  mix-blend-mode: plus-lighter;
 }
 /* 选中项保持实底，其余入场结束回到透明；悬停使用同一稳定状态。 */
 .aig-button:enabled .aig-button-highlight[data-hovered] polygon,
@@ -364,62 +363,69 @@
 .aig-button:enabled .aig-button-highlight[data-playing] polygon {
   animation: aig-button-facet-flash 1000ms steps(1, end) var(--aig-button-enter-delay, 0ms) 1 backwards;
 }
-/* 每个单元读取本轮采样值；只闪完整三角或双单元平行四边形，组间保留空隙。 */
+/* 梯形及边缘主体统一显现、保持和收束，拆分单元不读取随机闪切采样。 */
+.aig-button:enabled
+  .aig-button-highlight[data-playing]
+  polygon:is([data-facet-kind='trapezoid'], [data-facet-kind='edge']) {
+  animation-name: aig-button-facet-body;
+  animation-timing-function: linear;
+}
+@keyframes aig-button-facet-body {
+  0%,
+  12% {
+    fill-opacity: 0;
+  }
+  28%,
+  76% {
+    fill-opacity: var(--aig-facet-depth);
+  }
+  100% {
+    fill-opacity: var(--aig-facet-rest, 0);
+  }
+}
+/* 独立三角、平行四边形以原始块为单位共享采样值。 */
 @keyframes aig-button-facet-flash {
   0%,
   12% {
     fill-opacity: 0;
-    stroke-opacity: 0;
   }
   8% {
     fill-opacity: var(--aig-facet-frame-80);
-    stroke-opacity: var(--aig-facet-frame-80);
   }
   24% {
     fill-opacity: var(--aig-facet-frame-240);
-    stroke-opacity: var(--aig-facet-frame-240);
   }
   28% {
     fill-opacity: var(--aig-facet-frame-280);
-    stroke-opacity: var(--aig-facet-frame-280);
   }
   36% {
     fill-opacity: var(--aig-facet-frame-360);
-    stroke-opacity: var(--aig-facet-frame-360);
   }
   40% {
     fill-opacity: var(--aig-facet-frame-400);
-    stroke-opacity: var(--aig-facet-frame-400);
   }
   44% {
     fill-opacity: var(--aig-facet-frame-440);
-    stroke-opacity: var(--aig-facet-frame-440);
   }
   48% {
     fill-opacity: var(--aig-facet-frame-480);
-    stroke-opacity: var(--aig-facet-frame-480);
   }
   52% {
     fill-opacity: var(--aig-facet-frame-520);
-    stroke-opacity: var(--aig-facet-frame-520);
   }
   56% {
     fill-opacity: var(--aig-facet-frame-560);
-    stroke-opacity: var(--aig-facet-frame-560);
   }
   60% {
     fill-opacity: var(--aig-facet-frame-600);
-    stroke-opacity: var(--aig-facet-frame-600);
     animation-timing-function: linear;
   }
   76% {
     fill-opacity: var(--aig-facet-depth);
-    stroke-opacity: var(--aig-facet-depth);
     animation-timing-function: linear;
   }
   100% {
     fill-opacity: var(--aig-facet-rest, 0);
-    stroke-opacity: var(--aig-facet-rest, 0);
   }
 }
 /* 辅助线先于块面建立，内容的位置在整轮入场中保持不变。 */
@@ -656,7 +662,6 @@
   /* 减少动态时直接显示交互高亮与状态标记。 */
   .aig-button:is(:hover, :focus-visible):enabled .aig-button-highlight polygon {
     fill-opacity: var(--aig-facet-depth);
-    stroke-opacity: var(--aig-facet-depth);
   }
   /* 光带依赖运动表达状态，静止时停在画面之外。 */
   .aig-button-loading *,

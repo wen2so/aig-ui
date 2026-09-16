@@ -30,7 +30,11 @@ test('规则刻面按实际宽高适配，窄屏保留对称三角和一致斜�
       const base = triangle.filter((point) =>
         triangle.some((other) => other !== point && other.y === point.y),
       );
-      const pair = shapes.slice(0, 2).flat();
+      const band = svg.querySelector<SVGPolygonElement>('polygon[data-facet-kind=parallelogram]')!;
+      const pair = [...band.points].map((point) => ({
+        x: (point.x * bounds.width) / 300,
+        y: (point.y * bounds.height) / 100,
+      }));
       const xs = pair.filter((point) => point.y === 0).map((point) => point.x);
       const edgeDifference = Math.abs(Math.max(...xs) - Math.min(...xs) - Math.abs(base[1]!.x - base[0]!.x));
       const target =
@@ -99,7 +103,7 @@ test('按钮视图切换和图标收藏支持键盘，并保留可见激活反�
   await expect(selection).toContainText('当前显示数据视图');
 });
 
-test('规则网格逐帧随机拼块，每轮 hover 更新组合并收束为稳定底色', async ({ page }) => {
+test('梯形内部不闪切，独立块首次 hover 随机闪切，后续 hover 和键盘聚焦直接高亮', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Button');
   await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
@@ -112,7 +116,7 @@ test('规则网格逐帧随机拼块，每轮 hover 更新组合并收束为稳�
   await expect(highlight).not.toHaveAttribute('data-playing');
   await expect.poll(hidden).toBe(true);
   const initial = await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')));
-  expect(initial.length).toBeGreaterThanOrEqual(8);
+  expect(initial.length).toBeGreaterThanOrEqual(5);
   await primary.hover();
   await expect(highlight).toHaveAttribute('data-playing', 'interaction');
   const firstGeometry = await facets.evaluateAll((elements) =>
@@ -135,7 +139,10 @@ test('规则网格逐帧随机拼块，每轮 hover 更新组合并收束为稳�
       });
       animation.play();
       return {
-        clipped: polygon.dataset.clipped === 'true',
+        group: polygon.dataset.facetGroup,
+        kind: polygon.dataset.facetKind,
+        cells: Number(polygon.dataset.facetCells),
+        stroke: getComputedStyle(polygon).stroke,
         frames: [80, 240, 280, 360, 400, 440, 600].map((time) =>
           Number(polygon.style.getPropertyValue(`--aig-facet-frame-${time}`)),
         ),
@@ -143,7 +150,14 @@ test('规则网格逐帧随机拼块，每轮 hover 更新组合并收束为稳�
       };
     });
   });
-  for (const { values, frames, clipped } of sample) {
+  for (const { values, frames, kind, stroke } of sample) {
+    expect(stroke).toBe('none');
+    if (kind === 'trapezoid' || kind === 'edge') {
+      expect(values.slice(0, 4)).toEqual([0, 0, 0, 0]);
+      expect(values[5]).toBeCloseTo(0.75, 3);
+      expect(values.slice(7)).toEqual(Array(11).fill(1));
+      continue;
+    }
     const [preflash, first, full, a, b, c, last] = frames;
     expect(values.slice(0, 15)).toEqual([
       0,
@@ -164,11 +178,21 @@ test('规则网格逐帧随机拼块，每轮 hover 更新组合并收束为稳�
     ]);
     expect(values[15]).toBeCloseTo((last! + 1) / 2, 3);
     expect(values[16]).toBe(1);
-    if (clipped) expect([preflash, first, a, b, c, last]).toEqual([0, 0, 0, 0, 0, 0]);
   }
-  // 按实际渲染亮度检查轮廓分组，防止三单元梯形或尖端相接的锯齿回归。
+  const trapezoid = sample.filter(({ kind }) => kind === 'trapezoid');
+  expect(trapezoid).toHaveLength(1);
+  expect(trapezoid[0]!.cells).toBe(3);
+  expect(new Set(trapezoid.map(({ group }) => group)).size).toBe(1);
+  sample.forEach((facet) => {
+    expect(facet.values).toEqual(sample.find((other) => other.group === facet.group)!.values);
+  });
+  // 只检查独立块的随机采样，梯形主体始终完整保留。
   for (const index of [1, 5, 9, 11, 13, 14]) {
-    const binary = sample.map(({ values }) => Number(values[index]! > 0)).join('');
+    const binary = sample
+      .map(({ values, kind, cells }) =>
+        String(Number(kind !== 'trapezoid' && kind !== 'edge' && values[index]! > 0)).repeat(cells),
+      )
+      .join('');
     const groups = [...binary.matchAll(/1+/g)];
     expect(groups.length).toBeGreaterThan(0);
     expect(groups.length).toBeLessThanOrEqual(2);
@@ -181,7 +205,7 @@ test('规则网格逐帧随机拼块，每轮 hover 更新组合并收束为稳�
   const sampledCombinations = [5, 7, 9, 11, 13].map((index) =>
     sample.map(({ values }) => values[index]).join(','),
   );
-  expect(new Set(sampledCombinations).size).toBe(5);
+  expect(new Set(sampledCombinations).size).toBeGreaterThan(2);
   await expect(highlight).not.toHaveAttribute('data-playing');
   await expect
     .poll(() =>
@@ -192,13 +216,21 @@ test('规则网格逐帧随机拼块，每轮 hover 更新组合并收束为稳�
   await page.mouse.move(4, 4);
   await expect.poll(hidden).toBe(true);
   await primary.hover();
-  await expect(highlight).toHaveAttribute('data-playing', 'interaction');
-  expect(await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('style')))).not.toEqual(
+  await expect(highlight).not.toHaveAttribute('data-playing');
+  await expect.poll(hidden).toBe(false);
+  expect(await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('style')))).toEqual(
     firstSequence,
   );
-  expect(await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')))).not.toEqual(
+  expect(await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')))).toEqual(
     firstGeometry,
   );
+  await expect(highlight).not.toHaveAttribute('data-playing');
+  await page.mouse.move(4, 4);
+  await primary.focus();
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Shift+Tab');
+  await expect(primary).toBeFocused();
+  await expect(highlight).toHaveAttribute('data-hovered');
   await expect(highlight).not.toHaveAttribute('data-playing');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect.poll(hidden).toBe(false);
@@ -334,6 +366,77 @@ test('浅字区域与实际闪切刻面同步，未覆盖区域保留深字', as
   await expect.poll(async () => (await alphas()).some((value) => value > 0)).toBe(true);
   await page.emulateMedia({ forcedColors: 'active' });
   await expect(overlay).toHaveCSS('display', 'none');
+});
+
+test('中间帧的满亮和半透明拼接不产生浅色接缝，文字遮罩保持相同覆盖率', async ({ browser }) => {
+  for (const deviceScaleFactor of [1, 2]) {
+    const page = await browser.newPage({ deviceScaleFactor, viewport: { width: 1280, height: 900 } });
+    try {
+      await page.goto('http://127.0.0.1:5173/?component=Button');
+      await page.evaluate(() => document.fonts.ready.then(() => undefined));
+      await page.addStyleTag({
+        content: `
+        html { scroll-behavior: auto !important; }
+        #example-reference .aig-button { width: 200.75px; }
+        #example-reference :is(.aig-button-frame, .aig-button-content,
+          .aig-button-contrast-content, .aig-button-contrast-frame) { visibility: hidden; }
+      `,
+      });
+      const demo = page.locator('#example-reference');
+      await demo.scrollIntoViewIfNeeded();
+      await demo.getByRole('button', { name: '重置菜单入场与选中' }).click();
+      // 非选中项的真实入场：280ms 全亮，880ms 整面淡出到半透明。
+      const button = demo.getByRole('group', { name: '菜单入场演示' }).getByRole('button').nth(1);
+      const highlight = button.locator('.aig-button-highlight');
+      await expect(highlight).toHaveAttribute('data-playing', 'entrance');
+      for (const time of [280, 880]) {
+        await highlight.evaluate(async (el, time) => {
+          el.getAnimations({ subtree: true }).forEach((animation) => {
+            animation.pause();
+            animation.currentTime = Number(animation.effect!.getTiming().delay) + time;
+          });
+          el.setAttribute('data-sample-time', String(time));
+          await new Promise(requestAnimationFrame);
+          await new Promise(requestAnimationFrame);
+        }, time);
+        for (const surface of ['fill', 'mask']) {
+          // 给浅字层临时加整面颜色，直接观察真实文字遮罩的接缝。
+          await button.locator('.aig-button-contrast').evaluate((el, surface) => {
+            (el as HTMLElement).style.background = surface === 'mask' ? 'rgb(20, 80, 180)' : 'transparent';
+          }, surface);
+          const screenshot = await button.screenshot({
+            path: test.info().outputPath(`button-seams-${deviceScaleFactor}x-${time}-${surface}.png`),
+            animations: 'allow',
+          });
+          const spread = await page.evaluate(async (base64) => {
+            const image = new Image();
+            image.src = `data:image/png;base64,${base64}`;
+            await image.decode();
+            const canvas = document.createElement('canvas');
+            canvas.width = image.width;
+            canvas.height = image.height;
+            const context = canvas.getContext('2d')!;
+            context.drawImage(image, 0, 0);
+            const { data, width, height } = context.getImageData(0, 0, canvas.width, canvas.height);
+            const minimum = [255, 255, 255],
+              maximum = [0, 0, 0];
+            // 排除外围框线，只检查穿过全部内部斜边的中央区域。
+            for (let y = Math.ceil(height * 0.3); y < height * 0.7; y++)
+              for (let x = Math.ceil(width * 0.05); x < width * 0.95; x++)
+                for (let channel = 0; channel < 3; channel++) {
+                  const value = data[(y * width + x) * 4 + channel]!;
+                  minimum[channel] = Math.min(minimum[channel]!, value);
+                  maximum[channel] = Math.max(maximum[channel]!, value);
+                }
+            return Math.max(...maximum.map((value, channel) => value - minimum[channel]!));
+          }, screenshot.toString('base64'));
+          expect(spread, `${deviceScaleFactor}x / ${time}ms / ${surface}`).toBeLessThanOrEqual(3);
+        }
+      }
+    } finally {
+      await page.close();
+    }
+  }
 });
 
 test('悬停、按压、选中与加载分别使用对应反馈', async ({ page }) => {

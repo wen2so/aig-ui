@@ -77,9 +77,9 @@ export function useButtonContrast(
       while (mask.childElementCount < facets.length) {
         const path = document.createElementNS(svgNamespace, 'path');
         path.setAttribute('fill', 'white');
-        path.setAttribute('stroke', 'white');
-        path.setAttribute('stroke-width', '1');
-        path.setAttribute('stroke-linejoin', 'bevel');
+        path.setAttribute('stroke', 'none');
+        // 遮罩与底色使用相同的覆盖率合成，共边不会额外漏出深字。
+        path.style.mixBlendMode = 'plus-lighter';
         mask.append(path);
       }
       facets.forEach((polygon, index) => {
@@ -94,7 +94,6 @@ export function useButtonContrast(
         const path = mask.children[index]!;
         path.setAttribute('d', `M${points.join(' L')} Z`);
         path.setAttribute('fill-opacity', String(alpha));
-        path.setAttribute('stroke-opacity', String(alpha));
       });
       // 只在刻面或外沿仍运动时跟随实际帧，稳定后由状态、内容和尺寸变化唤醒。
       if (

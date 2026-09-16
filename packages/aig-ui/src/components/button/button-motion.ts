@@ -1,4 +1,9 @@
-import { BUTTON_FLASH_FRAMES, createButtonFacets, createButtonFlashFrames } from './button-facets.js';
+import {
+  BUTTON_FLASH_FRAMES,
+  combineButtonFacets,
+  createButtonFacets,
+  createButtonFlashFrames,
+} from './button-facets.js';
 
 /** 同一批挂载的按钮按视觉行错峰，行之间并行；120ms 对应参考素材的三帧。 */
 const entranceQueue = new Map<SVGSVGElement, () => void>();
@@ -57,18 +62,22 @@ function layoutButtonFacets(element: SVGSVGElement) {
   const seed = Number(element.dataset.facetSeed);
   const facets = createButtonFacets(width, height, seed);
   const frames = createButtonFlashFrames(facets, seed);
-  while (element.childElementCount > facets.length) element.lastElementChild!.remove();
-  facets.forEach(({ points, clipped }, index) => {
+  const shapes = combineButtonFacets(facets);
+  while (element.childElementCount > shapes.length) element.lastElementChild!.remove();
+  shapes.forEach(({ points, clipped, group, kind, cells }, index) => {
     let facet = element.children[index] as SVGPolygonElement | undefined;
     if (!facet) {
       facet = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
       element.append(facet);
     }
     facet.dataset.clipped = String(clipped);
+    facet.dataset.facetGroup = String(group);
+    facet.dataset.facetKind = kind;
+    facet.dataset.facetCells = String(cells);
     if (facet.getAttribute('points') !== points) facet.setAttribute('points', points);
     frames.forEach((frame, offset) => {
       const name = `--aig-facet-frame-${BUTTON_FLASH_FRAMES[offset]}`;
-      const value = String(frame[index]);
+      const value = String(frame[group]);
       if (facet.style.getPropertyValue(name) !== value) facet.style.setProperty(name, value);
     });
   });

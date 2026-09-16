@@ -1,5 +1,10 @@
 import { expect, it } from 'vitest';
-import { BUTTON_FLASH_FRAMES, createButtonFacets, createButtonFlashFrames } from './button-facets.js';
+import {
+  BUTTON_FLASH_FRAMES,
+  combineButtonFacets,
+  createButtonFacets,
+  createButtonFlashFrames,
+} from './button-facets.js';
 
 type Point = [number, number];
 const parse = (points: string) => points.split(' ').map((point) => point.split(',').map(Number) as Point);
@@ -59,10 +64,22 @@ it.each([
     const pair = full.slice(0, 2);
     expect(rowSpan(pair, 0)).toBeCloseTo(base, 3);
     expect(rowSpan(pair, 100)).toBeCloseTo(base, 3);
+    const trapezoid = facets.filter((facet) => facet.kind === 'trapezoid').map(({ points }) => parse(points));
+    const bases = [rowSpan(trapezoid, 0), rowSpan(trapezoid, 100)].sort((a, b) => a - b);
+    expect(bases[0]).toBeCloseTo(base, 3);
+    expect(bases[1]).toBeCloseTo(base * 2, 3);
+    const merged = combineButtonFacets(facets);
+    expect(merged.reduce((sum, facet) => sum + area(parse(facet.points)), 0)).toBeCloseTo(30000, 1);
+    expect(merged.reduce((sum, facet) => sum + facet.cells, 0)).toBe(facets.length);
+    expect(merged.filter((facet) => facet.kind === 'trapezoid')).toHaveLength(1);
+    for (const shape of merged) {
+      expect(parse(shape.points).length).toBe(shape.kind === 'triangle' ? 3 : 4);
+      if (shape.kind === 'trapezoid') expect(shape.cells).toBe(3);
+    }
   }
 });
 
-it('随机闪切只包含完整三角和平行四边形，组间分离、排除裁切块，同种子可复算', () => {
+it('梯形保留原始块归属，其拆分单元不参与随机闪切；独立块同步且可复算', () => {
   const plans = new Set<string>();
   const groupSizes = new Set<number>();
   for (let seed = 0; seed < 64; seed++) {
@@ -70,7 +87,10 @@ it('随机闪切只包含完整三角和平行四边形，组间分离、排除�
     const frames = createButtonFlashFrames(facets, seed);
     expect(frames).toEqual(createButtonFlashFrames(facets, seed));
     plans.add(JSON.stringify(frames));
-    expect(new Set(frames.map((frame) => frame.join(','))).size).toBe(BUTTON_FLASH_FRAMES.length);
+    const trapezoid = facets.filter((facet) => facet.kind === 'trapezoid');
+    expect(trapezoid).toHaveLength(3);
+    expect(new Set(trapezoid.map((facet) => facet.group)).size).toBe(1);
+    expect(new Set(frames.map((frame) => frame.join(','))).size).toBeGreaterThan(2);
     frames.forEach((frame, index) => {
       expect(frame).toHaveLength(facets.length);
       if (BUTTON_FLASH_FRAMES[index] === 280) return;
@@ -79,7 +99,9 @@ it('随机闪切只包含完整三角和平行四边形，组间分离、排除�
       const lit = BUTTON_FLASH_FRAMES[index] === 80 ? 0.16 : 1;
       expect(frame.every((value) => value === 0 || value === lit)).toBe(true);
       frame.forEach((value, cell) => {
-        if (facets[cell]!.clipped) expect(value).toBe(0);
+        const facet = facets[cell]!;
+        if (facet.kind === 'trapezoid' || facet.kind === 'edge') expect(value).toBe(0);
+        expect(value).toBe(frame[facet.group]);
       });
       const binary = frame.map((value) => Number(value > 0)).join('');
       const groups = [...binary.matchAll(/1+/g)];
@@ -92,6 +114,7 @@ it('随机闪切只包含完整三角和平行四边形，组间分离、排除�
       });
     });
   }
-  expect(plans.size).toBe(64);
+  // 原始块归属限制可用组合，允许不同种子偶尔生成相同采样表。
+  expect(plans.size).toBeGreaterThan(32);
   expect([...groupSizes].sort()).toEqual([1, 2]);
 });
