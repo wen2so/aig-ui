@@ -1,5 +1,63 @@
 import { expect, test } from '@playwright/test';
 
+test('规则刻面按实际宽高适配，窄屏保留对称三角和一致斜率', async ({ page }) => {
+  await page.goto('http://127.0.0.1:5173/?component=Button');
+  await page.evaluate(() => document.fonts.ready.then(() => undefined));
+  await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
+  const button = page.locator('#example-reference .aig-button').first();
+  const highlight = button.locator('.aig-button-highlight');
+  const geometry = () =>
+    highlight.evaluate((el) => {
+      const svg = el as SVGSVGElement;
+      const bounds = svg.getBoundingClientRect();
+      const shapes = [...svg.querySelectorAll('polygon')].map((polygon) =>
+        [...polygon.points].map((point) => ({
+          x: (point.x * bounds.width) / 300,
+          y: (point.y * bounds.height) / 100,
+        })),
+      );
+      const angles: number[] = [];
+      for (const points of shapes)
+        points.forEach((point, i) => {
+          const next = points[(i + 1) % points.length]!;
+          const dx = Math.abs(next.x - point.x),
+            dy = Math.abs(next.y - point.y);
+          if (dx > 0.01 && dy > 0.01) angles.push((Math.atan2(dy, dx) * 180) / Math.PI);
+        });
+      const host = svg.closest('button')!;
+      const target =
+        (Math.atan2(host.clientHeight, Math.min(host.clientHeight / Math.sqrt(3), host.clientWidth / 8)) *
+          180) /
+        Math.PI;
+      return {
+        spread: Math.max(...angles) - Math.min(...angles),
+        angle: angles[0]!,
+        error: Math.abs(angles[0]! - target),
+        width: bounds.width,
+      };
+    });
+  await button.scrollIntoViewIfNeeded();
+  await expect(highlight).not.toHaveAttribute('data-playing');
+  await expect.poll(async () => (await geometry()).error).toBeLessThan(0.5);
+  const desktop = await geometry();
+  await page.setViewportSize({ width: 360, height: 900 });
+  await button.scrollIntoViewIfNeeded();
+  await expect.poll(async () => Math.abs((await geometry()).width - desktop.width)).toBeGreaterThan(5);
+  await expect.poll(async () => (await geometry()).spread).toBeLessThan(0.01);
+  await expect.poll(async () => (await geometry()).error).toBeLessThan(0.5);
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await button.hover();
+  await highlight.evaluate((el) => {
+    el.getAnimations({ subtree: true }).forEach((animation) => {
+      animation.pause();
+      animation.currentTime = 440;
+    });
+    el.setAttribute('data-sample-time', '440');
+  });
+  await expect(button.locator('polygon[data-motion=tip]')).toHaveCSS('fill-opacity', '0');
+  await button.screenshot({ path: test.info().outputPath('regular-facets-440ms.png'), scale: 'css' });
+});
+
 test('按钮视图切换和图标收藏支持键盘，并保留可见激活反馈', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Button');
   const selection = page.locator('#example-selection');
@@ -36,7 +94,7 @@ test('入场收回，首次 hover 按帧硬切后稳定，重复交互复用几�
   await expect(highlight).not.toHaveAttribute('data-playing');
   await expect.poll(hidden).toBe(true);
   const initial = await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')));
-  expect([4, 5]).toContain(initial.length);
+  expect(initial).toHaveLength(5);
   await primary.hover();
   await expect(highlight).toHaveAttribute('data-playing', 'interaction');
   // 40ms 帧格上的实测值：整块先显现，斜带和三角再分别留空，后段连续填回。

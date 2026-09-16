@@ -2,6 +2,42 @@ import { createRef } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { expect, it, vi } from 'vitest';
 import { Button } from './button.js';
+import { createButtonFacets } from './button-motion.js';
+
+it.each([
+  [80, 32],
+  [140, 26],
+  [220, 40],
+  [160, 80],
+])('规则刻面在 %s×%s 下共用斜率，三角对称、斜带平行且无交叉', (width, height) => {
+  for (const flip of [false, true]) {
+    const shapes = createButtonFacets(width!, height!, flip).map(({ points }) =>
+      points.split(' ').map((point) => point.split(',').map(Number)),
+    );
+    const runs: number[] = [];
+    for (const points of shapes) {
+      const crosses: number[] = [];
+      points.forEach((point, index) => {
+        const next = points[(index + 1) % points.length]!;
+        const after = points[(index + 2) % points.length]!;
+        const dx = next[0]! - point[0]!;
+        const dy = next[1]! - point[1]!;
+        if (dx && dy) runs.push(Math.abs(dx));
+        crosses.push(dx * (after[1]! - next[1]!) - dy * (after[0]! - next[0]!));
+      });
+      expect(crosses.every((cross) => cross > 0) || crosses.every((cross) => cross < 0)).toBe(true);
+    }
+    expect(Math.max(...runs) - Math.min(...runs)).toBeLessThan(0.02);
+    const triangle = shapes.find((points) => points.length === 3)!;
+    const apex = triangle.find((point) => triangle.filter((other) => other[1] === point[1]).length === 1)!;
+    const base = triangle.filter((point) => point !== apex);
+    expect(apex[0]).toBeCloseTo((base[0]![0]! + base[1]![0]!) / 2, 2);
+    const band = shapes[1]!;
+    expect(band[1]![0]! - band[0]![0]!).toBeCloseTo(band[2]![0]! - band[3]![0]!, 2);
+    const physicalRun = (runs[0]! * width!) / 300;
+    expect(physicalRun).toBeCloseTo(Math.min(height! / Math.sqrt(3), width! / 8), 2);
+  }
+});
 
 it('刻面在挂载后固定，色块贯穿高度、三角形与四边形贴边拼接，局部快慢闪切支持宿主取消', () => {
   const enter = vi.fn();
@@ -10,7 +46,7 @@ it('刻面在挂载后固定，色块贯穿高度、三角形与四边形贴边�
   fireEvent.pointerOver(button);
   expect(enter).toHaveBeenCalledOnce();
   const facets = [...button.querySelectorAll<SVGElement>('.aig-button-highlight polygon')];
-  expect([4, 5]).toContain(facets.length);
+  expect(facets).toHaveLength(5);
   const depths = facets.map((facet) => Number(facet.style.getPropertyValue('--aig-facet-depth')));
   expect(depths.every((depth) => [0.88, 0.94, 1].includes(depth))).toBe(true);
   expect(new Set(depths).size).toBeLessThanOrEqual(3);

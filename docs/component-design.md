@@ -25,7 +25,7 @@ Card、Panel 和浮层以完整边界、表面和间距组织内容，卡片与�
 
 Button、IconButton、CopyButton 共用边框、端部刻线与基线扫描。稳定轮廓按 primary、secondary、outline、ghost、danger 区分；最小高度为 26 / 32 / 40px。
 
-横向按钮挂载时生成 4 或 5 块固定刻面，宽主体与窄斜带交替；按行错峰入场，前段按帧硬切，后段收束。首次 hover 或键盘聚焦重播，后续直接稳定高亮；选中与展开保留实底。primary 使用外围短标，outline 保留完整框线；文字、图标和细线按可见刻面同步显示浅色。`entrance={false}` 可关闭入场。语义颜色由 AigProvider.palette 统一配置，危险默认鲜红 #E60012。逐帧依据见[Button 参考拆解](design/button-reference.md)。
+横向按钮使用 5 块规则刻面，包含等腰三角形、平行四边形与梯形；斜边角度一致，整体可镜像，布局尺寸变化时适配坐标。按行错峰入场，前段按帧硬切，后段收束。首次 hover 或键盘聚焦重播，后续直接稳定高亮；选中与展开保留实底。primary 使用外围短标，outline 保留完整框线；文字、图标和细线按可见刻面同步显示浅色。`entrance={false}` 可关闭入场。语义颜色由 AigProvider.palette 统一配置，危险默认鲜红 #E60012。逐帧依据见[Button 参考拆解](design/button-reference.md)。
 
 按压收拢，松开回位；加载使用专用图标与基线扫描；禁用保留静态轮廓。CopyButton 的完成、失败和结果颜色对应实际复制结果。减少动态效果时直接显示稳定的交互形态。
 

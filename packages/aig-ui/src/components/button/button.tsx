@@ -2,7 +2,12 @@
 import { useEffect, useRef, type ComponentPropsWithRef, type ReactNode } from 'react';
 import { BrandMark, useAigBrand } from '../../theme/aig-provider.js';
 import { useButtonContrast } from './button-contrast.js';
-import { initializeButtonFacets, queueButtonEntrance, replayButtonFacets } from './button-motion.js';
+import {
+  initializeButtonFacets,
+  observeButtonFacets,
+  queueButtonEntrance,
+  replayButtonFacets,
+} from './button-motion.js';
 
 /** 执行动作的原生按钮。 */
 export interface ButtonProps extends ComponentPropsWithRef<'button'> {
@@ -89,6 +94,7 @@ export function Button({
   const entranceConsumedRef = useRef(false);
   const cancelEntranceRef = useRef<(() => void) | undefined>(undefined);
   const finishFrameRef = useRef(0);
+  useEffect(() => observeButtonFacets(highlightRef.current), []);
   /** 首次交互播放刻面，后续交互直接保持稳定高亮。 */
   const activateHighlight = () => {
     const element = highlightRef.current;

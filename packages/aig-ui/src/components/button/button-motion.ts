@@ -40,37 +40,41 @@ export function queueButtonEntrance(element: SVGSVGElement, play: () => void) {
   };
 }
 
-/** 三角形和四边形共享边界；宽阔主体与窄斜切交替，避免平均分成条纹。 */
-function createButtonFacets() {
-  const count = 4 + Math.floor(Math.random() * 2);
-  const weights = Array.from({ length: count }, (_, index) => (index % 2 ? 0.7 : 1.3) + Math.random() * 0.2);
-  const total = weights.reduce((sum, weight) => sum + weight, 0);
-  const triangle = count - 2;
-  let consumed = 0;
+/**
+ * 两端直角梯形、平行四边形、中部等腰梯形和等腰三角形共享同一斜率。
+ * 通常使用 60°；紧凑按钮统一加陡，给主体留出足够宽度。
+ * 按实际宽高换算到 300×100 坐标，避免固定 viewBox 任意拉伸斜角。
+ */
+export function createButtonFacets(width: number, height: number, flip = false) {
+  const run = (Math.min(height / Math.sqrt(3), width / 8) * 300) / width;
+  const body = (300 - 4 * run) / 3;
   const boundaries = [
     [
       [0, 0],
       [0, 100],
     ],
+    [
+      [body, 0],
+      [body + run, 100],
+    ],
+    [
+      [body + run, 0],
+      [body + 2 * run, 100],
+    ],
+    [
+      [2 * body + 3 * run, 0],
+      [2 * body + 2 * run, 100],
+    ],
+    [
+      [2 * body + 3 * run, 0],
+      [2 * body + 4 * run, 100],
+    ],
+    [
+      [300, 0],
+      [300, 100],
+    ],
   ];
-  for (let index = 1; index < count; index++) {
-    consumed += weights[index - 1]!;
-    const x = (consumed / total) * 300;
-    const skew = (index < triangle ? -1 : 1) * (16 + Math.random() * 6);
-    boundaries.push([
-      [x + skew, 0],
-      [x - skew, 100],
-    ]);
-  }
-  boundaries.push([
-    [300, 0],
-    [300, 100],
-  ]);
-  const tip = (boundaries[triangle]![0]![0]! + boundaries[triangle + 1]![0]![0]!) / 2;
-  boundaries[triangle]![0]![0] = tip;
-  boundaries[triangle + 1]![0]![0] = tip;
-  const flip = Math.random() < 0.5;
-  return Array.from({ length: count }, (_, index) => {
+  return Array.from({ length: 5 }, (_, index) => {
     const start = boundaries[index]!;
     const end = boundaries[index + 1]!;
     const points = [start[0]!, ...end, start[1]!].filter(
@@ -78,25 +82,47 @@ function createButtonFacets() {
         position === 0 || point[0] !== vertices[position - 1]![0] || point[1] !== vertices[position - 1]![1],
     );
     return {
-      points: points.map(([x, y]) => `${x!.toFixed(2)},${(flip ? 100 - y! : y!).toFixed(2)}`).join(' '),
-      motion: index === triangle ? 'tip' : index === 1 ? 'cut' : 'body',
+      points: points.map(([x, y]) => `${x!.toFixed(4)},${(flip ? 100 - y! : y!).toFixed(4)}`).join(' '),
+      motion: index === 3 ? 'tip' : index === 1 ? 'cut' : 'body',
     };
   });
 }
 
-/** 挂载期间固定几何、角色和深度，交互与重渲染只改变播放状态。 */
+/** 布局改变时适配实际尺寸，保留原有节点、镜像、色阶和播放进度。 */
+function layoutButtonFacets(element: SVGSVGElement) {
+  const button = element.closest('button');
+  const width = button?.clientWidth || 300;
+  const height = button?.clientHeight || 100;
+  createButtonFacets(width, height, element.dataset.facetFlip === 'true').forEach(({ points }, index) => {
+    const facet = element.children[index]!;
+    if (facet.getAttribute('points') !== points) facet.setAttribute('points', points);
+  });
+}
+
+/** 仅随机选择整体上下镜像，顶点、角度和比例不再分别随机化。 */
 export function initializeButtonFacets(element: SVGSVGElement | null) {
   if (!element || element.childElementCount) return;
+  element.dataset.facetFlip = String(Math.random() < 0.5);
   const depths = [1, 0.88, 0.94];
   element.replaceChildren(
-    ...createButtonFacets().map(({ points, motion }, index) => {
+    ...createButtonFacets(300, 100).map(({ motion }, index) => {
       const facet = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-      facet.setAttribute('points', points);
       facet.dataset.motion = motion;
       facet.style.setProperty('--aig-facet-depth', String(depths[index % depths.length]));
       return facet;
     }),
   );
+  layoutButtonFacets(element);
+}
+
+/** 字体、宽度或换行改变时同步规则几何；普通 hover 复用原有布局。 */
+export function observeButtonFacets(element: SVGSVGElement | null) {
+  initializeButtonFacets(element);
+  const button = element?.closest('button');
+  if (!element || !button || typeof ResizeObserver === 'undefined') return;
+  const observer = new ResizeObserver(() => layoutButtonFacets(element));
+  observer.observe(button);
+  return () => observer.disconnect();
 }
 
 /** 前段按 40ms 帧格硬切，后段淡出到当前选中或悬停状态。 */
