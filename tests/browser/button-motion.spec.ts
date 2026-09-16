@@ -482,7 +482,7 @@ test('悬停、按压、选中与加载分别使用对应反馈', async ({ page 
   );
   await expect(busy.locator('.aig-button-frame .aig-button-line').first()).toHaveCSS(
     'animation-duration',
-    '16s',
+    '48s',
   );
   await expect(busy.locator('.aig-button-highlight')).not.toHaveAttribute('data-playing', '');
   const disabled = matrix.locator('.aig-button:disabled:not([aria-busy])').first();
@@ -573,10 +573,10 @@ test('所有边缘短线持续绕行，闭环连续且减少动态时停止', as
       time,
     );
   const start = await sample(0);
-  const middle = await sample(8000);
-  const end = await sample(16000);
+  const middle = await sample(24000);
+  const end = await sample(48000);
   start.forEach((line, index) => {
-    expect(line.duration).toBe('16s');
+    expect(line.duration).toBe('48s');
     expect(line.iterations).toBe('infinite');
     expect(line.width).toBeGreaterThan(20);
     expect(line.height).toBeGreaterThan(20);
@@ -585,4 +585,45 @@ test('所有边缘短线持续绕行，闭环连续且减少动态时停止', as
   });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const line of await lines.all()) await expect(line).toHaveCSS('animation-name', 'none');
+});
+
+test('边线随机长度保持稳定，hover 连续加速并在离开后减速', async ({ page }) => {
+  await page.goto('http://127.0.0.1:5173/?component=Button');
+  const button = page.locator('#example-variants .preview-actions > .aig-button').first();
+  await button.scrollIntoViewIfNeeded();
+  await page.mouse.move(0, 0);
+  await page.clock.install();
+  const lengths = () =>
+    button
+      .locator('.aig-button-frame .aig-button-line')
+      .evaluateAll((lines) => lines.map((line) => parseFloat(getComputedStyle(line).strokeDasharray)));
+  const initial = await lengths();
+  expect(new Set(initial).size).toBe(4);
+  initial.forEach((length) => {
+    expect(length).toBeGreaterThanOrEqual(1.2);
+    expect(length).toBeLessThanOrEqual(4.2);
+  });
+  const rate = () =>
+    button
+      .locator('.aig-button-frame .aig-button-line')
+      .first()
+      .evaluate((line) => line.getAnimations()[0]!.playbackRate);
+  expect(await rate()).toBe(1);
+  await button.hover();
+  await page.clock.runFor(300);
+  expect(await rate()).toBeGreaterThan(1.1);
+  expect(await rate()).toBeLessThan(3);
+  await page.clock.runFor(700);
+  expect(await rate()).toBe(3);
+  const rates = await button
+    .locator('.aig-button-line')
+    .evaluateAll((lines) => lines.map((line) => line.getAnimations()[0]!.playbackRate));
+  expect(rates).toEqual(Array(8).fill(3));
+  await page.mouse.move(0, 0);
+  await page.clock.runFor(300);
+  expect(await rate()).toBeLessThan(2.9);
+  expect(await rate()).toBeGreaterThan(1);
+  await page.clock.runFor(700);
+  expect(await rate()).toBe(1);
+  expect(await lengths()).toEqual(initial);
 });

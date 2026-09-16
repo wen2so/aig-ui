@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, type ComponentPropsWithRef, type ReactNode } from 'react';
 import { BrandMark, useAigBrand } from '../../theme/aig-provider.js';
+import { useButtonPerimeter } from './button-perimeter.js';
 import { useButtonContrast } from './button-contrast.js';
 import {
   initializeButtonFacets,
@@ -67,6 +68,8 @@ export function Button({
   const highlightRef = useRef<SVGSVGElement>(null);
   const contentRef = useRef<HTMLSpanElement>(null);
   const contrastRef = useRef<HTMLSpanElement>(null);
+  const frameRef = useRef<HTMLSpanElement>(null);
+  const setPerimeterActive = useButtonPerimeter(frameRef, Boolean(disabled || loading));
   useButtonContrast(highlightRef, contentRef, contrastRef);
   const interactedRef = useRef(false);
   const entranceConsumedRef = useRef(false);
@@ -75,6 +78,7 @@ export function Button({
   useEffect(() => observeButtonFacets(highlightRef.current), []);
   /** 首次交互播放随机组合，后续进入直接高亮，保留首次交互标记。 */
   const activateHighlight = () => {
+    setPerimeterActive(true);
     const element = highlightRef.current;
     if (!element || element.hasAttribute('data-hovered')) return;
     cancelEntranceRef.current?.();
@@ -125,6 +129,7 @@ export function Button({
       }}
       onPointerLeave={(event) => {
         onPointerLeave?.(event);
+        setPerimeterActive(event.currentTarget.matches(':focus-visible'));
         if (highlightRef.current && !event.currentTarget.matches(':focus-visible')) {
           delete highlightRef.current.dataset.hovered;
           if (highlightRef.current.dataset.playing === 'interaction')
@@ -133,6 +138,7 @@ export function Button({
       }}
       onBlur={(event) => {
         onBlur?.(event);
+        setPerimeterActive(event.currentTarget.matches(':hover'));
         if (highlightRef.current && !event.currentTarget.matches(':hover')) {
           delete highlightRef.current.dataset.hovered;
           if (highlightRef.current.dataset.playing === 'interaction')
@@ -175,7 +181,7 @@ export function Button({
         aria-hidden="true"
         focusable="false"
       ></svg>
-      <span className="aig-button-frame" aria-hidden="true">
+      <span ref={frameRef} className="aig-button-frame" aria-hidden="true">
         <svg className="aig-button-perimeter" aria-hidden="true" focusable="false">
           {[0, 1, 2, 3].map((index) => (
             <rect key={index} className="aig-button-line" pathLength={100} />

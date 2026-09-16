@@ -63,6 +63,7 @@ export function useButtonContrast(
           const original = originals[index]?.getAnimations?.()[0];
           const duplicate = line.getAnimations?.()[0];
           if (!original || !duplicate) return;
+          duplicate.playbackRate = original.playbackRate;
           if (original.startTime != null) duplicate.startTime = original.startTime;
           else duplicate.currentTime = original.currentTime ?? 0;
         });
