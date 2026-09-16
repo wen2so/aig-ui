@@ -219,23 +219,23 @@
   height: calc(100% - 4px);
   /* 线芯使用中性对比色，避免继承按钮品牌色后融入刻面底色。 */
   --aig-line-glow-color: var(--aig-color-text);
-  --aig-line-glow: color-mix(
-    in srgb,
-    var(--aig-line-glow-color) calc(var(--aig-perimeter-energy, 0) * 80%),
-    transparent
-  );
+  --aig-line-glow-strength: var(--aig-perimeter-energy, 0);
+  /* 冷色光晕独立于深灰线芯，在浅色画布上也能看清向外扩散的光。 */
+  --aig-line-glow: color-mix(in srgb, #55baff calc(var(--aig-line-glow-strength) * 95%), transparent);
   stroke: var(--aig-line-glow-color);
   stroke-width: 1px;
   stroke-dasharray: 3 97;
   stroke-dashoffset: var(--aig-line-phase, 0px);
   opacity: calc(0.18 + var(--aig-perimeter-energy, 0) * 0.82);
-  /* 窄光晕保留清晰线芯，宽光晕向按钮外扩散；静止基速时透明。 */
-  filter: drop-shadow(0 0 calc(var(--aig-perimeter-energy, 0) * 2px) var(--aig-line-glow))
-    drop-shadow(0 0 calc(var(--aig-perimeter-energy, 0) * 6px) var(--aig-line-glow));
+  /* 三层光晕分别形成贴线亮光、近处扩散和外围柔光，线芯保持锐利。 */
+  filter: drop-shadow(0 0 calc(var(--aig-line-glow-strength) * 2px) var(--aig-line-glow))
+    drop-shadow(0 0 calc(var(--aig-line-glow-strength) * 5px) var(--aig-line-glow))
+    drop-shadow(0 0 calc(var(--aig-line-glow-strength) * 10px) var(--aig-line-glow));
   animation: aig-button-perimeter 48s linear infinite;
 }
 /* hover 立即显示清晰实线，速度继续增强光晕与剩余亮度。 */
 .aig-button:is(:hover, :focus-visible):enabled .aig-button-line {
+  --aig-line-glow-strength: calc(0.55 + var(--aig-perimeter-energy, 0) * 0.45);
   stroke-width: 2px;
   opacity: calc(0.9 + var(--aig-perimeter-energy, 0) * 0.1);
 }
