@@ -24,7 +24,7 @@ it.each([
   [220, 40],
   [160, 80],
   [800, 32],
-])('%s×%s 网格完整覆盖，内部三角同斜率，两单元等边长平行四边形，三单元梯形', (width, height) => {
+])('%s×%s 网格完整覆盖，内部三角同斜率，两单元组成等边长平行四边形', (width, height) => {
   for (let seed = 0; seed < 32; seed++) {
     const facets = createButtonFacets(width!, height!, seed);
     const shapes = facets.map(({ points }) => parse(points));
@@ -56,46 +56,42 @@ it.each([
       expect(apex[0]).toBeCloseTo((triangle[0]![0] + triangle[2]![0]) / 2, 3);
     });
     const base = Math.abs(full[0]![2]![0] - full[0]![0]![0]);
-    const pair = full.slice(0, 2),
-      triple = full.slice(0, 3);
+    const pair = full.slice(0, 2);
     expect(rowSpan(pair, 0)).toBeCloseTo(base, 3);
     expect(rowSpan(pair, 100)).toBeCloseTo(base, 3);
-    const trapezoidBases = [rowSpan(triple, 0), rowSpan(triple, 100)].sort((a, b) => a - b);
-    expect(trapezoidBases[0]).toBeCloseTo(base, 3);
-    expect(trapezoidBases[1]).toBeCloseTo(base * 2, 3);
   }
 });
 
-it('逐帧组合来自相邻单元，一轮内变化、跨轮变化，同一种子可复算', () => {
+it('随机闪切只包含完整三角和平行四边形，组间分离、排除裁切块，同种子可复算', () => {
   const plans = new Set<string>();
   const groupSizes = new Set<number>();
   for (let seed = 0; seed < 64; seed++) {
-    const frames = createButtonFlashFrames(12, seed);
-    expect(frames).toEqual(createButtonFlashFrames(12, seed));
+    const facets = createButtonFacets(140, 26, seed);
+    const frames = createButtonFlashFrames(facets, seed);
+    expect(frames).toEqual(createButtonFlashFrames(facets, seed));
     plans.add(JSON.stringify(frames));
     expect(new Set(frames.map((frame) => frame.join(','))).size).toBe(BUTTON_FLASH_FRAMES.length);
     frames.forEach((frame, index) => {
-      expect(frame).toHaveLength(12);
-      if (BUTTON_FLASH_FRAMES[index] === 80 || BUTTON_FLASH_FRAMES[index] === 280) return;
+      expect(frame).toHaveLength(facets.length);
+      if (BUTTON_FLASH_FRAMES[index] === 280) return;
       expect(frame.some((value) => value === 0)).toBe(true);
       expect(frame.some((value) => value > 0)).toBe(true);
-      expect(frame.every((value) => value === 0 || value === 1)).toBe(true);
-      // 亮块与缺口互为补集，从两侧检查是否由一至两组、每组一至三个相邻单元构成。
-      const binary = frame.join('');
-      const runs = binary
-        .split('0')
-        .filter(Boolean)
-        .map((run) => run.length);
-      const inverse = binary
-        .split('1')
-        .filter(Boolean)
-        .map((run) => run.length);
-      const groups = runs.length <= 2 && runs.every((size) => size <= 3) ? runs : inverse;
+      const lit = BUTTON_FLASH_FRAMES[index] === 80 ? 0.16 : 1;
+      expect(frame.every((value) => value === 0 || value === lit)).toBe(true);
+      frame.forEach((value, cell) => {
+        if (facets[cell]!.clipped) expect(value).toBe(0);
+      });
+      const binary = frame.map((value) => Number(value > 0)).join('');
+      const groups = [...binary.matchAll(/1+/g)];
       expect(groups.length).toBeLessThanOrEqual(2);
-      expect(groups.every((size) => size >= 1 && size <= 3)).toBe(true);
-      groups.forEach((size) => groupSizes.add(size));
+      groups.forEach((group, position) => {
+        expect([1, 2]).toContain(group[0].length);
+        groupSizes.add(group[0].length);
+        const previous = groups[position - 1];
+        if (previous) expect(group.index - previous.index - previous[0].length).toBeGreaterThanOrEqual(2);
+      });
     });
   }
   expect(plans.size).toBe(64);
-  expect([...groupSizes].sort()).toEqual([1, 2, 3]);
+  expect([...groupSizes].sort()).toEqual([1, 2]);
 });

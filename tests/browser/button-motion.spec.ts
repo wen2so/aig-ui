@@ -135,6 +135,7 @@ test('规则网格逐帧随机拼块，每轮 hover 更新组合并收束为稳�
       });
       animation.play();
       return {
+        clipped: polygon.dataset.clipped === 'true',
         frames: [80, 240, 280, 360, 400, 440, 600].map((time) =>
           Number(polygon.style.getPropertyValue(`--aig-facet-frame-${time}`)),
         ),
@@ -142,7 +143,7 @@ test('规则网格逐帧随机拼块，每轮 hover 更新组合并收束为稳�
       };
     });
   });
-  for (const { values, frames } of sample) {
+  for (const { values, frames, clipped } of sample) {
     const [preflash, first, full, a, b, c, last] = frames;
     expect(values.slice(0, 15)).toEqual([
       0,
@@ -163,6 +164,19 @@ test('规则网格逐帧随机拼块，每轮 hover 更新组合并收束为稳�
     ]);
     expect(values[15]).toBeCloseTo((last! + 1) / 2, 3);
     expect(values[16]).toBe(1);
+    if (clipped) expect([preflash, first, a, b, c, last]).toEqual([0, 0, 0, 0, 0, 0]);
+  }
+  // 按实际渲染亮度检查轮廓分组，防止三单元梯形或尖端相接的锯齿回归。
+  for (const index of [1, 5, 9, 11, 13, 14]) {
+    const binary = sample.map(({ values }) => Number(values[index]! > 0)).join('');
+    const groups = [...binary.matchAll(/1+/g)];
+    expect(groups.length).toBeGreaterThan(0);
+    expect(groups.length).toBeLessThanOrEqual(2);
+    groups.forEach((group, position) => {
+      expect([1, 2]).toContain(group[0].length);
+      const previous = groups[position - 1];
+      if (previous) expect(group.index - previous.index - previous[0].length).toBeGreaterThanOrEqual(2);
+    });
   }
   const sampledCombinations = [5, 7, 9, 11, 13].map((index) =>
     sample.map(({ values }) => values[index]).join(','),

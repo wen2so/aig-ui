@@ -56,7 +56,7 @@ function layoutButtonFacets(element: SVGSVGElement) {
   const height = button?.clientHeight || 100;
   const seed = Number(element.dataset.facetSeed);
   const facets = createButtonFacets(width, height, seed);
-  const frames = createButtonFlashFrames(facets.length, seed);
+  const frames = createButtonFlashFrames(facets, seed);
   while (element.childElementCount > facets.length) element.lastElementChild!.remove();
   facets.forEach(({ points, clipped }, index) => {
     let facet = element.children[index] as SVGPolygonElement | undefined;

@@ -31,7 +31,7 @@ function clipAtX(points: Point[], boundary: number, keepRight: boolean): Point[]
 }
 
 /**
- * 用交替朝向的等腰三角形铺满按钮。两单元组成平行四边形，三单元组成梯形。
+ * 用交替朝向的等腰三角形铺满按钮，闪切使用单三角或双单元平行四边形。
  * 基础平行四边形的上、下边等于单三角的底边；合并更多单元时为整倍数。
  * 通常使用 60° 斜边，紧凑按钮统一加陡；一轮内只随机网格整体偏移和上下朝向。
  */
@@ -65,41 +65,44 @@ export function createButtonFacets(width: number, height: number, seed: number) 
 /** 40ms 采样点；280ms 短暂补齐，其余时间点独立组合，600ms 后进入收束。 */
 export const BUTTON_FLASH_FRAMES = [80, 240, 280, 360, 400, 440, 480, 520, 560, 600] as const;
 
-/** 随机点亮或挖空一至两组相邻单元，每组一至三个，形成三角、平行四边形与梯形。 */
-function randomCombination(count: number, random: () => number) {
-  const cutout = random() < 0.5;
-  const values = Array<number>(count).fill(cutout ? 1 : 0);
+/** 只点亮完整三角或双单元平行四边形；裁切块、梯形和反向挖空不参与闪切。 */
+function randomCombination(facets: readonly { clipped: boolean }[], random: () => number) {
+  const count = facets.length;
+  const values = Array<number>(count).fill(0);
   const occupied = new Set<number>();
   const groups = 1 + Math.floor(random() * 2);
   for (let group = 0; group < groups; group++) {
-    const length = 1 + Math.floor(random() * 3);
-    const starts = Array.from({ length: count - length + 1 }, (_, start) => start).filter((start) =>
-      Array.from({ length: length + 2 }, (_, offset) => start + offset - 1).every(
-        (cell) => !occupied.has(cell),
-      ),
+    const length = 1 + Math.floor(random() * 2);
+    const starts = Array.from({ length: count - length + 1 }, (_, start) => start).filter(
+      (start) =>
+        facets.slice(start, start + length).every((facet) => !facet.clipped) &&
+        // 留出两个空单元，让轮廓之间有实际间距，避免尖端相接形成锯齿。
+        Array.from({ length: length + 4 }, (_, offset) => start + offset - 2).every(
+          (cell) => !occupied.has(cell),
+        ),
     );
     if (!starts.length) break;
     const start = starts[Math.floor(random() * starts.length)]!;
-    // 满亮拼块避免半透明描边叠加，让共享边在合成后的平行四边形、梯形内部消失。
-    const opacity = cutout ? 0 : 1;
+    // 满亮拼块避免半透明描边叠加，让平行四边形内部共享边消失。
     for (let cell = start; cell < start + length; cell++) {
       occupied.add(cell);
-      values[cell] = opacity;
+      values[cell] = 1;
     }
   }
   return values;
 }
 
 /** 每轮生成完整采样表，CSS 按表硬切；同组单元共用亮度，视觉上合成连续块面。 */
-export function createButtonFlashFrames(count: number, seed: number) {
+export function createButtonFlashFrames(facets: readonly { clipped: boolean }[], seed: number) {
+  const count = facets.length;
   const random = seededRandom(seed ^ 0x9e3779b9);
   const used = new Set<string>();
   return BUTTON_FLASH_FRAMES.map((time) => {
     if (time === 280) return Array<number>(count).fill(1);
-    let values = randomCombination(count, random);
+    let values = randomCombination(facets, random);
     let signature = values.join(',');
     for (let attempt = 0; used.has(signature) && attempt < 32; attempt++) {
-      values = randomCombination(count, random);
+      values = randomCombination(facets, random);
       signature = values.join(',');
     }
     used.add(signature);

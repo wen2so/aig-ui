@@ -364,7 +364,7 @@
 .aig-button:enabled .aig-button-highlight[data-playing] polygon {
   animation: aig-button-facet-flash 1000ms steps(1, end) var(--aig-button-enter-delay, 0ms) 1 backwards;
 }
-/* 每个单元读取本轮采样值；相邻单元同亮度显现时合成为平行四边形或梯形。 */
+/* 每个单元读取本轮采样值；只闪完整三角或双单元平行四边形，组间保留空隙。 */
 @keyframes aig-button-facet-flash {
   0%,
   12% {
