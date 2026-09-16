@@ -634,6 +634,21 @@ test('边线随机长度保持稳定，hover 持续无上限加速并在离开�
   expect(laterRate).toBeGreaterThan(3);
   await page.clock.runFor(3000);
   const fastestRate = await rate();
+  await expect(button.locator('.aig-button-frame .aig-button-line').first()).toHaveCSS('stroke-width', '2px');
+  const coreBounds = await button
+    .locator('.aig-button-contrast-frame .aig-button-line')
+    .first()
+    .evaluate((line) => {
+      const bounds = line.getBoundingClientRect();
+      const clip = line.closest('.aig-button-contrast')!.getBoundingClientRect();
+      return {
+        left: bounds.left - clip.left,
+        top: bounds.top - clip.top,
+        right: clip.right - bounds.right,
+        bottom: clip.bottom - bounds.bottom,
+      };
+    });
+  Object.values(coreBounds).forEach((inset) => expect(inset).toBeGreaterThanOrEqual(0.9));
   expect(fastestRate).toBeGreaterThan(laterRate);
   const fastLight = await light();
   expect(laterLight.opacity).toBeGreaterThan(idleLight.opacity);

@@ -212,10 +212,11 @@
   pointer-events: none;
 }
 .aig-button-line {
-  x: 0.5px;
-  y: 0.5px;
-  width: calc(100% - 1px);
-  height: calc(100% - 1px);
+  /* 向内留出线芯宽度，避免 hover 外扩后白色线芯落在文字遮罩之外。 */
+  x: 2px;
+  y: 2px;
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
   /* 线芯使用中性对比色，避免继承按钮品牌色后融入刻面底色。 */
   --aig-line-glow-color: var(--aig-color-text);
   --aig-line-glow: color-mix(
@@ -232,6 +233,11 @@
   filter: drop-shadow(0 0 calc(var(--aig-perimeter-energy, 0) * 2px) var(--aig-line-glow))
     drop-shadow(0 0 calc(var(--aig-perimeter-energy, 0) * 6px) var(--aig-line-glow));
   animation: aig-button-perimeter 48s linear infinite;
+}
+/* hover 立即显示清晰实线，速度继续增强光晕与剩余亮度。 */
+.aig-button:is(:hover, :focus-visible):enabled .aig-button-line {
+  stroke-width: 2px;
+  opacity: calc(0.9 + var(--aig-perimeter-energy, 0) * 0.1);
 }
 .aig-button-line:nth-child(2) {
   --aig-line-phase: -25px;
