@@ -37,19 +37,13 @@ it('首次交互播放随机组合，重复进入与加载恢复保持几何且�
   expect(button.querySelector('svg')!.innerHTML).toBe(before);
 });
 
-it('随机线长在重渲染和重复交互后保持不变', () => {
+it('三段轮廓在重渲染和重复交互后保持结构', () => {
   const { rerender } = render(<Button>保存</Button>);
   const button = screen.getByRole('button', { name: '保存' });
   const styles = () =>
     [...button.querySelectorAll('.aig-button-frame .aig-button-line')].map((line) => line.outerHTML);
   const initial = styles();
-  expect(initial).toHaveLength(4);
-  button.querySelectorAll<SVGRectElement>('.aig-button-frame .aig-button-line').forEach((line) => {
-    const [length, gap] = line.style.strokeDasharray.split(' ').map(Number);
-    expect(length).toBeGreaterThanOrEqual(1.2);
-    expect(length).toBeLessThanOrEqual(4.2);
-    expect(length! + gap!).toBeCloseTo(100);
-  });
+  expect(initial).toHaveLength(3);
   expect(initial.every((markup) => markup.includes('pathLength="100"'))).toBe(true);
   fireEvent.pointerOver(button);
   fireEvent.pointerLeave(button);

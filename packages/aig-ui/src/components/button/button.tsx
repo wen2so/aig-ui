@@ -181,9 +181,10 @@ export function Button({
         aria-hidden="true"
         focusable="false"
       ></svg>
+      <span className="aig-button-heat" aria-hidden="true" />
       <span ref={frameRef} className="aig-button-frame" aria-hidden="true">
         <svg className="aig-button-perimeter" aria-hidden="true" focusable="false">
-          {[0, 1, 2, 3].map((index) => (
+          {[0, 1, 2].map((index) => (
             <rect key={index} className="aig-button-line" pathLength={100} />
           ))}
         </svg>

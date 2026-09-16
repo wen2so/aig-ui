@@ -553,7 +553,7 @@ test('所有边缘短线持续绕行，闭环连续且减少动态时停止', as
   await page.goto('http://127.0.0.1:5173/?component=Button');
   const button = page.locator('#example-variants .preview-actions > .aig-button').first();
   const lines = button.locator('.aig-button-frame .aig-button-line');
-  await expect(lines).toHaveCount(4);
+  await expect(lines).toHaveCount(3);
   const sample = async (time: number) =>
     lines.evaluateAll(
       (elements, time) =>
@@ -587,7 +587,7 @@ test('所有边缘短线持续绕行，闭环连续且减少动态时停止', as
   for (const line of await lines.all()) await expect(line).toHaveCSS('animation-name', 'none');
 });
 
-test('边线随机长度保持稳定，hover 持续无上限加速并在离开后减速', async ({ page }) => {
+test('三根等距线随速度增长闭合并形成炽热渐变，离开后恢复', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Button');
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
   await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
@@ -600,11 +600,7 @@ test('边线随机长度保持稳定，hover 持续无上限加速并在离开�
       .locator('.aig-button-frame .aig-button-line')
       .evaluateAll((lines) => lines.map((line) => parseFloat(getComputedStyle(line).strokeDasharray)));
   const initial = await lengths();
-  expect(new Set(initial).size).toBe(4);
-  initial.forEach((length) => {
-    expect(length).toBeGreaterThanOrEqual(1.2);
-    expect(length).toBeLessThanOrEqual(4.2);
-  });
+  expect(initial).toEqual([3, 3, 3]);
   const rate = () =>
     button
       .locator('.aig-button-frame .aig-button-line')
@@ -655,6 +651,17 @@ test('边线随机长度保持稳定，hover 持续无上限加速并在离开�
   expect(fastLight.opacity).toBeGreaterThan(laterLight.opacity);
   expect(fastLight.filter).toContain('drop-shadow');
   expect(fastLight.filter).not.toBe(idleLight.filter);
+  const growingLengths = await lengths();
+  growingLengths.forEach((length) => expect(length).toBeGreaterThan(3));
+  await page.clock.runFor(3000);
+  (await lengths()).forEach((length) => expect(length).toBeCloseTo(100 / 3, 3));
+  await expect(button.locator('.aig-button-heat')).toHaveCSS('opacity', '1');
+  const phases = await button
+    .locator('.aig-button-frame .aig-button-line')
+    .evaluateAll((lines) => lines.map((line) => parseFloat(getComputedStyle(line).strokeDashoffset)));
+  expect(phases[0]! - phases[1]!).toBeCloseTo(100 / 3, 3);
+  expect(phases[1]! - phases[2]!).toBeCloseTo(100 / 3, 3);
+  const beforeLeaveRate = await rate();
   const bounds = (await button.boundingBox())!;
   await page.screenshot({
     path: test.info().outputPath('button-speed-glow.png'),
@@ -664,10 +671,10 @@ test('边线随机长度保持稳定，hover 持续无上限加速并在离开�
   const rates = await button
     .locator('.aig-button-line')
     .evaluateAll((lines) => lines.map((line) => line.getAnimations()[0]!.playbackRate));
-  expect(rates).toEqual(Array(8).fill(rates[0]));
+  expect(rates).toEqual(Array(6).fill(rates[0]));
   await page.mouse.move(0, 0);
   await page.clock.runFor(300);
-  expect(await rate()).toBeLessThan(fastestRate);
+  expect(await rate()).toBeLessThan(beforeLeaveRate);
   expect(await rate()).toBeGreaterThan(1);
   await page.clock.runFor(700);
   expect(await rate()).toBe(1);

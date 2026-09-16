@@ -201,7 +201,7 @@
   background-repeat: no-repeat;
   transition: inset 300ms cubic-bezier(0.34, 1.3, 0.64, 1);
 }
-/* 四段细线沿同一闭合轮廓匀速绕行，拐角处连续折转；尺寸由按钮实时决定。 */
+/* 三段细线沿同一闭合轮廓匀速绕行，拐角处连续折转；尺寸由按钮实时决定。 */
 .aig-button-perimeter {
   position: absolute;
   inset: 0;
@@ -221,16 +221,21 @@
   --aig-line-glow-color: var(--aig-color-text);
   --aig-line-glow-strength: var(--aig-perimeter-energy, 0);
   /* 冷色光晕独立于深灰线芯，在浅色画布上也能看清向外扩散的光。 */
-  --aig-line-glow: color-mix(in srgb, #55baff calc(var(--aig-line-glow-strength) * 95%), transparent);
+  --aig-line-heat-color: color-mix(in srgb, #55baff, #ff9c45 calc(var(--aig-perimeter-heat, 0) * 100%));
+  --aig-line-glow: color-mix(
+    in srgb,
+    var(--aig-line-heat-color) calc(var(--aig-line-glow-strength) * 95%),
+    transparent
+  );
   stroke: var(--aig-line-glow-color);
   stroke-width: 1px;
-  stroke-dasharray: 3 97;
+  stroke-dasharray: var(--aig-perimeter-length, 3) calc(100 - var(--aig-perimeter-length, 3));
   stroke-dashoffset: var(--aig-line-phase, 0px);
   opacity: calc(0.18 + var(--aig-perimeter-energy, 0) * 0.82);
   /* 三层光晕分别形成贴线亮光、近处扩散和外围柔光，线芯保持锐利。 */
   filter: drop-shadow(0 0 calc(var(--aig-line-glow-strength) * 2px) var(--aig-line-glow))
-    drop-shadow(0 0 calc(var(--aig-line-glow-strength) * 5px) var(--aig-line-glow))
-    drop-shadow(0 0 calc(var(--aig-line-glow-strength) * 10px) var(--aig-line-glow));
+    drop-shadow(0 0 calc(var(--aig-line-glow-strength) * 7px) var(--aig-line-glow))
+    drop-shadow(0 0 calc(var(--aig-line-glow-strength) * 16px) var(--aig-line-glow));
   animation: aig-button-perimeter 48s linear infinite;
 }
 /* hover 立即显示清晰实线，速度继续增强光晕与剩余亮度。 */
@@ -240,17 +245,37 @@
   opacity: calc(0.9 + var(--aig-perimeter-energy, 0) * 0.1);
 }
 .aig-button-line:nth-child(2) {
-  --aig-line-phase: -25px;
+  --aig-line-phase: -33.3333333333px;
 }
 .aig-button-line:nth-child(3) {
-  --aig-line-phase: -50px;
-}
-.aig-button-line:nth-child(4) {
-  --aig-line-phase: -75px;
+  --aig-line-phase: -66.6666666667px;
 }
 @keyframes aig-button-perimeter {
   to {
     stroke-dashoffset: calc(var(--aig-line-phase, 0px) - 100px);
+  }
+}
+/* 升温层位于刻面之上、线芯与文字之下；只在高亮状态显现，避免离开后遮住深字。 */
+.aig-button-heat {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    115deg,
+    color-mix(in srgb, var(--aig-button-paint) 60%, #302238),
+    #a33656 48%,
+    #a94e20
+  );
+}
+.aig-button:enabled:has(.aig-button-highlight[data-hovered]) .aig-button-heat,
+.aig-button:is([aria-pressed='true'], [aria-expanded='true']):enabled .aig-button-heat {
+  opacity: var(--aig-perimeter-heat, 0);
+}
+@media (forced-colors: active) {
+  .aig-button-heat {
+    display: none;
   }
 }
 /* 同一轮保持网格稳定，采样点更换组合，最终收束成完整底色。 */

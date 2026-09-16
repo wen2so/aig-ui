@@ -1,18 +1,12 @@
 import { useCallback, useEffect, useRef, type RefObject } from 'react';
 
-/** 随机线长在挂载期间固定；仅在加减速期间逐帧调整速率，避免重启循环造成跳位。 */
+/** 三段线等距绕行并随速度同步增长；仅在加减速期间逐帧调整速率，避免重启循环造成跳位。 */
 export function useButtonPerimeter(frameRef: RefObject<HTMLSpanElement | null>, disabled: boolean) {
   const changeRate = useRef<(active: boolean) => void>(() => undefined);
   useEffect(() => {
     const frame = frameRef.current;
     const button = frame?.closest('button');
     if (!frame || !button) return;
-    frame.querySelectorAll<SVGRectElement>('.aig-button-line').forEach((line) => {
-      if (line.style.strokeDasharray) return;
-      // 归一化周长的 1.2%–4.2%，每段独立取样，短线之间始终留有间隔。
-      const length = 1.2 + Math.random() * 3;
-      line.style.strokeDasharray = `${length} ${100 - length}`;
-    });
     let raf = 0;
     let rate = 1;
     const media = window.matchMedia?.('(prefers-reduced-motion: reduce)');
@@ -24,6 +18,11 @@ export function useButtonPerimeter(frameRef: RefObject<HTMLSpanElement | null>, 
       rate = value;
       // 亮度与光晕随实际速率连续增强，视觉强度渐近饱和，速度仍可持续增长。
       button.style.setProperty('--aig-perimeter-energy', String(1 - Math.exp(-(value - 1) / 12)));
+      // 25 倍速时三段各占周长的三分之一，有限时间内闭合，之后继续加速。
+      const progress = Math.min(1, Math.max(0, (value - 1) / 24));
+      const heat = progress * progress * (3 - 2 * progress);
+      button.style.setProperty('--aig-perimeter-heat', String(heat));
+      button.style.setProperty('--aig-perimeter-length', String(3 + (100 / 3 - 3) * heat));
       animations().forEach((animation) => {
         animation.playbackRate = value;
       });
@@ -59,6 +58,8 @@ export function useButtonPerimeter(frameRef: RefObject<HTMLSpanElement | null>, 
     return () => {
       reset();
       button.style.removeProperty('--aig-perimeter-energy');
+      button.style.removeProperty('--aig-perimeter-heat');
+      button.style.removeProperty('--aig-perimeter-length');
       media?.removeEventListener('change', reset);
       changeRate.current = () => undefined;
     };
