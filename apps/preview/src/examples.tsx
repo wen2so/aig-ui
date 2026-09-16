@@ -323,7 +323,7 @@ export const extraExamples: Record<string, Example[]> = {
       id: 'variants',
       title: '操作层级',
       description:
-        '挂载时按行从左到右错峰入场，前段硬切、后段淡出。每次移出再进入时更换规则分区与闪切顺序，停留期间保持高亮。',
+        '挂载时按行从左到右错峰入场，三角单元随机拼成平行四边形、梯形与缺口。每次移出再进入生成新一轮组合，停留期间保持高亮。',
       render: () => (
         <div className="preview-actions">
           {variants.map((variant, i) => (

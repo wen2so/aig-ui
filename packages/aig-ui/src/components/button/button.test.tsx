@@ -2,129 +2,35 @@ import { createRef } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { expect, it, vi } from 'vitest';
 import { Button } from './button.js';
-import { BUTTON_FACET_LAYOUT_COUNT, createButtonFacets } from './button-motion.js';
 
-it.each([
-  [80, 32],
-  [140, 26],
-  [220, 40],
-  [160, 80],
-])('规则刻面在 %s×%s 下共用斜率，三角对称、斜带平行且无交叉', (width, height) => {
-  for (const flip of [false, true]) {
-    const layouts = Array.from({ length: BUTTON_FACET_LAYOUT_COUNT }, (_, layout) =>
-      createButtonFacets(width!, height!, flip, layout),
-    );
-    expect(new Set(layouts.map((facets) => facets.map(({ points }) => points).join('|'))).size).toBe(
-      BUTTON_FACET_LAYOUT_COUNT,
-    );
-    for (const facets of layouts) {
-      const shapes = facets.map(({ points }) =>
-        points.split(' ').map((point) => point.split(',').map(Number)),
-      );
-      const runs: number[] = [];
-      let area = 0;
-      for (const points of shapes) {
-        const crosses: number[] = [];
-        let twiceArea = 0;
-        points.forEach((point, index) => {
-          const next = points[(index + 1) % points.length]!;
-          const after = points[(index + 2) % points.length]!;
-          expect(point[0]).toBeGreaterThanOrEqual(0);
-          expect(point[0]).toBeLessThanOrEqual(300);
-          twiceArea += point[0]! * next[1]! - next[0]! * point[1]!;
-          const dx = next[0]! - point[0]!;
-          const dy = next[1]! - point[1]!;
-          if (dx && dy) runs.push(Math.abs(dx));
-          crosses.push(dx * (after[1]! - next[1]!) - dy * (after[0]! - next[0]!));
-        });
-        area += Math.abs(twiceArea) / 2;
-        expect(crosses.every((cross) => cross > 0) || crosses.every((cross) => cross < 0)).toBe(true);
-      }
-      expect(area).toBeCloseTo(30000, 2);
-      expect(Math.max(...runs) - Math.min(...runs)).toBeLessThan(0.02);
-      const triangle = shapes.find((points) => points.length === 3)!;
-      const apex = triangle.find((point) => triangle.filter((other) => other[1] === point[1]).length === 1)!;
-      const base = triangle.filter((point) => point !== apex);
-      expect(apex[0]).toBeCloseTo((base[0]![0]! + base[1]![0]!) / 2, 2);
-      const band = shapes[1]!;
-      expect(band[1]![0]! - band[0]![0]!).toBeCloseTo(band[2]![0]! - band[3]![0]!, 2);
-      const triangleBase = Math.abs(base[1]![0]! - base[0]![0]!);
-      expect(Math.abs(band[1]![0]! - band[0]![0]!)).toBeCloseTo(triangleBase, 2);
-      const physicalRun = (runs[0]! * width!) / 300;
-      expect(physicalRun).toBeCloseTo(Math.min(height! / Math.sqrt(3), width! / 8), 2);
-    }
-  }
-});
-
-it('每次重新进入切换规则分区，轮内复用节点和色阶，闪切支持宿主取消', () => {
+it('每次重新进入生成新网格和组合，轮内保持稳定，闪切支持宿主取消', () => {
   const enter = vi.fn();
   const { rerender } = render(<Button onPointerEnter={enter}>保存</Button>);
   const button = screen.getByRole('button', { name: '保存' });
   fireEvent.pointerOver(button);
   expect(enter).toHaveBeenCalledOnce();
   const facets = [...button.querySelectorAll<SVGElement>('.aig-button-highlight polygon')];
-  expect(facets).toHaveLength(5);
-  const depths = facets.map((facet) => Number(facet.style.getPropertyValue('--aig-facet-depth')));
-  expect(depths.every((depth) => [0.88, 0.94, 1].includes(depth))).toBe(true);
-  expect(new Set(depths).size).toBeLessThanOrEqual(3);
-  const shapes = facets.map((facet) =>
-    facet
-      .getAttribute('points')!
-      .split(' ')
-      .map((point) => point.split(',').map(Number)),
-  );
-  expect(shapes.every((points) => points.length === 3 || points.length === 4)).toBe(true);
-  expect(
-    shapes.every(
-      (points) => points.some((point) => point[1] === 0) && points.some((point) => point[1] === 100),
-    ),
-  ).toBe(true);
-  expect(shapes.filter((points) => points.length === 3)).toHaveLength(1);
-  expect(
-    shapes
-      .filter((points) => points.some((point) => point[0] === 0 || point[0] === 300))
-      .every((points) => points.length >= 4),
-  ).toBe(true);
-  // 每个内部节点最多连接三块，覆盖面积与按钮一致。
-  const incidence = new Map<string, number>();
-  for (const points of shapes) {
-    for (const point of points) {
-      if (point[1] === 0 || point[1] === 100) continue;
-      const key = point.join(',');
-      incidence.set(key, (incidence.get(key) ?? 0) + 1);
-    }
-  }
-  expect(Math.max(...incidence.values())).toBeLessThanOrEqual(3);
-  const area = shapes.reduce(
-    (sum, points) =>
-      sum +
-      Math.abs(
-        points.reduce((cross, point, index) => {
-          const next = points[(index + 1) % points.length]!;
-          return cross + point[0]! * next[1]! - next[0]! * point[1]!;
-        }, 0),
-      ) /
-        2,
-    0,
-  );
-  expect(Math.abs(area - 30000)).toBeLessThan(2);
-  const geometry = facets.map((facet) => facet.getAttribute('points'));
-  expect(facets.filter((facet) => facet.dataset.motion === 'cut')).toHaveLength(1);
-  expect(facets.filter((facet) => facet.dataset.motion === 'tip')).toHaveLength(1);
+  expect(facets.length).toBeGreaterThanOrEqual(8);
+  const snapshot = () =>
+    [...button.querySelectorAll('polygon')].map((facet) => ({
+      points: facet.getAttribute('points'),
+      frames: facet.getAttribute('style'),
+    }));
+  const first = snapshot();
   expect(button.querySelector('.aig-button-highlight')).toHaveAttribute('data-playing', 'interaction');
   fireEvent.pointerOver(button);
-  expect(facets.map((facet) => facet.getAttribute('points'))).toEqual(geometry);
+  expect(snapshot()).toEqual(first);
   fireEvent.pointerLeave(button);
   fireEvent.pointerOver(button);
   expect(button.querySelector('.aig-button-highlight')).toHaveAttribute('data-hovered');
   expect(button.querySelector('.aig-button-highlight')).toHaveAttribute('data-playing', 'interaction');
-  expect([...button.querySelectorAll('polygon')]).toEqual(facets);
-  const nextGeometry = facets.map((facet) => facet.getAttribute('points'));
-  expect(nextGeometry).not.toEqual(geometry);
-  expect(facets.map((facet) => Number(facet.style.getPropertyValue('--aig-facet-depth')))).toEqual(depths);
+  expect(button.querySelector('polygon')).toBe(facets[0]);
+  const next = snapshot();
+  expect(next.map(({ points }) => points)).not.toEqual(first.map(({ points }) => points));
+  expect(next.map(({ frames }) => frames)).not.toEqual(first.map(({ frames }) => frames));
   rerender(<Button loading>保存</Button>);
   rerender(<Button>保存</Button>);
-  expect(facets.map((facet) => facet.getAttribute('points'))).toEqual(nextGeometry);
+  expect(snapshot()).toEqual(next);
   const before = button.querySelector('svg')!.innerHTML;
   rerender(<Button onPointerEnter={(event) => event.preventDefault()}>保存</Button>);
   fireEvent.pointerOver(button);

@@ -1,4 +1,4 @@
-/* 挂载时错峰组装，每次重新进入更换规则分区；前段整帧闪切，后段收束。 */
+/* 挂载时错峰组装，每轮在规则网格上随机拼块；前段整帧闪切，后段收束。 */
 .aig-button {
   --aig-button-edge: color-mix(in srgb, var(--aig-color-text) 26%, transparent);
   --aig-button-trace: var(--aig-color-mark);
@@ -317,7 +317,7 @@
     inset 280ms cubic-bezier(0.22, 0.61, 0.36, 1),
     background-size 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
-/* 同一轮保持几何稳定，入场收回，悬停后保持三档高亮。 */
+/* 同一轮保持网格稳定，采样点更换组合，最终收束成完整底色。 */
 .aig-button-highlight {
   position: absolute;
   z-index: 0;
@@ -347,7 +347,7 @@
   transition-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
 }
 .aig-button-highlight polygon {
-  --aig-facet-depth: 0.22;
+  --aig-facet-depth: 1;
   fill-opacity: var(--aig-facet-rest, 0);
   stroke: var(--aig-button-paint);
   stroke-opacity: var(--aig-facet-rest, 0);
@@ -362,95 +362,54 @@
   --aig-facet-rest: var(--aig-facet-depth);
 }
 .aig-button:enabled .aig-button-highlight[data-playing] polygon {
-  animation: aig-button-facet-body 1000ms steps(1, end) var(--aig-button-enter-delay, 0ms) 1 backwards;
+  animation: aig-button-facet-flash 1000ms steps(1, end) var(--aig-button-enter-delay, 0ms) 1 backwards;
 }
-.aig-button:enabled .aig-button-highlight[data-playing] polygon[data-motion='cut'] {
-  animation-name: aig-button-facet-cut;
-}
-.aig-button:enabled .aig-button-highlight[data-playing] polygon[data-motion='tip'] {
-  animation-name: aig-button-facet-tip;
-}
-/* 两组显隐次序交替，三角和斜带轮流先显现、先留空，保持单轮收束。 */
-.aig-button:enabled .aig-button-highlight[data-playing][data-sequence='reverse'] polygon[data-motion='cut'] {
-  animation-name: aig-button-facet-tip;
-}
-.aig-button:enabled .aig-button-highlight[data-playing][data-sequence='reverse'] polygon[data-motion='tip'] {
-  animation-name: aig-button-facet-cut;
-}
-/* 时间落在 40ms 的帧格上：低亮预闪、整块显现、斜切留空，最后线性收束。 */
-@keyframes aig-button-facet-body {
+/* 每个单元读取本轮采样值；相邻单元同亮度显现时合成为平行四边形或梯形。 */
+@keyframes aig-button-facet-flash {
   0%,
   12% {
     fill-opacity: 0;
     stroke-opacity: 0;
   }
   8% {
-    fill-opacity: 0.16;
-    stroke-opacity: 0.16;
+    fill-opacity: var(--aig-facet-frame-80);
+    stroke-opacity: var(--aig-facet-frame-80);
+  }
+  24% {
+    fill-opacity: var(--aig-facet-frame-240);
+    stroke-opacity: var(--aig-facet-frame-240);
   }
   28% {
-    fill-opacity: var(--aig-facet-depth);
-    stroke-opacity: var(--aig-facet-depth);
+    fill-opacity: var(--aig-facet-frame-280);
+    stroke-opacity: var(--aig-facet-frame-280);
   }
-  60% {
-    fill-opacity: var(--aig-facet-depth);
-    stroke-opacity: var(--aig-facet-depth);
-    animation-timing-function: linear;
-  }
-  100% {
-    fill-opacity: var(--aig-facet-rest, 0);
-    stroke-opacity: var(--aig-facet-rest, 0);
-  }
-}
-@keyframes aig-button-facet-cut {
-  0%,
-  12%,
   36% {
-    fill-opacity: 0;
-    stroke-opacity: 0;
+    fill-opacity: var(--aig-facet-frame-360);
+    stroke-opacity: var(--aig-facet-frame-360);
   }
-  8% {
-    fill-opacity: 0.16;
-    stroke-opacity: 0.16;
+  40% {
+    fill-opacity: var(--aig-facet-frame-400);
+    stroke-opacity: var(--aig-facet-frame-400);
   }
-  28% {
-    fill-opacity: var(--aig-facet-depth);
-    stroke-opacity: var(--aig-facet-depth);
-  }
-  60% {
-    fill-opacity: 0;
-    stroke-opacity: 0;
-    animation-timing-function: linear;
-  }
-  76% {
-    fill-opacity: var(--aig-facet-depth);
-    stroke-opacity: var(--aig-facet-depth);
-    animation-timing-function: linear;
-  }
-  100% {
-    fill-opacity: var(--aig-facet-rest, 0);
-    stroke-opacity: var(--aig-facet-rest, 0);
-  }
-}
-@keyframes aig-button-facet-tip {
-  0%,
-  12%,
   44% {
-    fill-opacity: 0;
-    stroke-opacity: 0;
+    fill-opacity: var(--aig-facet-frame-440);
+    stroke-opacity: var(--aig-facet-frame-440);
   }
-  8% {
-    fill-opacity: 0.16;
-    stroke-opacity: 0.16;
+  48% {
+    fill-opacity: var(--aig-facet-frame-480);
+    stroke-opacity: var(--aig-facet-frame-480);
   }
-  24%,
-  28% {
-    fill-opacity: var(--aig-facet-depth);
-    stroke-opacity: var(--aig-facet-depth);
+  52% {
+    fill-opacity: var(--aig-facet-frame-520);
+    stroke-opacity: var(--aig-facet-frame-520);
+  }
+  56% {
+    fill-opacity: var(--aig-facet-frame-560);
+    stroke-opacity: var(--aig-facet-frame-560);
   }
   60% {
-    fill-opacity: 0;
-    stroke-opacity: 0;
+    fill-opacity: var(--aig-facet-frame-600);
+    stroke-opacity: var(--aig-facet-frame-600);
     animation-timing-function: linear;
   }
   76% {

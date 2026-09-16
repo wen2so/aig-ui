@@ -10,11 +10,12 @@ test('规则刻面按实际宽高适配，窄屏保留对称三角和一致斜�
     highlight.evaluate((el) => {
       const svg = el as SVGSVGElement;
       const bounds = svg.getBoundingClientRect();
-      const shapes = [...svg.querySelectorAll('polygon')].map((polygon) =>
-        [...polygon.points].map((point) => ({
-          x: (point.x * bounds.width) / 300,
-          y: (point.y * bounds.height) / 100,
-        })),
+      const shapes = [...svg.querySelectorAll<SVGPolygonElement>('polygon[data-clipped=false]')].map(
+        (polygon) =>
+          [...polygon.points].map((point) => ({
+            x: (point.x * bounds.width) / 300,
+            y: (point.y * bounds.height) / 100,
+          })),
       );
       const angles: number[] = [];
       for (const points of shapes)
@@ -29,8 +30,9 @@ test('规则刻面按实际宽高适配，窄屏保留对称三角和一致斜�
       const base = triangle.filter((point) =>
         triangle.some((other) => other !== point && other.y === point.y),
       );
-      const band = shapes[1]!;
-      const edgeDifference = Math.abs(Math.abs(band[1]!.x - band[0]!.x) - Math.abs(base[1]!.x - base[0]!.x));
+      const pair = shapes.slice(0, 2).flat();
+      const xs = pair.filter((point) => point.y === 0).map((point) => point.x);
+      const edgeDifference = Math.abs(Math.max(...xs) - Math.min(...xs) - Math.abs(base[1]!.x - base[0]!.x));
       const target =
         (Math.atan2(host.clientHeight, Math.min(host.clientHeight / Math.sqrt(3), host.clientWidth / 8)) *
           180) /
@@ -46,6 +48,9 @@ test('规则刻面按实际宽高适配，窄屏保留对称三角和一致斜�
   await button.scrollIntoViewIfNeeded();
   await expect(highlight).not.toHaveAttribute('data-playing');
   await expect.poll(async () => (await geometry()).error).toBeLessThan(0.5);
+  await expect
+    .poll(async () => button.locator('.aig-button-text-mask path').count())
+    .toBe(await highlight.locator('polygon').count());
   await expect.poll(async () => (await geometry()).edgeDifference).toBeLessThan(0.01);
   const desktop = await geometry();
   await page.setViewportSize({ width: 360, height: 900 });
@@ -63,7 +68,11 @@ test('规则刻面按实际宽高适配，窄屏保留对称三角和一致斜�
     });
     el.setAttribute('data-sample-time', '440');
   });
-  await expect(button.locator('polygon[data-motion=tip]')).toHaveCSS('fill-opacity', '0');
+  const lit = await highlight
+    .locator('polygon')
+    .evaluateAll((elements) => elements.map((el) => Number(getComputedStyle(el).fillOpacity)));
+  expect(lit.some((value) => value === 0)).toBe(true);
+  expect(lit.some((value) => value > 0)).toBe(true);
   await button.screenshot({ path: test.info().outputPath('regular-facets-440ms.png'), scale: 'css' });
 });
 
@@ -90,7 +99,7 @@ test('按钮视图切换和图标收藏支持键盘，并保留可见激活反�
   await expect(selection).toContainText('当前显示数据视图');
 });
 
-test('入场收回，每轮 hover 更换规则分区与闪切顺序，轮内按帧硬切后稳定', async ({ page }) => {
+test('规则网格逐帧随机拼块，每轮 hover 更新组合并收束为稳定底色', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Button');
   await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
@@ -103,54 +112,76 @@ test('入场收回，每轮 hover 更换规则分区与闪切顺序，轮内按�
   await expect(highlight).not.toHaveAttribute('data-playing');
   await expect.poll(hidden).toBe(true);
   const initial = await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')));
-  expect(initial).toHaveLength(5);
+  expect(initial.length).toBeGreaterThanOrEqual(8);
   await primary.hover();
   await expect(highlight).toHaveAttribute('data-playing', 'interaction');
   const firstGeometry = await facets.evaluateAll((elements) =>
     elements.map((el) => el.getAttribute('points')),
   );
-  const firstSequence = await highlight.getAttribute('data-sequence');
+  const firstSequence = await facets.evaluateAll((elements) =>
+    elements.map((el) => el.getAttribute('style')),
+  );
   expect(firstGeometry).not.toEqual(initial);
-  // 40ms 帧格上的实测值：整块先显现，斜带和三角再分别留空，后段连续填回。
+  // 实测每个边界的前后值，验证 CSS 读取本轮随机采样表且没有插值拖影。
   const sample = await highlight.evaluate((el) => {
     return [...el.querySelectorAll('polygon')].map((polygon) => {
       const animation = polygon.getAnimations()[0]!;
       animation.pause();
-      const values = [79, 80, 119, 120, 239, 240, 279, 280, 359, 360, 439, 440, 680, 760, 999].map((ms) => {
+      const values = [
+        79, 80, 119, 120, 239, 240, 279, 280, 359, 360, 399, 400, 439, 440, 600, 680, 760, 999,
+      ].map((ms) => {
         animation.currentTime = ms;
         return Number(getComputedStyle(polygon).fillOpacity);
       });
       animation.play();
       return {
-        role: (animation as CSSAnimation).animationName.replace('aig-button-facet-', ''),
-        depth: Number(getComputedStyle(polygon).getPropertyValue('--aig-facet-depth')),
+        frames: [80, 240, 280, 360, 400, 440, 600].map((time) =>
+          Number(polygon.style.getPropertyValue(`--aig-facet-frame-${time}`)),
+        ),
         values,
       };
     });
   });
-  const body = sample.find((facet) => facet.role === 'body')!;
-  const cut = sample.find((facet) => facet.role === 'cut')!;
-  const tip = sample.find((facet) => facet.role === 'tip')!;
-  expect(body.values.slice(0, 8)).toEqual([0, 0.16, 0.16, 0, 0, 0, 0, body.depth]);
-  expect(cut.values[8]).toBe(cut.depth);
-  expect(cut.values[9]).toBe(0);
-  expect(tip.values[4]).toBe(0);
-  expect(tip.values[5]).toBe(tip.depth);
-  expect(tip.values[10]).toBe(tip.depth);
-  expect(tip.values[11]).toBe(0);
-  expect(tip.values[12]).toBeCloseTo(tip.depth / 2, 3);
+  for (const { values, frames } of sample) {
+    const [preflash, first, full, a, b, c, last] = frames;
+    expect(values.slice(0, 15)).toEqual([
+      0,
+      preflash,
+      preflash,
+      0,
+      0,
+      first,
+      first,
+      full,
+      full,
+      a,
+      a,
+      b,
+      b,
+      c,
+      last,
+    ]);
+    expect(values[15]).toBeCloseTo((last! + 1) / 2, 3);
+    expect(values[16]).toBe(1);
+  }
+  const sampledCombinations = [5, 7, 9, 11, 13].map((index) =>
+    sample.map(({ values }) => values[index]).join(','),
+  );
+  expect(new Set(sampledCombinations).size).toBe(5);
   await expect(highlight).not.toHaveAttribute('data-playing');
   await expect
     .poll(() =>
       facets.evaluateAll((elements) => elements.map((el) => Number(getComputedStyle(el).fillOpacity))),
     )
-    .toEqual(sample.map((facet) => facet.depth));
+    .toEqual(sample.map(() => 1));
   await primary.screenshot({ path: test.info().outputPath('button-facets.png') });
   await page.mouse.move(4, 4);
   await expect.poll(hidden).toBe(true);
   await primary.hover();
   await expect(highlight).toHaveAttribute('data-playing', 'interaction');
-  await expect(highlight).not.toHaveAttribute('data-sequence', firstSequence!);
+  expect(await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('style')))).not.toEqual(
+    firstSequence,
+  );
   expect(await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')))).not.toEqual(
     firstGeometry,
   );
@@ -233,28 +264,28 @@ test('浅字区域与实际闪切刻面同步，未覆盖区域保留深字', as
   });
   await expect.poll(async () => (await alphas()).every((value) => value === 0)).toBe(true);
   await expect(button.locator('.aig-button-content')).toHaveCSS('color', idle);
-  const flashRole = (await highlight.getAttribute('data-sequence')) === 'reverse' ? 'cut' : 'tip';
-  const flash = highlight.locator(`polygon[data-motion=${flashRole}]`).first();
   const sample = async (progress: number) => {
-    await flash.evaluate((el, progress) => {
-      const animation = el.getAnimations()[0]!;
-      const timing = animation.effect!.getTiming();
-      animation.currentTime = Number(timing.delay) + Number(timing.duration) * progress;
-      el.closest('svg')!.setAttribute('data-sample-time', String(progress));
+    await highlight.evaluate((el, progress) => {
+      el.getAnimations({ subtree: true }).forEach((animation) => {
+        if (!(animation instanceof CSSAnimation)) return;
+        const timing = animation.effect!.getTiming();
+        animation.currentTime = Number(timing.delay) + Number(timing.duration) * progress;
+      });
+      el.setAttribute('data-sample-time', String(progress));
     }, progress);
   };
   await sample(0.09);
   await expect.poll(async () => (await alphas()).some((value) => value > 0 && value < 1)).toBe(true);
-  const expectedAlpha = await flash.evaluate(
-    (el) =>
-      Number(getComputedStyle(el).fillOpacity) /
-      Number(getComputedStyle(el).getPropertyValue('--aig-facet-depth')),
-  );
-  expect(Math.max(...(await alphas()))).toBeCloseTo(expectedAlpha, 3);
+  const expectedAlphas = () =>
+    highlight
+      .locator('polygon')
+      .evaluateAll((elements) => elements.map((el) => Number(getComputedStyle(el).fillOpacity)));
+  await expect.poll(alphas).toEqual(await expectedAlphas());
   await sample(0.24);
   await expect.poll(async () => (await alphas()).some((value) => value > 0)).toBe(true);
-  expect((await alphas()).filter((value) => value > 0)).toHaveLength(1);
-  await sample(0.45);
+  await expect.poll(alphas).toEqual(await expectedAlphas());
+  expect((await alphas()).some((value) => value === 0)).toBe(true);
+  await sample(0.12);
   await expect.poll(async () => (await alphas()).every((value) => value === 0)).toBe(true);
   await sample(0.96);
   await expect.poll(async () => (await alphas()).some((value) => value > 0)).toBe(true);

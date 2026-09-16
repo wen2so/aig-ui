@@ -73,6 +73,7 @@ export function useButtonContrast(
       mask.setAttribute('width', String(layer.width));
       mask.setAttribute('height', String(layer.height));
       const facets = [...highlight.querySelectorAll('polygon')];
+      while (mask.childElementCount > facets.length) mask.lastElementChild!.remove();
       while (mask.childElementCount < facets.length) {
         const path = document.createElementNS(svgNamespace, 'path');
         path.setAttribute('fill', 'white');
