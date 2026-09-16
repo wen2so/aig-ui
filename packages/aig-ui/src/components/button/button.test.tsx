@@ -34,6 +34,8 @@ it.each([
     expect(apex[0]).toBeCloseTo((base[0]![0]! + base[1]![0]!) / 2, 2);
     const band = shapes[1]!;
     expect(band[1]![0]! - band[0]![0]!).toBeCloseTo(band[2]![0]! - band[3]![0]!, 2);
+    const triangleBase = Math.abs(base[1]![0]! - base[0]![0]!);
+    expect(band[1]![0]! - band[0]![0]!).toBeCloseTo(triangleBase, 2);
     const physicalRun = (runs[0]! * width!) / 300;
     expect(physicalRun).toBeCloseTo(Math.min(height! / Math.sqrt(3), width! / 8), 2);
   }

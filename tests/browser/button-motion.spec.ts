@@ -25,6 +25,12 @@ test('规则刻面按实际宽高适配，窄屏保留对称三角和一致斜�
           if (dx > 0.01 && dy > 0.01) angles.push((Math.atan2(dy, dx) * 180) / Math.PI);
         });
       const host = svg.closest('button')!;
+      const triangle = shapes.find((points) => points.length === 3)!;
+      const base = triangle.filter((point) =>
+        triangle.some((other) => other !== point && other.y === point.y),
+      );
+      const band = shapes[1]!;
+      const edgeDifference = Math.abs(band[1]!.x - band[0]!.x - Math.abs(base[1]!.x - base[0]!.x));
       const target =
         (Math.atan2(host.clientHeight, Math.min(host.clientHeight / Math.sqrt(3), host.clientWidth / 8)) *
           180) /
@@ -34,16 +40,19 @@ test('规则刻面按实际宽高适配，窄屏保留对称三角和一致斜�
         angle: angles[0]!,
         error: Math.abs(angles[0]! - target),
         width: bounds.width,
+        edgeDifference,
       };
     });
   await button.scrollIntoViewIfNeeded();
   await expect(highlight).not.toHaveAttribute('data-playing');
   await expect.poll(async () => (await geometry()).error).toBeLessThan(0.5);
+  await expect.poll(async () => (await geometry()).edgeDifference).toBeLessThan(0.01);
   const desktop = await geometry();
   await page.setViewportSize({ width: 360, height: 900 });
   await button.scrollIntoViewIfNeeded();
   await expect.poll(async () => Math.abs((await geometry()).width - desktop.width)).toBeGreaterThan(5);
   await expect.poll(async () => (await geometry()).spread).toBeLessThan(0.01);
+  await expect.poll(async () => (await geometry()).edgeDifference).toBeLessThan(0.01);
   await expect.poll(async () => (await geometry()).error).toBeLessThan(0.5);
   await page.setViewportSize({ width: 1280, height: 720 });
   await button.hover();

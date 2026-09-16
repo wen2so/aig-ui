@@ -42,12 +42,13 @@ export function queueButtonEntrance(element: SVGSVGElement, play: () => void) {
 
 /**
  * 两端直角梯形、平行四边形、中部等腰梯形和等腰三角形共享同一斜率。
+ * 平行四边形的上、下边与三角形底边等长，均为水平偏移的两倍。
  * 通常使用 60°；紧凑按钮统一加陡，给主体留出足够宽度。
  * 按实际宽高换算到 300×100 坐标，避免固定 viewBox 任意拉伸斜角。
  */
 export function createButtonFacets(width: number, height: number, flip = false) {
   const run = (Math.min(height / Math.sqrt(3), width / 8) * 300) / width;
-  const body = (300 - 4 * run) / 3;
+  const body = (300 - 5 * run) / 3;
   const boundaries = [
     [
       [0, 0],
@@ -58,16 +59,16 @@ export function createButtonFacets(width: number, height: number, flip = false) 
       [body + run, 100],
     ],
     [
-      [body + run, 0],
-      [body + 2 * run, 100],
+      [body + 2 * run, 0],
+      [body + 3 * run, 100],
     ],
     [
-      [2 * body + 3 * run, 0],
-      [2 * body + 2 * run, 100],
+      [2 * body + 4 * run, 0],
+      [2 * body + 3 * run, 100],
     ],
     [
-      [2 * body + 3 * run, 0],
-      [2 * body + 4 * run, 100],
+      [2 * body + 4 * run, 0],
+      [2 * body + 5 * run, 100],
     ],
     [
       [300, 0],
