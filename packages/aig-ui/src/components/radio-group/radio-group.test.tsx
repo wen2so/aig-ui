@@ -18,7 +18,7 @@ it('单选组选项保持互斥', () => {
 });
 
 it.each([false, true])('表单重置后重渲染保留默认值，外部关联 %s', (external) => {
-  const group = (
+  const group = () => (
     <RadioGroup
       label="范围"
       name="scope"
@@ -34,10 +34,10 @@ it.each([false, true])('表单重置后重渲染保留默认值，外部关联 %
     external ? (
       <>
         <form id="owner" data-testid="form" />
-        {group}
+        {group()}
       </>
     ) : (
-      <form data-testid="form">{group}</form>
+      <form data-testid="form">{group()}</form>
     );
   const view = render(ui());
   fireEvent.click(screen.getByLabelText('乙'));
