@@ -2,7 +2,7 @@
 import { Check } from 'lucide-react';
 import { Icon } from '../icon/icon.js';
 import { Combobox as BaseCombobox } from '@base-ui/react/combobox';
-import type { ComponentPropsWithRef } from 'react';
+import { useMemo, type ComponentPropsWithRef } from 'react';
 import type { SelectOption } from '../select/select.js';
 import { useAigPortalContainer } from '../../theme/aig-provider.js';
 export interface ComboboxProps extends Omit<
@@ -30,16 +30,23 @@ export function Combobox({
   ...props
 }: ComboboxProps) {
   const container = useAigPortalContainer();
-  const labelOf = (value: string) =>
-    options.find((option) => option.value === value)?.label ?? `${value}（已不可用）`;
+  const { byValue, searchLabels, items } = useMemo(
+    () => ({
+      byValue: new Map(options.map((option) => [option.value, option])),
+      searchLabels: new Map(options.map((option) => [option.value, option.label.toLocaleLowerCase()])),
+      items: options.map((option) => option.value),
+    }),
+    [options],
+  );
+  const labelOf = (value: string) => byValue.get(value)?.label ?? `${value}（已不可用）`;
   return (
     <BaseCombobox.Root<string>
-      items={options.map((option) => option.value)}
+      items={items}
       value={value}
       defaultValue={defaultValue}
       onValueChange={onValueChange}
       itemToStringLabel={labelOf}
-      filter={(item, query) => labelOf(item).toLocaleLowerCase().includes(query.toLocaleLowerCase())}
+      filter={(item, query) => (searchLabels.get(item) ?? '').includes(query.toLocaleLowerCase())}
       name={name}
       form={form}
       disabled={disabled}
@@ -55,7 +62,7 @@ export function Combobox({
                 <BaseCombobox.Item
                   key={item}
                   value={item}
-                  disabled={options.find((option) => option.value === item)?.disabled}
+                  disabled={byValue.get(item)?.disabled}
                   className="aig-combobox-item"
                 >
                   {labelOf(item)}
