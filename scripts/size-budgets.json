@@ -1,0 +1,33 @@
+{
+  "growthAllowance": 0.1,
+  "entries": {
+    "button": {
+      "javascriptBytes": 19195,
+      "gzipBytes": 6234
+    },
+    "motion": {
+      "javascriptBytes": 98638,
+      "gzipBytes": 26876
+    },
+    "ai": {
+      "javascriptBytes": 256372,
+      "gzipBytes": 63040
+    },
+    "styles.css": {
+      "bytes": 84162,
+      "gzipBytes": 17491
+    },
+    "motion/styles.css": {
+      "bytes": 3672,
+      "gzipBytes": 1103
+    },
+    "ai/styles.css": {
+      "bytes": 13768,
+      "gzipBytes": 2949
+    },
+    "preview": {
+      "javascriptBytes": 408228,
+      "gzipBytes": 135041
+    }
+  }
+}

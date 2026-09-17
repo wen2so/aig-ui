@@ -2,6 +2,8 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests/browser',
+  outputDir: './test-results/consumer',
+  testMatch: ['consumer.spec.ts', 'button.spec.ts'],
   use: { viewport: { width: 1280, height: 720 } },
   webServer: [
     {

@@ -22,8 +22,9 @@ jobs:
       - run: pnpm --dir examples/vite-consumer install --ignore-workspace --no-frozen-lockfile
       - run: pnpm --dir examples/next-consumer install --ignore-workspace --no-frozen-lockfile
       - run: pnpm --dir examples/vite-consumer build && pnpm --dir examples/next-consumer build
-      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm exec playwright install --with-deps chromium firefox webkit
       - run: pnpm test:browser
+      - run: pnpm test:cross-browser
       - run: pnpm check:size
       - uses: actions/upload-artifact@v4
         if: always()

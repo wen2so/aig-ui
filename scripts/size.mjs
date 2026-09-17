@@ -43,6 +43,36 @@ for (const path of ['styles.css', 'motion/styles.css', 'ai/styles.css']) {
   const css = readFileSync(entryPath(`aig-ui/${path}`));
   results[path] = { bytes: css.byteLength, gzipBytes: gzipSync(css).byteLength };
 }
+// 预览入口按 manifest 收集静态依赖，排除仅在打开详情后请求的动态块。
+const previewRoot = resolve('apps/preview/dist');
+const manifest = JSON.parse(readFileSync(resolve(previewRoot, '.vite/manifest.json'), 'utf8'));
+const visited = new Set();
+function collect(key) {
+  if (visited.has(key)) return;
+  visited.add(key);
+  for (const dependency of manifest[key].imports ?? []) collect(dependency);
+}
+collect('index.html');
+const initialChunks = [...visited].map((key) => readFileSync(resolve(previewRoot, manifest[key].file)));
+results.preview = {
+  javascriptBytes: initialChunks.reduce((total, code) => total + code.byteLength, 0),
+  gzipBytes: initialChunks.reduce((total, code) => total + gzipSync(code).byteLength, 0),
+};
+const budgetPath = resolve('scripts/size-budgets.json');
+if (process.argv.includes('--update-baseline')) {
+  if (process.env.CI) throw Error('CI 不允许自动更新体积基线');
+  writeFileSync(budgetPath, JSON.stringify({ growthAllowance: 0.1, entries: results }, null, 2) + '\n');
+}
+const budget = JSON.parse(readFileSync(budgetPath, 'utf8'));
+const violations = [];
+for (const [name, metrics] of Object.entries(results)) {
+  for (const [metric, actual] of Object.entries(metrics)) {
+    const baseline = budget.entries[name]?.[metric];
+    if (!Number.isFinite(baseline) || baseline <= 0) throw Error(`缺少有效体积基线: ${name}.${metric}`);
+    const maximum = Math.ceil(baseline * (1 + budget.growthAllowance));
+    if (actual > maximum) violations.push(`${name}.${metric}: ${actual} > ${maximum} bytes`);
+  }
+}
 writeFileSync(
   'artifacts/size-report.json',
   JSON.stringify(
@@ -50,9 +80,12 @@ writeFileSync(
       environment: { node: process.version, platform: process.platform, architecture: process.arch },
       reactExternal: true,
       entries: results,
+      growthAllowance: budget.growthAllowance,
+      violations,
     },
     null,
     2,
   ) + '\n',
 );
 console.log(JSON.stringify(results, null, 2));
+if (violations.length) throw Error(`体积超过增长预算:\n${violations.join('\n')}`);
