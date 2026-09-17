@@ -1,3 +1,4 @@
+import { format, resolveConfig } from 'prettier';
 import { createRequire } from 'node:module';
 import { writeFileSync } from 'node:fs';
 import { createElement } from 'react';
@@ -12,5 +13,8 @@ const masks = Object.entries({ check: Check, minus: Minus }).map(([name, icon]) 
 });
 writeFileSync(
   new URL('../packages/aig-ui/src/internal/icon-masks.css', import.meta.url),
-  `/* 由 scripts/icons.mjs 从 Lucide 生成。 */\n:root {\n${masks.join('\n')}\n}\n`,
+  await format(`/* 由 scripts/icons.mjs 从 Lucide 生成。 */\n:root {\n${masks.join('\n')}\n}\n`, {
+    ...(await resolveConfig(new URL('../packages/aig-ui/src/internal/icon-masks.css', import.meta.url))),
+    parser: 'css',
+  }),
 );
