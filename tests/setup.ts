@@ -4,6 +4,10 @@ import { afterEach } from 'vitest';
 
 afterEach(cleanup);
 
+/** jsdom 不执行浏览器动画；真实动画行为由 Playwright 验证。 */
+if (typeof SVGElement !== 'undefined' && !SVGElement.prototype.getAnimations)
+  SVGElement.prototype.getAnimations = () => [];
+
 /** jsdom 补齐本项目使用的 SVG 点列表读取，按实际 points 属性解析。 */
 if (typeof SVGElement !== 'undefined' && !('points' in SVGElement.prototype)) {
   Object.defineProperty(SVGElement.prototype, 'points', {

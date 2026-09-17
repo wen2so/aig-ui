@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef, type ComponentPropsWithRef } from 'react';
+import { useState, useRef, useEffect, type ComponentPropsWithRef } from 'react';
 import { SafeMarkdown } from '../safe-markdown.js';
 import { Textarea } from '../../components/textarea/textarea.js';
 import { Button } from '../../components/button/button.js';
@@ -22,7 +22,10 @@ export interface ArtifactPreviewProps extends Omit<ComponentPropsWithRef<'sectio
   onApply?: (change: ArtifactChange) => void;
 }
 /** 查看历史版本，编辑和应用入口只针对当前最新版本。 */
-export function ArtifactPreview({
+export function ArtifactPreview(props: ArtifactPreviewProps) {
+  return <ArtifactPreviewInstance key={props.artifactId} {...props} />;
+}
+function ArtifactPreviewInstance({
   artifactId,
   title,
   versions,
@@ -100,19 +103,30 @@ function ArtifactBody({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
   const lock = useRef(false);
+  const request = useRef(0);
+  useEffect(
+    () => () => {
+      request.current += 1;
+    },
+    [],
+  );
   async function save() {
     if (lock.current || !latest) return;
+    const identity = ++request.current;
     lock.current = true;
     setPending(true);
     setError('');
     try {
       await onSave?.({ artifactId, revision: version.revision, content: draft });
-      onEditingChange(false);
+      if (identity === request.current) onEditingChange(false);
     } catch (reason) {
+      if (identity !== request.current) return;
       setError(reason instanceof Error ? reason.message : '保存未完成，草稿已保留。');
     } finally {
-      lock.current = false;
-      setPending(false);
+      if (identity === request.current) {
+        lock.current = false;
+        setPending(false);
+      }
     }
   }
   return (
