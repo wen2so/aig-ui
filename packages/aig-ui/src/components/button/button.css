@@ -216,19 +216,21 @@
 .aig-button[data-perimeter-visible] .aig-button-perimeter {
   display: block;
 }
-.aig-button-line > rect {
+.aig-button-line > rect,
+.aig-button-ring {
   /* 向内留出线芯宽度，避免 hover 外扩后白色线芯落在文字遮罩之外。 */
   x: 2px;
   y: 2px;
   width: calc(100% - 4px);
   height: calc(100% - 4px);
 }
-.aig-button-line {
+.aig-button-line,
+.aig-button-ring {
   /* 线芯使用中性对比色，避免继承按钮品牌色后融入刻面底色。 */
   --aig-line-glow-color: var(--aig-color-text);
   --aig-line-glow-strength: var(--aig-perimeter-energy, 0);
-  /* 冷色光晕独立于深灰线芯，在浅色画布上也能看清向外扩散的光。 */
-  --aig-line-heat-color: color-mix(in srgb, #55baff, #ff9c45 calc(var(--aig-perimeter-heat, 0) * 100%));
+  /* 光晕与按钮共用品牌色或语义色。 */
+  --aig-line-heat-color: var(--aig-button-facet);
   --aig-line-glow: color-mix(
     in srgb,
     var(--aig-line-heat-color) calc(var(--aig-line-glow-strength) * 95%),
@@ -238,7 +240,7 @@
   stroke-width: 1px;
   stroke-dasharray: var(--aig-perimeter-length, 3) calc(100 - var(--aig-perimeter-length, 3));
   stroke-dashoffset: var(--aig-line-phase, 0px);
-  opacity: calc(0.18 + var(--aig-perimeter-energy, 0) * 0.82);
+  opacity: calc((0.12 + var(--aig-perimeter-energy, 0) * 0.58) * (1 - var(--aig-perimeter-fusion, 0)));
   /* 三层光晕分别形成贴线亮光、近处扩散和外围柔光，线芯保持锐利。 */
   filter: drop-shadow(0 0 calc(var(--aig-line-glow-strength) * 2px) var(--aig-line-glow))
     drop-shadow(0 0 calc(var(--aig-line-glow-strength) * 7px) var(--aig-line-glow))
@@ -258,8 +260,15 @@
 /* hover 立即显示清晰亮头，速度继续增强光晕与剩余亮度。 */
 .aig-button:is(:hover, :focus-visible):enabled .aig-button-line {
   --aig-line-glow-strength: calc(0.55 + var(--aig-perimeter-energy, 0) * 0.45);
-  stroke-width: 2px;
-  opacity: calc(0.9 + var(--aig-perimeter-energy, 0) * 0.1);
+  stroke-width: 1px;
+  opacity: calc((0.5 + var(--aig-perimeter-energy, 0) * 0.2) * (1 - var(--aig-perimeter-fusion, 0)));
+}
+/* 完整光边没有亮头、尾端和位移动画，高速时呈现稳定的整体。 */
+.aig-button .aig-button-ring {
+  stroke-width: 0.9px;
+  stroke-dasharray: none;
+  opacity: calc(var(--aig-perimeter-fusion, 0) * 0.7);
+  animation: none;
 }
 .aig-button-line:nth-child(2) {
   --aig-line-phase: -33.3333333333px;
@@ -281,9 +290,9 @@
   opacity: 0;
   background: linear-gradient(
     115deg,
-    color-mix(in srgb, var(--aig-button-paint) 60%, #302238),
-    #a33656 48%,
-    #a94e20
+    color-mix(in srgb, var(--aig-button-facet) 88%, black),
+    var(--aig-button-facet) 48%,
+    color-mix(in srgb, var(--aig-button-facet) 78%, white)
   );
 }
 .aig-button:enabled:has(.aig-button-highlight[data-hovered]) .aig-button-heat,
@@ -294,6 +303,14 @@
   .aig-button-heat {
     display: none;
   }
+}
+/* 无填充层级只留下极淡珍珠白反馈，文字保持原色，燃烧集中在边缘。 */
+.aig-button:is([data-variant='outline'], [data-variant='ghost']) {
+  --aig-button-paint: color-mix(in srgb, #f5f3ee 12%, transparent);
+}
+.aig-button:is([data-variant='outline'], [data-variant='ghost']) .aig-button-contrast,
+.aig-button:is([data-variant='outline'], [data-variant='ghost']) .aig-button-heat {
+  display: none;
 }
 /* 同一轮保持网格稳定，采样点更换组合，最终收束成完整底色。 */
 .aig-button-highlight {
@@ -640,6 +657,7 @@
   }
   .aig-button-frame::before,
   .aig-button-line,
+  .aig-button-ring,
   .aig-button-highlight {
     display: none;
   }
@@ -685,6 +703,7 @@
 .aig-button-contrast-frame::before {
   display: none;
 }
-.aig-button-contrast-frame .aig-button-line {
+.aig-button-contrast-frame .aig-button-line,
+.aig-button-contrast-frame .aig-button-ring {
   --aig-line-glow-color: white;
 }

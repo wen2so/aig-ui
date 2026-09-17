@@ -195,7 +195,7 @@ export function Button({
                     pathLength={100}
                     style={{
                       strokeDasharray: `0 calc(100 - var(--aig-perimeter-length, 3) * ${fraction}) calc(var(--aig-perimeter-length, 3) * ${fraction}) 0`,
-                      strokeWidth: `${0.45 + (1 - fraction) * 1.55}px`,
+                      strokeWidth: `${0.25 + (1 - fraction) * 0.65}px`,
                     }}
                   />
                 );
@@ -203,6 +203,7 @@ export function Button({
               <rect className="aig-button-head" pathLength={100} />
             </g>
           ))}
+          <rect className="aig-button-ring" pathLength={100} />
         </svg>
       </span>
       {loading && (

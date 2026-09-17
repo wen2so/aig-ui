@@ -9,6 +9,7 @@ export function useButtonPerimeter(frameRef: RefObject<HTMLSpanElement | null>, 
     if (!frame || !button) return;
     let raf = 0;
     let rate = 1;
+    let stoppedTime = 0;
     let trailLength = 3;
     let lastSample = performance.now();
     const media = window.matchMedia?.('(prefers-reduced-motion: reduce)');
@@ -16,6 +17,12 @@ export function useButtonPerimeter(frameRef: RefObject<HTMLSpanElement | null>, 
       (button.getAnimations?.({ subtree: true }) ?? []).filter(
         (animation) => 'animationName' in animation && animation.animationName === 'aig-button-perimeter',
       );
+    // 隐藏子树会销毁 CSS 动画，先保存共享时间，下次显示时同步恢复原线与浅色副本。
+    const hide = () => {
+      const current = animations()[0]?.currentTime;
+      if (typeof current === 'number') stoppedTime = current % 48000;
+      button.removeAttribute('data-perimeter-visible');
+    };
     const setRate = (value: number) => {
       rate = value;
       // 亮度与光晕随实际速率连续增强，视觉强度渐近饱和，速度仍可持续增长。
@@ -32,6 +39,9 @@ export function useButtonPerimeter(frameRef: RefObject<HTMLSpanElement | null>, 
       trailLength += (targetLength - trailLength) * (1 - Math.exp(-elapsed / 180));
       if (value === 1) trailLength = 3;
       button.style.setProperty('--aig-perimeter-length', String(trailLength));
+      // 最后一段尾长增长时淡入完整轮廓，闭合后消除亮头与尾端的明暗循环。
+      const fusion = Math.min(1, Math.max(0, (trailLength - 27) / (100 / 3 - 27)));
+      button.style.setProperty('--aig-perimeter-fusion', String(fusion > 0.999 ? 1 : fusion));
       animations().forEach((animation) => {
         animation.playbackRate = value;
       });
@@ -39,14 +49,21 @@ export function useButtonPerimeter(frameRef: RefObject<HTMLSpanElement | null>, 
     changeRate.current = (active) => {
       cancelAnimationFrame(raf);
       const accelerating = active && !button.disabled;
-      if (accelerating) button.setAttribute('data-perimeter-visible', '');
+      if (accelerating && !button.hasAttribute('data-perimeter-visible')) {
+        button.setAttribute('data-perimeter-visible', '');
+        animations().forEach((animation) => {
+          animation.currentTime = stoppedTime;
+          animation.playbackRate = rate;
+        });
+        lastSample = performance.now();
+      }
       if (media?.matches) {
-        if (!accelerating) button.removeAttribute('data-perimeter-visible');
+        if (!accelerating) hide();
         return;
       }
       const from = rate;
       if (!accelerating && from === 1) {
-        button.removeAttribute('data-perimeter-visible');
+        hide();
         return;
       }
       const started = performance.now();
@@ -63,7 +80,7 @@ export function useButtonPerimeter(frameRef: RefObject<HTMLSpanElement | null>, 
           const eased = progress * progress * (3 - 2 * progress);
           setRate(from + (1 - from) * eased);
           if (progress < 1) raf = requestAnimationFrame(step);
-          else button.removeAttribute('data-perimeter-visible');
+          else hide();
         }
       };
       raf = requestAnimationFrame(step);
@@ -79,6 +96,7 @@ export function useButtonPerimeter(frameRef: RefObject<HTMLSpanElement | null>, 
       button.style.removeProperty('--aig-perimeter-energy');
       button.style.removeProperty('--aig-perimeter-heat');
       button.style.removeProperty('--aig-perimeter-length');
+      button.style.removeProperty('--aig-perimeter-fusion');
       media?.removeEventListener('change', reset);
       changeRate.current = () => undefined;
     };

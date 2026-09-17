@@ -622,7 +622,7 @@ test('三个等距亮头带渐隐尾迹加速绕行，高速连成光边并在�
         return { opacity: Number(style.opacity), filter: style.filter };
       });
   const idleLight = await light();
-  expect(idleLight.opacity).toBeCloseTo(0.18);
+  expect(idleLight.opacity).toBeCloseTo(0.12);
   expect(await rate()).toBe(1);
   await button.hover();
   await page.clock.runFor(300);
@@ -637,7 +637,7 @@ test('三个等距亮头带渐隐尾迹加速绕行，高速连成光边并在�
   expect(laterRate).toBeGreaterThan(3);
   await page.clock.runFor(3000);
   const fastestRate = await rate();
-  await expect(button.locator('.aig-button-frame .aig-button-line').first()).toHaveCSS('stroke-width', '2px');
+  await expect(button.locator('.aig-button-frame .aig-button-line').first()).toHaveCSS('stroke-width', '1px');
   const coreBounds = await button
     .locator('.aig-button-contrast-frame .aig-button-line')
     .first()
@@ -692,6 +692,11 @@ test('三个等距亮头带渐隐尾迹加速绕行，高速连成光边并在�
   await page.clock.runFor(6000);
   (await lengths()).forEach((length) => expect(length).toBeCloseTo(100 / 3, 3));
   await expect(button.locator('.aig-button-heat')).toHaveCSS('opacity', '1');
+  await expect(trail).toHaveCSS('opacity', '0');
+  const ring = button.locator('.aig-button-frame .aig-button-ring');
+  await expect(ring).toHaveCSS('stroke-dasharray', 'none');
+  await expect(ring).toHaveCSS('animation-name', 'none');
+  await expect(ring).toHaveCSS('opacity', '0.7');
   const phases = await button
     .locator('.aig-button-frame .aig-button-line')
     .evaluateAll((lines) => lines.map((line) => parseFloat(getComputedStyle(line).strokeDashoffset)));
@@ -729,4 +734,69 @@ test('三个等距亮头带渐隐尾迹加速绕行，高速连成光边并在�
       .locator('.aig-button-line')
       .evaluateAll((lines) => lines.flatMap((line) => line.getAnimations()).length),
   ).toBe(0);
+});
+
+test('边线完全收回后再次进入沿用停止位置，浅色副本同步恢复', async ({ page }) => {
+  await page.goto('http://127.0.0.1:5173/?component=Button');
+  const button = page.locator('#example-variants .preview-actions > .aig-button').first();
+  await button.scrollIntoViewIfNeeded();
+  await page.mouse.move(0, 0);
+  await page.clock.install();
+  await button.hover();
+  await page.clock.runFor(1000);
+  await page.mouse.move(0, 0);
+  await page.clock.runFor(2000);
+  // 固定收回末帧的位置，确认隐藏后不会回到 CSS 动画起点。
+  await button.locator('.aig-button-line').evaluateAll((lines) =>
+    lines.forEach((line) => {
+      const animation = line.getAnimations()[0]!;
+      animation.pause();
+      animation.currentTime = 12345;
+    }),
+  );
+  await page.clock.runFor(1100);
+  await expect(button).not.toHaveAttribute('data-perimeter-visible');
+  await button.hover();
+  const times = await button
+    .locator('.aig-button-line')
+    .evaluateAll((lines) => lines.map((line) => Number(line.getAnimations()[0]!.currentTime)));
+  expect(times).toHaveLength(6);
+  times.forEach((time) => expect(Math.abs(time - 12345)).toBeLessThan(500));
+  expect(Math.max(...times) - Math.min(...times)).toBeLessThan(1);
+});
+
+test('无填充按钮保留珍珠白反馈和原色文字，燃烧跟随语义色', async ({ page }) => {
+  await page.goto('http://127.0.0.1:5173/?component=Button');
+  for (const variant of ['outline', 'ghost']) {
+    const button = page
+      .locator(`#example-variants .preview-actions > .aig-button[data-variant=${variant}]`)
+      .first();
+    await button.hover();
+    await expect(button.locator('.aig-button-contrast')).toBeHidden();
+    await expect(button.locator('.aig-button-heat')).toBeHidden();
+    expect(
+      await button.evaluate((el) => getComputedStyle(el).getPropertyValue('--aig-button-paint')),
+    ).toContain('12%');
+  }
+  const button = page.locator('#example-variants .preview-actions > .aig-button').first();
+  const colors = [];
+  for (const tone of ['success', 'danger', 'info']) {
+    await button.evaluate((el, tone) => el.setAttribute('data-tone', tone), tone);
+    colors.push(
+      await button.locator('.aig-button-heat').evaluate((el) => getComputedStyle(el).backgroundImage),
+    );
+    expect(
+      await button
+        .locator('.aig-button-line')
+        .first()
+        .evaluate((el) => {
+          const style = getComputedStyle(el);
+          return (
+            style.getPropertyValue('--aig-line-heat-color').trim() ===
+            style.getPropertyValue('--aig-button-facet').trim()
+          );
+        }),
+    ).toBe(true);
+  }
+  expect(new Set(colors).size).toBe(3);
 });
