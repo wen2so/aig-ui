@@ -129,7 +129,12 @@ export function createApiReader(root = process.cwd()) {
   const slash = (path) => path.replaceAll('\\', '/');
   const config = ts.readConfigFile(resolve(root, 'tsconfig.json'), ts.sys.readFile).config;
   const parsed = ts.parseJsonConfigFileContent(config, ts.sys, root);
-  const program = ts.createProgram(parsed.fileNames, parsed.options);
+  const program = ts.createProgram(
+    parsed.fileNames.filter(
+      (file) => slash(file).startsWith(slash(source) + '/') && !/\.(stories|test)\./.test(file),
+    ),
+    parsed.options,
+  );
   const checker = program.getTypeChecker();
   const nativeProps = new Set([
     'children',

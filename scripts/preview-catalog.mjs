@@ -1,3 +1,4 @@
+import ts from 'typescript';
 import { readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 
 /** 主题层与组件、AI 组件共用同一份预览目录；主题作用域按文件组织，组件按目录组织。 */
@@ -21,11 +22,42 @@ const files = groups.flatMap(({ dir, label }) => {
         : [];
     });
 });
+/** 仅提取字符串元数据，目录不执行或静态导入 Story。 */
+function metadata(file) {
+  const source = ts.createSourceFile(
+    file,
+    readFileSync(file, 'utf8'),
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TSX,
+  );
+  const objects = [];
+  function visit(node) {
+    if (ts.isObjectLiteralExpression(node)) {
+      const values = Object.fromEntries(
+        node.properties.flatMap((prop) =>
+          ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.name) && ts.isStringLiteral(prop.initializer)
+            ? [[prop.name.text, prop.initializer.text]]
+            : [],
+        ),
+      );
+      if (values.name && values.label && values.description) objects.push(values);
+    }
+    ts.forEachChild(node, visit);
+  }
+  visit(source);
+  return objects;
+}
 writeFileSync(
   'apps/preview/src/catalog.ts',
-  `/** 由 scripts/preview-catalog.mjs 生成。 */\n${files
-    .map(({ module }, i) => `import * as component${i} from '../../../packages/aig-ui/src/${module}';`)
-    .join('\n')}\nexport const componentStories = [${files
-    .map(({ label }, i) => `{ ...component${i}, group: '${label}' }`)
-    .join(', ')}];\n`,
+  `/** 由 scripts/preview-catalog.mjs 生成。 */
+export const componentStories = [${files
+    .map(({ module }) => {
+      const info = metadata(`packages/aig-ui/src/${module.replace(/\.js$/, '.tsx')}`)[0];
+      if (!info) throw Error(`缺少目录元数据: ${module}`);
+      return `{ preview: ${JSON.stringify(info)}, load: () => import('../../../packages/aig-ui/src/${module}') }`;
+    })
+    .join(',\n')}];
+export const pageMetadata = ${JSON.stringify(metadata('apps/preview/src/pages.tsx'))};
+`,
 );

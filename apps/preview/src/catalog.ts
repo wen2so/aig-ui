@@ -1,50 +1,50 @@
 /** 由 scripts/preview-catalog.mjs 生成。 */
-import * as component0 from '../../../packages/aig-ui/src/components/accordion/accordion.stories.js';
-import * as component1 from '../../../packages/aig-ui/src/components/alert/alert.stories.js';
-import * as component2 from '../../../packages/aig-ui/src/components/badge/badge.stories.js';
-import * as component3 from '../../../packages/aig-ui/src/components/breadcrumb/breadcrumb.stories.js';
-import * as component4 from '../../../packages/aig-ui/src/components/card/card.stories.js';
-import * as component5 from '../../../packages/aig-ui/src/components/checkbox/checkbox.stories.js';
-import * as component6 from '../../../packages/aig-ui/src/components/combobox/combobox.stories.js';
-import * as component7 from '../../../packages/aig-ui/src/components/copy-button/copy-button.stories.js';
-import * as component8 from '../../../packages/aig-ui/src/components/description-list/description-list.stories.js';
-import * as component9 from '../../../packages/aig-ui/src/components/dialog/dialog.stories.js';
-import * as component10 from '../../../packages/aig-ui/src/components/drawer/drawer.stories.js';
-import * as component11 from '../../../packages/aig-ui/src/components/dropdown-menu/dropdown-menu.stories.js';
-import * as component12 from '../../../packages/aig-ui/src/components/empty-state/empty-state.stories.js';
-import * as component13 from '../../../packages/aig-ui/src/components/field/field.stories.js';
-import * as component14 from '../../../packages/aig-ui/src/components/heading/heading.stories.js';
-import * as component15 from '../../../packages/aig-ui/src/components/icon/icon.stories.js';
-import * as component16 from '../../../packages/aig-ui/src/components/icon-button/icon-button.stories.js';
-import * as component17 from '../../../packages/aig-ui/src/components/input/input.stories.js';
-import * as component18 from '../../../packages/aig-ui/src/components/link/link.stories.js';
-import * as component19 from '../../../packages/aig-ui/src/components/navigation/navigation.stories.js';
-import * as component20 from '../../../packages/aig-ui/src/components/page-header/page-header.stories.js';
-import * as component21 from '../../../packages/aig-ui/src/components/pagination/pagination.stories.js';
-import * as component22 from '../../../packages/aig-ui/src/components/panel/panel.stories.js';
-import * as component23 from '../../../packages/aig-ui/src/components/popover/popover.stories.js';
-import * as component24 from '../../../packages/aig-ui/src/components/progress/progress.stories.js';
-import * as component25 from '../../../packages/aig-ui/src/components/radio-group/radio-group.stories.js';
-import * as component26 from '../../../packages/aig-ui/src/components/result/result.stories.js';
-import * as component27 from '../../../packages/aig-ui/src/components/select/select.stories.js';
-import * as component28 from '../../../packages/aig-ui/src/components/separator/separator.stories.js';
-import * as component29 from '../../../packages/aig-ui/src/components/skeleton/skeleton.stories.js';
-import * as component30 from '../../../packages/aig-ui/src/components/spinner/spinner.stories.js';
-import * as component31 from '../../../packages/aig-ui/src/components/status-indicator/status-indicator.stories.js';
-import * as component32 from '../../../packages/aig-ui/src/components/switch/switch.stories.js';
-import * as component33 from '../../../packages/aig-ui/src/components/table/table.stories.js';
-import * as component34 from '../../../packages/aig-ui/src/components/tabs/tabs.stories.js';
-import * as component35 from '../../../packages/aig-ui/src/components/text/text.stories.js';
-import * as component36 from '../../../packages/aig-ui/src/components/textarea/textarea.stories.js';
-import * as component37 from '../../../packages/aig-ui/src/components/toast/toast.stories.js';
-import * as component38 from '../../../packages/aig-ui/src/components/tooltip/tooltip.stories.js';
-import * as component39 from '../../../packages/aig-ui/src/ai/artifact-preview/artifact-preview.stories.js';
-import * as component40 from '../../../packages/aig-ui/src/ai/confirmation/confirmation.stories.js';
-import * as component41 from '../../../packages/aig-ui/src/ai/conversation/conversation.stories.js';
-import * as component42 from '../../../packages/aig-ui/src/ai/message/message.stories.js';
-import * as component43 from '../../../packages/aig-ui/src/ai/prompt-input/prompt-input.stories.js';
-import * as component44 from '../../../packages/aig-ui/src/ai/source-list/source-list.stories.js';
-import * as component45 from '../../../packages/aig-ui/src/ai/task-status/task-status.stories.js';
-import * as component46 from '../../../packages/aig-ui/src/ai/tool-result/tool-result.stories.js';
-import * as component47 from '../../../packages/aig-ui/src/theme/aig-provider.stories.js';
-export const componentStories = [{ ...component0, group: '通用' }, { ...component1, group: '通用' }, { ...component2, group: '通用' }, { ...component3, group: '通用' }, { ...component4, group: '通用' }, { ...component5, group: '通用' }, { ...component6, group: '通用' }, { ...component7, group: '通用' }, { ...component8, group: '通用' }, { ...component9, group: '通用' }, { ...component10, group: '通用' }, { ...component11, group: '通用' }, { ...component12, group: '通用' }, { ...component13, group: '通用' }, { ...component14, group: '通用' }, { ...component15, group: '通用' }, { ...component16, group: '通用' }, { ...component17, group: '通用' }, { ...component18, group: '通用' }, { ...component19, group: '通用' }, { ...component20, group: '通用' }, { ...component21, group: '通用' }, { ...component22, group: '通用' }, { ...component23, group: '通用' }, { ...component24, group: '通用' }, { ...component25, group: '通用' }, { ...component26, group: '通用' }, { ...component27, group: '通用' }, { ...component28, group: '通用' }, { ...component29, group: '通用' }, { ...component30, group: '通用' }, { ...component31, group: '通用' }, { ...component32, group: '通用' }, { ...component33, group: '通用' }, { ...component34, group: '通用' }, { ...component35, group: '通用' }, { ...component36, group: '通用' }, { ...component37, group: '通用' }, { ...component38, group: '通用' }, { ...component39, group: 'AI' }, { ...component40, group: 'AI' }, { ...component41, group: 'AI' }, { ...component42, group: 'AI' }, { ...component43, group: 'AI' }, { ...component44, group: 'AI' }, { ...component45, group: 'AI' }, { ...component46, group: 'AI' }, { ...component47, group: '主题' }];
+export const componentStories = [{ preview: {"name":"Accordion","label":"折叠面板","description":"将补充信息逐项展开，保留按钮、标题和内容关联。"}, load: () => import('../../../packages/aig-ui/src/components/accordion/accordion.stories.js') },
+{ preview: {"name":"Alert","label":"区域提示","description":"在内容区域展示说明、警告或错误，保留恢复操作。"}, load: () => import('../../../packages/aig-ui/src/components/alert/alert.stories.js') },
+{ preview: {"name":"Badge","label":"标签","description":"用文字和语义色表达分类与状态，长标签可自然换行。"}, load: () => import('../../../packages/aig-ui/src/components/badge/badge.stories.js') },
+{ preview: {"name":"Breadcrumb","label":"面包屑","description":"展示页面层级，当前页使用明确的导航语义。"}, load: () => import('../../../packages/aig-ui/src/components/breadcrumb/breadcrumb.stories.js') },
+{ preview: {"name":"Card","label":"卡片","description":"自然伸展的内容表面，支持实色与柔和玻璃材质。"}, load: () => import('../../../packages/aig-ui/src/components/card/card.stories.js') },
+{ preview: {"name":"Checkbox","label":"复选框","description":"原生复选框，支持受控值、真实表单值和中间状态。"}, load: () => import('../../../packages/aig-ui/src/components/checkbox/checkbox.stories.js') },
+{ preview: {"name":"Combobox","label":"检索选择","description":"输入文字检索单选项，保留键盘选择、无结果提示与真实表单值。"}, load: () => import('../../../packages/aig-ui/src/components/combobox/combobox.stories.js') },
+{ preview: {"name":"CopyButton","label":"复制按钮","description":"复制真实传入的文本，成功后反馈，失败时保留可手动复制的原文。"}, load: () => import('../../../packages/aig-ui/src/components/copy-button/copy-button.stories.js') },
+{ preview: {"name":"DescriptionList","label":"描述列表","description":"使用 dl、dt、dd 展示标签和值，支持长标识与响应式分列。"}, load: () => import('../../../packages/aig-ui/src/components/description-list/description-list.stories.js') },
+{ preview: {"name":"Dialog","label":"对话框","description":"以可组合部件提供模态焦点管理、键盘关闭与主题内浮层。"}, load: () => import('../../../packages/aig-ui/src/components/dialog/dialog.stories.js') },
+{ preview: {"name":"Drawer","label":"抽屉","description":"复用对话框的焦点与关闭行为，在侧边展示详情与操作。"}, load: () => import('../../../packages/aig-ui/src/components/drawer/drawer.stories.js') },
+{ preview: {"name":"DropdownMenu","label":"操作菜单","description":"可用方向键选择的操作列表，支持禁用项与关闭恢复焦点。"}, load: () => import('../../../packages/aig-ui/src/components/dropdown-menu/dropdown-menu.stories.js') },
+{ preview: {"name":"EmptyState","label":"空状态","description":"区分初次使用和筛选为空，显示下一步引导。"}, load: () => import('../../../packages/aig-ui/src/components/empty-state/empty-state.stories.js') },
+{ preview: {"name":"Field","label":"表单字段","description":"为原生控件关联标签、说明、必填信息与稳定错误 ID。"}, load: () => import('../../../packages/aig-ui/src/components/field/field.stories.js') },
+{ preview: {"name":"Heading","label":"标题","description":"语义级别与视觉大小分别设置，保持页面标题层级。"}, load: () => import('../../../packages/aig-ui/src/components/heading/heading.stories.js') },
+{ preview: {"name":"Icon","label":"图标","description":"统一线性图标尺寸，区分装饰图标和具名图像。"}, load: () => import('../../../packages/aig-ui/src/components/icon/icon.stories.js') },
+{ preview: {"name":"IconButton","label":"图标按钮","description":"具有必需可访问名称的图标操作按钮。"}, load: () => import('../../../packages/aig-ui/src/components/icon-button/icon-button.stories.js') },
+{ preview: {"name":"Input","label":"输入框","description":"原生单行输入，保留受控值、自动填充、错误与中文输入事件。"}, load: () => import('../../../packages/aig-ui/src/components/input/input.stories.js') },
+{ preview: {"name":"Link","label":"链接","description":"原生导航链接，支持长地址换行和安全外链属性。"}, load: () => import('../../../packages/aig-ui/src/components/link/link.stories.js') },
+{ preview: {"name":"Navigation","label":"导航","description":"原生导航与可组合链接，标记当前页面并支持长文本换行。"}, load: () => import('../../../packages/aig-ui/src/components/navigation/navigation.stories.js') },
+{ preview: {"name":"PageHeader","label":"页面标题区","description":"组织标题、说明和主要操作，窄屏下自然换行。"}, load: () => import('../../../packages/aig-ui/src/components/page-header/page-header.stories.js') },
+{ preview: {"name":"Pagination","label":"分页","description":"受控分页与边界按钮，数据请求和页大小由宿主管理。"}, load: () => import('../../../packages/aig-ui/src/components/pagination/pagination.stories.js') },
+{ preview: {"name":"Panel","label":"面板","description":"Header、Body、Footer 组织内容，支持受约束容器内滚动。"}, load: () => import('../../../packages/aig-ui/src/components/panel/panel.stories.js') },
+{ preview: {"name":"Popover","label":"弹出内容","description":"在触发元素旁展示补充操作，支持焦点恢复和越界定位。"}, load: () => import('../../../packages/aig-ui/src/components/popover/popover.stories.js') },
+{ preview: {"name":"Progress","label":"进度","description":"展示真实已知进度，非法或未知数值降级为未定进度。"}, load: () => import('../../../packages/aig-ui/src/components/progress/progress.stories.js') },
+{ preview: {"name":"RadioGroup","label":"单选组","description":"以原生 fieldset 和 radio 展示互斥选项，支持方向键和表单提交。"}, load: () => import('../../../packages/aig-ui/src/components/radio-group/radio-group.stories.js') },
+{ preview: {"name":"Result","label":"结果","description":"明确表达成功、失败、未找到、登录过期或访问受限。"}, load: () => import('../../../packages/aig-ui/src/components/result/result.stories.js') },
+{ preview: {"name":"Select","label":"选择器","description":"基于 Base UI 的单选下拉，支持键盘、空选项和已失效值提示。"}, load: () => import('../../../packages/aig-ui/src/components/select/select.stories.js') },
+{ preview: {"name":"Separator","label":"分隔线","description":"按语义划分相邻内容，支持水平和垂直方向。"}, load: () => import('../../../packages/aig-ui/src/components/separator/separator.stories.js') },
+{ preview: {"name":"Skeleton","label":"加载占位","description":"在数据到达前保留内容空间，跟随系统减少动态效果偏好。"}, load: () => import('../../../packages/aig-ui/src/components/skeleton/skeleton.stories.js') },
+{ preview: {"name":"Spinner","label":"等待指示","description":"局部未定进度等待，提供可访问名称。"}, load: () => import('../../../packages/aig-ui/src/components/spinner/spinner.stories.js') },
+{ preview: {"name":"StatusIndicator","label":"状态指示","description":"以文字和状态点表达真实业务状态，支持忙碌提示。"}, load: () => import('../../../packages/aig-ui/src/components/status-indicator/status-indicator.stories.js') },
+{ preview: {"name":"Switch","label":"开关","description":"即时二元状态，使用原生 checkbox 保留键盘和表单值。"}, load: () => import('../../../packages/aig-ui/src/components/switch/switch.stories.js') },
+{ preview: {"name":"Table","label":"表格","description":"原生表格部件，排序与选中由宿主管理，横向滚动限制在表格区域。"}, load: () => import('../../../packages/aig-ui/src/components/table/table.stories.js') },
+{ preview: {"name":"Tabs","label":"页签","description":"使用可控值组织同一区域的不同视图，支持方向键与面板关联。"}, load: () => import('../../../packages/aig-ui/src/components/tabs/tabs.stories.js') },
+{ preview: {"name":"Text","label":"文本","description":"正文与说明文字，支持语义色和自然换行。"}, load: () => import('../../../packages/aig-ui/src/components/text/text.stories.js') },
+{ preview: {"name":"Textarea","label":"多行输入","description":"原生多行编辑，允许纵向调整高度并保留输入内容。"}, load: () => import('../../../packages/aig-ui/src/components/textarea/textarea.stories.js') },
+{ preview: {"name":"Toast","label":"轻提示","description":"提供状态播报、关闭和自动计时，悬停与键盘焦点期间暂停。"}, load: () => import('../../../packages/aig-ui/src/components/toast/toast.stories.js') },
+{ preview: {"name":"Tooltip","label":"工具提示","description":"在悬停或键盘聚焦时提供简短补充说明。"}, load: () => import('../../../packages/aig-ui/src/components/tooltip/tooltip.stories.js') },
+{ preview: {"name":"ArtifactPreview","label":"产物预览","description":"查看文本或 Markdown 版本，编辑草稿并转入明确的应用确认。"}, load: () => import('../../../packages/aig-ui/src/ai/artifact-preview/artifact-preview.stories.js') },
+{ preview: {"name":"Confirmation","label":"操作确认","description":"绑定产物与具体版本，明确影响，阻止重复提交并处理失败与版本冲突。"}, load: () => import('../../../packages/aig-ui/src/ai/confirmation/confirmation.stories.js') },
+{ preview: {"name":"Conversation","label":"对话容器","description":"在底部跟随消息，向上阅读时保持位置，支持历史插入与回到底部。"}, load: () => import('../../../packages/aig-ui/src/ai/conversation/conversation.stories.js') },
+{ preview: {"name":"Message","label":"消息","description":"展示用户或助手消息，支持纯文本、安全 Markdown 和消息操作。"}, load: () => import('../../../packages/aig-ui/src/ai/message/message.stories.js') },
+{ preview: {"name":"PromptInput","label":"提示输入","description":"输入与发送、停止入口，识别中文输入法并在失败后保留草稿。"}, load: () => import('../../../packages/aig-ui/src/ai/prompt-input/prompt-input.stories.js') },
+{ preview: {"name":"SourceList","label":"来源列表","description":"展示真实传入的来源、地址和片段，缺失或非法地址使用普通文字。"}, load: () => import('../../../packages/aig-ui/src/ai/source-list/source-list.stories.js') },
+{ preview: {"name":"TaskStatus","label":"任务状态","description":"表达排队、执行、待确认、完成、失败和取消等真实任务状态。"}, load: () => import('../../../packages/aig-ui/src/ai/task-status/task-status.stories.js') },
+{ preview: {"name":"ToolResult","label":"工具结果","description":"展示工具用途、公开输入摘要、任务状态、结果和错误。"}, load: () => import('../../../packages/aig-ui/src/ai/tool-result/tool-result.stories.js') },
+{ preview: {"name":"AigProvider","label":"主题作用域","description":"一处配置品牌、字体、材质与密度，控件、加载图形与浮层共同继承。"}, load: () => import('../../../packages/aig-ui/src/theme/aig-provider.stories.js') }];
+export const pageMetadata = [{"name":"visual-study","label":"视觉样板","group":"页面组合","description":"留白、表单操作、确认浮层与完整加载交接。"},{"name":"access-state-page","label":"访问状态页","group":"页面组合","description":"根据真实访问状态组合结果、请求信息与恢复入口。"},{"name":"settings-form","label":"设置表单","group":"页面组合","description":"编辑、字段校验、保存失败和草稿保留。本地演示数据。"},{"name":"filterable-list","label":"筛选列表","group":"页面组合","description":"筛选、分页、空状态、读取错误与详情抽屉。本地演示数据。"},{"name":"ai-assistant","label":"AI 助手页面","group":"页面组合","description":"本地模拟消息分段、停止、失败重试与来源展示。"},{"name":"artifact-review","label":"产物审核页","group":"页面组合","description":"预览编辑、明确确认、执行失败与版本冲突。本地演示数据。"}];

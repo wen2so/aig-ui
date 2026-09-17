@@ -225,7 +225,8 @@
 html {
   --preview-header-height: 76px;
   scroll-padding-top: calc(var(--preview-header-height) + 16px);
-  scroll-behavior: smooth;
+  /* 导航通过显式调用平滑滚动，原生聚焦滚动立即完成，避免按下与抬起之间移动控件。 */
+  scroll-behavior: auto;
 }
 body {
   margin: 0;

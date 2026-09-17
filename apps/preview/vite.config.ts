@@ -8,14 +8,22 @@ const root = fileURLToPath(new URL('../../', import.meta.url));
 /** 直接复用发布资料的属性读取器，预览与源码修改同步。 */
 function componentDocs(): Plugin {
   const id = '\0virtual:component-api';
+  let apiFor: ReturnType<typeof createApiReader> | undefined;
   return {
     name: 'aig-component-docs',
     resolveId(source: string) {
-      if (source === 'virtual:component-api') return id;
+      if (source === 'virtual:component-api' || source.startsWith('virtual:component-api/'))
+        return `\0${source}`;
     },
     load(source: string) {
+      if (source.startsWith(`${id}/`)) {
+        apiFor ??= createApiReader(root);
+        const [group, component, name] = source.slice(id.length + 1).split('/');
+        const path =
+          group === 'motion' || group === 'theme' ? `${component}.tsx` : `${component}/${component}.tsx`;
+        return `export default ${JSON.stringify(apiFor(resolve(root, 'packages/aig-ui/src', group!, path), name!))}`;
+      }
       if (source !== id) return;
-      const apiFor = createApiReader(root);
       const entries = ['components', 'ai', 'motion'].flatMap((group) => {
         const base = resolve(root, 'packages/aig-ui/src', group);
         const ids =
@@ -29,20 +37,11 @@ function componentDocs(): Plugin {
             .split('-')
             .map((word) => word[0]!.toUpperCase() + word.slice(1))
             .join('');
-          return [
-            name,
-            apiFor(
-              resolve(base, group === 'motion' ? `${component}.tsx` : `${component}/${component}.tsx`),
-              name,
-            ),
-          ];
+          return [name, `virtual:component-api/${group}/${component}/${name}`];
         });
       });
-      entries.push([
-        'AigProvider',
-        apiFor(resolve(root, 'packages/aig-ui/src/theme/aig-provider.tsx'), 'AigProvider'),
-      ]);
-      return `export default ${JSON.stringify(Object.fromEntries(entries))}`;
+      entries.push(['AigProvider', 'virtual:component-api/theme/aig-provider/AigProvider']);
+      return `export default {${entries.map(([name, path]) => `${JSON.stringify(name)}: () => import(${JSON.stringify(path)})`).join(',')}}`;
     },
     handleHotUpdate(context) {
       if (
@@ -50,8 +49,10 @@ function componentDocs(): Plugin {
         context.file.endsWith('.tsx') &&
         !context.file.endsWith('.stories.tsx')
       ) {
-        const module = context.server.moduleGraph.getModuleById(id);
-        if (module) context.server.moduleGraph.invalidateModule(module);
+        apiFor = undefined;
+        for (const [moduleId, module] of context.server.moduleGraph.idToModuleMap) {
+          if (moduleId.startsWith(id)) context.server.moduleGraph.invalidateModule(module);
+        }
         context.server.ws.send({ type: 'full-reload' });
       }
     },
@@ -60,6 +61,7 @@ function componentDocs(): Plugin {
 
 export default defineConfig({
   plugins: [componentDocs()],
+  build: { manifest: true },
   resolve: {
     alias: [
       {

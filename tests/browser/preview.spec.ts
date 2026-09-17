@@ -54,7 +54,7 @@ test('示例参数、重置、源码复制和当前 API 可实际使用', async 
   await page.locator('#example-states').screenshot({ path: 'artifacts/preview-redesign/button-states.png' });
 });
 
-test('普通按钮与禁用状态保持静态，加载保留扫描并支持减少动画', async ({ page }) => {
+test('普通按钮与禁用状态保持静态，加载标记支持减少动画', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Button');
   const idle = page.locator('#example-states .aig-button[data-variant=primary]:enabled');
   const disabled = page.locator(
@@ -64,15 +64,16 @@ test('普通按钮与禁用状态保持静态，加载保留扫描并支持减�
   await expect(idle.locator('.aig-button-frame')).toHaveCSS('animation-name', 'none');
   await expect(disabled.locator('.aig-button-frame')).toHaveCSS('animation-name', 'none');
   await expect(disabled).toBeDisabled();
-  await expect(busy.locator('.aig-button-frame')).toHaveCSS('animation-name', 'aig-button-scan');
+  await expect(busy.locator('.aig-button-loading')).toBeVisible();
+  await expect(busy.locator('.aig-button-mark-ring')).not.toHaveCSS('animation-name', 'none');
   await expect(busy).toBeDisabled();
   await page.getByRole('button', { name: '全局主题', exact: true }).click();
   await page.getByRole('button', { name: '暂停环境动效' }).click();
   await page.getByRole('button', { name: '完成设置', exact: true }).click();
   await expect(idle.locator('.aig-button-frame')).toHaveCSS('animation-play-state', 'paused');
-  await expect(busy.locator('.aig-button-frame')).toHaveCSS('animation-play-state', 'running');
+  await expect(busy.locator('.aig-button-mark-ring')).toHaveCSS('animation-play-state', 'running');
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await expect(busy.locator('.aig-button-frame')).toHaveCSS('animation-name', 'none');
+  await expect(busy.locator('.aig-button-mark-ring')).toHaveCSS('animation-name', 'none');
   await expect(idle.locator('.aig-button-frame')).toHaveCSS('animation-name', 'none');
   await page.goto('http://127.0.0.1:5173/?component=Input');
   await expect(page.getByLabel('等待开通')).toBeDisabled();

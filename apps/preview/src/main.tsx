@@ -6,23 +6,20 @@ import '@fontsource/inter/latin-700.css';
 import '@fontsource/jetbrains-mono/latin-400.css';
 import '@fontsource/jetbrains-mono/latin-500.css';
 import '@fontsource/jetbrains-mono/latin-600.css';
+import { ArrowLeft, ArrowRight, ArrowUpRight, Search, X, Plus, Minus, Grid2X2 } from 'lucide-react';
 import {
-  Code,
-  ArrowLeft,
-  ArrowRight,
-  ArrowUpRight,
-  Search,
-  X,
-  Plus,
-  Minus,
-  Grid2X2,
-  RotateCcw,
-} from 'lucide-react';
-import { useEffect, useRef, useState, StrictMode, type MouseEvent } from 'react';
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  StrictMode,
+  lazy,
+  Suspense,
+  type MouseEvent,
+} from 'react';
 import { createRoot } from 'react-dom/client';
 import { AigProvider, Icon, Accordion, BrandMark, Button, CopyButton } from 'aig-ui';
 import { LoadingMark } from 'aig-ui/motion';
-import { SafeMarkdown } from '../../../packages/aig-ui/src/ai/safe-markdown.js';
 import {
   brandShapes,
   BrandControls,
@@ -35,9 +32,15 @@ import '../../../packages/aig-ui/src/styles.css';
 import '../../../packages/aig-ui/src/motion/styles.css';
 import '../../../packages/aig-ui/src/ai/styles.css';
 import './preview.css';
-import { entries, groups, type Entry } from './catalog-model.js';
-import type { Example } from './examples.js';
-import api from 'virtual:component-api';
+import { entries, groups } from './catalog-model.js';
+import { ExampleCard, ApiTable } from './detail-components.js';
+import { useEntryDetail } from './use-entry-detail.js';
+
+const SafeMarkdown = lazy(() =>
+  import('../../../packages/aig-ui/src/ai/safe-markdown.js').then((module) => ({
+    default: module.SafeMarkdown,
+  })),
+);
 
 /** 分类锚点同时供顶部导航、直达地址和浏览器历史使用。 */
 const catalogId = (group: string) =>
@@ -54,115 +57,6 @@ const navGroups = [
   { label: '页面组合', group: '页面组合' },
   { label: '主题', group: '主题' },
 ];
-
-/** 示例保留独立状态，重置后从初始状态重新演示。 */
-function ExampleCard({ example }: { example: Example }) {
-  const [run, setRun] = useState(0);
-  const [codeOpen, setCodeOpen] = useState(false);
-  return (
-    <article className="example-card" data-wide={example.wide || undefined} id={`example-${example.id}`}>
-      <div className="preview-example" key={run}>
-        {example.render()}
-      </div>
-      <div className="example-caption">
-        <h3>{example.title}</h3>
-        <p>{example.description}</p>
-      </div>
-      <div className="example-toolbar">
-        <span>可交互示例</span>
-        <button onClick={() => setRun(run + 1)} aria-label={`重置${example.title}`}>
-          <Icon icon={RotateCcw} size={14} /> <span>重置</span>
-        </button>
-        <CopyButton
-          value={example.code}
-          label="复制代码"
-          aria-label={`复制${example.title}代码`}
-          variant="ghost"
-        />
-        <button
-          aria-expanded={codeOpen}
-          aria-controls={`code-${example.id}`}
-          onClick={() => setCodeOpen(!codeOpen)}
-          aria-label={`查看${example.title}代码`}
-        >
-          <Icon icon={Code} size={16} />
-        </button>
-      </div>
-      <div
-        className="code-disclosure"
-        data-open={codeOpen || undefined}
-        inert={!codeOpen}
-        aria-hidden={!codeOpen}
-      >
-        <pre className="example-code" id={`code-${example.id}`}>
-          <code>{example.code}</code>
-        </pre>
-      </div>
-    </article>
-  );
-}
-
-/** 属性表来自当前源码声明，主题作用域与其他组件共用同一套资料。 */
-function ApiTable({ entry }: { entry: Pick<Entry, 'name' | 'group'> }) {
-  return (
-    <section className="doc-section" id="api">
-      <h2>
-        API <span>属性参考</span>
-      </h2>
-      <p>属性来自当前组件声明，包含组合部件、相关数据类型与常用原生属性。</p>
-      {(api[entry.name] ?? []).map((signature, i) => (
-        <div key={`${signature.part}-${i}`}>
-          <h3>
-            {signature.kind === 'type'
-              ? `数据类型 ${signature.part}`
-              : signature.part === entry.name
-                ? entry.name
-                : `${entry.name}.${signature.part}`}
-          </h3>
-          {signature.props.length ? (
-            <div className="api-scroll" tabIndex={0} role="region" aria-label={`${signature.part} 属性表`}>
-              <table>
-                <thead>
-                  <tr>
-                    <th>属性</th>
-                    <th>说明</th>
-                    <th>类型</th>
-                    <th>默认值</th>
-                    <th>必填</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {signature.props.map((prop) => (
-                    <tr key={prop.name}>
-                      <td>
-                        <code>{prop.name}</code>
-                      </td>
-                      <td>{prop.description || '见完整组件说明'}</td>
-                      <td>
-                        <code>{prop.type}</code>
-                      </td>
-                      <td>
-                        <code>{prop.defaultValue}</code>
-                      </td>
-                      <td>{prop.required ? '是' : '可选'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p>
-              继承原生控件属性，可使用 <code>{signature.propsType}</code> 查看完整类型。
-            </p>
-          )}
-        </div>
-      ))}
-      {entry.group === '页面组合' && (
-        <p>页面组合通过 Registry 提供源码，业务数据和操作由接入应用提供。完整演示代码可在示例中展开。</p>
-      )}
-    </section>
-  );
-}
 
 /** 原生链接保留新标签打开和复制地址，普通点击使用本地导航。 */
 function Preview() {
@@ -184,6 +78,7 @@ function Preview() {
   const sidebar = useRef<HTMLElement>(null);
   const menuToggle = useRef<HTMLButtonElement>(null);
   const entry = entries.find((entry) => entry.name === selected);
+  const { detail, error, retry } = useEntryDetail(entry);
   const query = search.trim().toLocaleLowerCase();
   const matches = entries.filter((entry) =>
     `${entry.name} ${entry.label} ${entry.group} ${entry.description}`.toLocaleLowerCase().includes(query),
@@ -192,6 +87,8 @@ function Preview() {
   const filteredGroups = groups.filter((group) => visible.some((entry) => entry.group === group.label));
 
   useEffect(() => {
+    const restoration = history.scrollRestoration;
+    history.scrollRestoration = 'manual';
     const onPopState = () => {
       setSelected(new URLSearchParams(location.search).get('component') ?? '');
       setSearch('');
@@ -215,26 +112,26 @@ function Preview() {
     window.addEventListener('popstate', onPopState);
     window.addEventListener('keydown', onKey);
     return () => {
+      history.scrollRestoration = restoration;
       window.removeEventListener('popstate', onPopState);
       window.removeEventListener('keydown', onKey);
     };
   }, []);
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      let anchor = location.hash.slice(1);
-      try {
-        anchor = decodeURIComponent(anchor);
-      } catch {
-        // 手动输入的未完成转义按原文查找，正文仍可正常导航。
-      }
-      const target = document.getElementById(anchor);
-      const behavior = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
-      if (target) target.scrollIntoView({ behavior, block: 'start' });
-      else window.scrollTo({ top: 0, behavior });
-      (target ?? title.current)?.focus({ preventScroll: true });
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [entry, navigation]);
+  useLayoutEffect(() => {
+    if (entry && !detail) return;
+    let anchor = location.hash.slice(1);
+    try {
+      anchor = decodeURIComponent(anchor);
+    } catch {
+      // 手动输入的未完成转义按原文查找，正文仍可正常导航。
+    }
+    const target = document.getElementById(anchor);
+    const behavior =
+      navigation === 0 || matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
+    if (target) target.scrollIntoView({ behavior, block: 'start' });
+    else window.scrollTo({ top: 0, behavior });
+    (target ?? title.current)?.focus({ preventScroll: true });
+  }, [entry, navigation, detail]);
 
   useEffect(() => {
     const nav = sidebar.current?.querySelector('nav');
@@ -433,7 +330,7 @@ function Preview() {
                 <p>{entry.description}</p>
                 <div className="component-meta">
                   <span className="component-tag">{entry.group}</span>
-                  <span>{entry.examples.length} 个交互示例</span>
+                  <span>{(detail?.examples ?? []).length} 个交互示例</span>
                   <span>实验性 Alpha</span>
                 </div>
               </header>
@@ -456,13 +353,20 @@ function Preview() {
                   <h2>代码演示</h2>
                   <span className="section-caption">即时体验 · 独立重置 · 复制源码</span>
                 </div>
+                {error ? (
+                  <p role="alert">
+                    资料加载失败。<button onClick={retry}>重新加载</button>
+                  </p>
+                ) : (
+                  !detail && <p role="status">正在加载组件资料…</p>
+                )}
                 <div className="examples-grid" key={entry.name}>
-                  {entry.examples.map((example) => (
+                  {(detail?.examples ?? []).map((example) => (
                     <ExampleCard key={example.id} example={example} />
                   ))}
                 </div>
               </section>
-              <ApiTable entry={entry} />
+              <ApiTable entry={entry} signatures={detail?.api ?? []} />
               <section className="doc-section" id="guidelines">
                 <h2>使用说明</h2>
                 <div className="guideline-note">
@@ -478,9 +382,11 @@ function Preview() {
                   基础组件导入 <code>aig-ui/styles.css</code>。动效与 AI 组件分别补充导入对应入口的{' '}
                   <code>styles.css</code>。
                 </p>
-                {entry.readme && (
+                {detail?.readme && (
                   <div className="readme">
-                    <SafeMarkdown>{entry.readme.replace(/^# .+\r?\n/, '')}</SafeMarkdown>
+                    <Suspense fallback={<p role="status">正在加载说明…</p>}>
+                      <SafeMarkdown>{detail?.readme.replace(/^# .+\r?\n/, '')}</SafeMarkdown>
+                    </Suspense>
                   </div>
                 )}
                 <Accordion.Root className="doc-accessibility">
@@ -534,7 +440,7 @@ function Preview() {
             <nav className="page-toc" aria-label="本页目录">
               <span>本页内容</span>
               <a href="#examples">代码演示</a>
-              {entry.examples.map((example) => (
+              {(detail?.examples ?? []).map((example) => (
                 <a className="toc-example" key={example.id} href={`#example-${example.id}`}>
                   {example.title}
                 </a>
@@ -648,7 +554,7 @@ function Preview() {
                                 </Button>
                               </div>
                             ) : (
-                              item.examples[0]!.render()
+                              <span>{item.label}</span>
                             )}
                           </div>
                           <Icon icon={ArrowUpRight} className="catalog-arrow" size={16} />

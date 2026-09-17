@@ -1,6 +1,5 @@
-import { componentStories } from './catalog.js';
-import { pageEntries } from './pages.js';
-import { extraExamples, type Example } from './examples.js';
+import { componentStories, pageMetadata } from './catalog.js';
+import { loadExtraExamples, type Example } from './examples.js';
 
 export const groups = [
   { label: '通用', caption: '动作与文字', names: 'Button IconButton CopyButton Link Text Heading Icon' },
@@ -38,22 +37,24 @@ export const groups = [
 const rawFiles = import.meta.glob('../../../packages/aig-ui/src/**/*.{stories.tsx,md}', {
   query: '?raw',
   import: 'default',
-  eager: true,
-}) as Record<string, string>;
+}) as Record<string, () => Promise<string>>;
 const pageSource = import.meta.glob(['./pages.tsx', './visual-study.tsx'], {
   query: '?raw',
   import: 'default',
-  eager: true,
-}) as Record<string, string>;
+}) as Record<string, () => Promise<string>>;
 
 export interface Entry {
   name: string;
   label: string;
   description: string;
   group: string;
+  load: () => Promise<EntryDetail>;
+  importPath: string;
+}
+
+export interface EntryDetail {
   examples: Example[];
   readme: string;
-  importPath: string;
 }
 
 const special = [
@@ -64,9 +65,22 @@ const special = [
 
 /** 分类、示例和源码共用一份目录，支持稳定的组件直达地址。 */
 export const entries: Entry[] = [
-  ...special.map((entry) => ({ ...entry, render: extraExamples[entry.name]![0]!.render })),
-  ...componentStories.map((story) => ({ ...story.preview, render: () => <story.Preview /> })),
-  ...pageEntries,
+  ...special.map((entry) => ({
+    ...entry,
+    loadPreview: async () => (await loadExtraExamples(entry.name))[0]!.render,
+  })),
+  ...componentStories.map((story) => ({
+    ...story.preview,
+    loadPreview: async () => {
+      const module = await story.load();
+      return () => <module.Preview />;
+    },
+  })),
+  ...pageMetadata.map((entry) => ({
+    ...entry,
+    loadPreview: async () =>
+      (await import('./pages.js')).pageEntries.find((page) => page.name === entry.name)!.render,
+  })),
 ]
   .map((entry) => {
     const group = groups.find((group) => group.names.split(' ').includes(entry.name))!.label;
@@ -80,30 +94,36 @@ export const entries: Entry[] = [
             ? 'theme'
             : `components/${id}`;
     const prefix = `../../../packages/aig-ui/src/${directory}`;
-    const extras = extraExamples[entry.name] ?? [];
-    const examples = special.some((item) => item.name === entry.name)
-      ? extras
-      : [
-          {
-            id: 'basic',
-            title: '基本用法',
-            description: entry.description,
-            render: entry.render,
-            code:
-              group === '页面组合'
-                ? pageSource[entry.name === 'visual-study' ? './visual-study.tsx' : './pages.tsx']!
-                : rawFiles[`${prefix}/${id}.stories.tsx`]!,
-            wide:
-              ['页面组合', 'AI', '主题'].includes(group) ||
-              ['Table', 'Conversation', 'Panel'].includes(entry.name),
-          },
-          ...extras,
-        ];
+    const load = async (): Promise<EntryDetail> => {
+      const [render, extras, readme, code] = await Promise.all([
+        entry.loadPreview(),
+        loadExtraExamples(entry.name),
+        rawFiles[`${prefix}/README.md`]?.() ?? Promise.resolve(''),
+        group === '页面组合'
+          ? pageSource[entry.name === 'visual-study' ? './visual-study.tsx' : './pages.tsx']!()
+          : (rawFiles[`${prefix}/${id}.stories.tsx`]?.() ?? Promise.resolve('')),
+      ]);
+      const examples = special.some((item) => item.name === entry.name)
+        ? extras
+        : [
+            {
+              id: 'basic',
+              title: '基本用法',
+              description: entry.description,
+              render,
+              code,
+              wide:
+                ['页面组合', 'AI', '主题'].includes(group) ||
+                ['Table', 'Conversation', 'Panel'].includes(entry.name),
+            },
+            ...extras,
+          ];
+      return { examples, readme };
+    };
     return {
       ...entry,
       group,
-      examples,
-      readme: rawFiles[`${prefix}/README.md`] ?? '',
+      load,
       importPath:
         entry.name === 'visual-study'
           ? '预览页操作样板'
