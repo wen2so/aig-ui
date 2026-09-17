@@ -388,6 +388,9 @@ test('中间帧的满亮和半透明拼接不产生浅色接缝，文字遮罩�
       // 非选中项的真实入场：280ms 全亮，880ms 整面淡出到半透明。
       const button = demo.getByRole('group', { name: '菜单入场演示' }).getByRole('button').nth(1);
       const highlight = button.locator('.aig-button-highlight');
+      // 截图前完成定位并移开指针，避免截图滚动触发 hover，替换正在采样的入场动画。
+      await page.mouse.move(0, 0);
+      await button.scrollIntoViewIfNeeded();
       await expect(highlight).toHaveAttribute('data-playing', 'entrance');
       for (const time of [280, 880]) {
         await highlight.evaluate(async (el, time) => {
@@ -476,14 +479,7 @@ test('悬停、按压、选中与加载分别使用对应反馈', async ({ page 
   await expect.poll(edgeDifference).toBeLessThan(0.1);
 
   const busy = matrix.locator('.aig-button[aria-busy="true"]').first();
-  await expect(busy.locator('.aig-button-frame .aig-button-line').first()).toHaveCSS(
-    'animation-name',
-    'aig-button-perimeter',
-  );
-  await expect(busy.locator('.aig-button-frame .aig-button-line').first()).toHaveCSS(
-    'animation-duration',
-    '48s',
-  );
+  await expect(busy.locator('.aig-button-frame .aig-button-line')).toHaveCount(0);
   await expect(busy.locator('.aig-button-highlight')).not.toHaveAttribute('data-playing', '');
   const disabled = matrix.locator('.aig-button:disabled:not([aria-busy])').first();
   await expect(disabled.locator('.aig-button-highlight')).not.toHaveAttribute('data-playing', '');
@@ -553,13 +549,14 @@ test('边线默认隐藏，hover 绕行闭环连续且减少动态时停止', as
   await page.goto('http://127.0.0.1:5173/?component=Button');
   const button = page.locator('#example-variants .preview-actions > .aig-button').first();
   const lines = button.locator('.aig-button-frame .aig-button-line');
-  await expect(lines).toHaveCount(3);
+  await expect(lines).toHaveCount(0);
   await expect(button.locator('.aig-button-frame .aig-button-perimeter')).toBeHidden();
   expect(await lines.evaluateAll((elements) => elements.flatMap((el) => el.getAnimations()).length)).toBe(0);
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
   await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
   await button.hover();
   await expect(button.locator('.aig-button-frame .aig-button-perimeter')).toBeVisible();
+  await expect(lines).toHaveCount(3);
   const sample = async (time: number) =>
     lines.evaluateAll(
       (elements, time) =>
@@ -606,6 +603,10 @@ test('三个等距亮头带渐隐尾迹加速绕行，高速连成光边并在�
     button
       .locator('.aig-button-frame .aig-button-line')
       .evaluateAll((lines) => lines.map((line) => parseFloat(getComputedStyle(line).strokeDasharray)));
+  expect(await lengths()).toEqual([]);
+  await button.hover();
+  await page.mouse.move(0, 0);
+  await page.clock.runFor(100);
   const initial = await lengths();
   expect(initial).toEqual([3, 3, 3]);
   const rate = () =>
@@ -798,6 +799,7 @@ test('无填充按钮保留珍珠白反馈和原色文字，燃烧跟随语义�
     await button.screenshot({ path: test.info().outputPath(`pearl-${variant}.png`), scale: 'css' });
   }
   const button = page.locator('#example-variants .preview-actions > .aig-button').first();
+  await button.hover();
   const colors = [];
   for (const tone of ['success', 'danger', 'info']) {
     await button.evaluate((el, tone) => el.setAttribute('data-tone', tone), tone);

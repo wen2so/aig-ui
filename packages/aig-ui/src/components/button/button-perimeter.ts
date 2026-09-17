@@ -1,5 +1,38 @@
 import { useCallback, useEffect, useRef, type RefObject } from 'react';
 
+/** 首次交互才创建轨迹；同一文档复用模板，保持三组等距亮头与渐隐尾迹。 */
+const templates = new WeakMap<Document, DocumentFragment>();
+function ensurePerimeter(frame: HTMLSpanElement) {
+  const svg = frame.querySelector('svg');
+  if (!svg || svg.childElementCount) return;
+  const document = frame.ownerDocument;
+  let template = templates.get(document);
+  if (!template) {
+    template = document.createDocumentFragment();
+    const create = (tag: string, className: string) => {
+      const element = document.createElementNS('http://www.w3.org/2000/svg', tag);
+      element.setAttribute('class', className);
+      if (tag === 'rect') element.setAttribute('pathLength', '100');
+      return element;
+    };
+    for (let index = 0; index < 3; index++) {
+      const group = create('g', 'aig-button-line');
+      for (let sample = 0; sample < 16; sample++) {
+        const fraction = (16 - sample) / 16;
+        const tail = create('rect', 'aig-button-tail');
+        tail.style.strokeDasharray = `0 calc(100 - var(--aig-perimeter-length, 3) * ${fraction}) calc(var(--aig-perimeter-length, 3) * ${fraction}) 0`;
+        tail.style.strokeWidth = `${0.15 + (1 - fraction) * 0.35}px`;
+        group.append(tail);
+      }
+      group.append(create('rect', 'aig-button-head'));
+      template.append(group);
+    }
+    template.append(create('rect', 'aig-button-ring'));
+    templates.set(document, template);
+  }
+  svg.append(template.cloneNode(true));
+}
+
 /** 三个亮头等距绕行，后方尾迹随速度延展；仅在加减速期间逐帧调整速率，避免重启循环造成跳位。 */
 export function useButtonPerimeter(frameRef: RefObject<HTMLSpanElement | null>, disabled: boolean) {
   const changeRate = useRef<(active: boolean) => void>(() => undefined);
@@ -50,6 +83,7 @@ export function useButtonPerimeter(frameRef: RefObject<HTMLSpanElement | null>, 
       cancelAnimationFrame(raf);
       const accelerating = active && !button.disabled;
       if (accelerating && !button.hasAttribute('data-perimeter-visible')) {
+        ensurePerimeter(frame);
         button.setAttribute('data-perimeter-visible', '');
         animations().forEach((animation) => {
           animation.currentTime = stoppedTime;

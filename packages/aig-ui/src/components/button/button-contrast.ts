@@ -126,6 +126,8 @@ export function useButtonContrast(
       subtree: true,
       attributes: true,
     });
+    const perimeter = button.querySelector('.aig-button-frame');
+    if (perimeter) contentObserver.observe(perimeter, { childList: true, subtree: true });
     const motionObserver = new MutationObserver(schedule);
     motionObserver.observe(highlight, { attributes: true, childList: true, subtree: true });
     motionObserver.observe(button, {

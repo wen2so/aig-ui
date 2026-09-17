@@ -42,6 +42,8 @@ it('三段轮廓在重渲染和重复交互后保持结构', () => {
   const button = screen.getByRole('button', { name: '保存' });
   const styles = () =>
     [...button.querySelectorAll('.aig-button-frame .aig-button-line')].map((line) => line.outerHTML);
+  expect(styles()).toHaveLength(0);
+  fireEvent.pointerOver(button);
   const initial = styles();
   expect(initial).toHaveLength(3);
   expect(initial.every((markup) => markup.includes('pathLength="100"'))).toBe(true);

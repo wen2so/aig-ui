@@ -183,28 +183,7 @@ export function Button({
       ></svg>
       <span className="aig-button-heat" aria-hidden="true" />
       <span ref={frameRef} className="aig-button-frame" aria-hidden="true">
-        <svg className="aig-button-perimeter" aria-hidden="true" focusable="false">
-          {[0, 1, 2].map((index) => (
-            <g key={index} className="aig-button-line">
-              {Array.from({ length: 16 }, (_, sample) => {
-                const fraction = (16 - sample) / 16;
-                return (
-                  <rect
-                    key={sample}
-                    className="aig-button-tail"
-                    pathLength={100}
-                    style={{
-                      strokeDasharray: `0 calc(100 - var(--aig-perimeter-length, 3) * ${fraction}) calc(var(--aig-perimeter-length, 3) * ${fraction}) 0`,
-                      strokeWidth: `${0.15 + (1 - fraction) * 0.35}px`,
-                    }}
-                  />
-                );
-              })}
-              <rect className="aig-button-head" pathLength={100} />
-            </g>
-          ))}
-          <rect className="aig-button-ring" pathLength={100} />
-        </svg>
+        <svg className="aig-button-perimeter" aria-hidden="true" focusable="false"></svg>
       </span>
       {loading && (
         <span className="aig-button-loading" aria-hidden="true">
