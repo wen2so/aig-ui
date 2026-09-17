@@ -1,5 +1,5 @@
 'use client';
-import { useId, useState, type ComponentPropsWithRef, type ReactNode } from 'react';
+import { useId, type ComponentPropsWithRef, type ReactNode } from 'react';
 export interface RadioOption {
   value: string;
   label: ReactNode;
@@ -24,26 +24,26 @@ export function RadioGroup({
   defaultValue = '',
   onValueChange,
   required,
+  form,
   className = '',
   ...props
 }: RadioGroupProps) {
   const id = useId();
-  const [local, setLocal] = useState(defaultValue);
-  const selected = value ?? local;
   return (
-    <fieldset {...props} className={`aig-radio-group ${className}`}>
+    <fieldset {...props} form={form} className={`aig-radio-group ${className}`}>
       <legend>{label}</legend>
       {options.map((option) => (
         <label key={option.value}>
           <input
             type="radio"
+            form={form}
             name={name ?? id}
             value={option.value}
             disabled={option.disabled}
             required={required}
-            checked={selected === option.value}
+            checked={value === undefined ? undefined : value === option.value}
+            defaultChecked={value === undefined ? defaultValue === option.value : undefined}
             onChange={() => {
-              if (value === undefined) setLocal(option.value);
               onValueChange?.(option.value);
             }}
           />
