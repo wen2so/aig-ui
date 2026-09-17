@@ -48,12 +48,13 @@ pnpm --dir examples/vite-consumer install --ignore-workspace --no-frozen-lockfil
 pnpm --dir examples/next-consumer install --ignore-workspace --no-frozen-lockfile
 pnpm --dir examples/vite-consumer build
 pnpm --dir examples/next-consumer build
-pnpm exec playwright install chromium
+pnpm exec playwright install chromium firefox webkit
 pnpm test:browser
+pnpm test:cross-browser
 pnpm check:size
 ```
 
-Linux CI 使用 `playwright install --with-deps chromium`。`check:size` 从独立安装包重新构建 button、motion、ai 入口并测量 JS 与 CSS 的原始和 gzip 体积，同时检查 Button 入口的 Markdown 依赖隔离，输出 `artifacts/size-report.json`。
+Linux CI 使用 `playwright install --with-deps chromium firefox webkit`。`check:size` 从独立安装包重新构建 button、motion、ai 入口并测量 JS 与 CSS 的原始和 gzip 体积，同时检查 Button 入口的 Markdown 依赖隔离，输出 `artifacts/size-report.json`。预览按 Vite manifest 累加入口的静态 JS 依赖，动态详情块不计入初次加载。`scripts/size-budgets.json` 保存原始与 gzip 基线，任一指标增长超过 10% 时退出失败；正常 CI 只检查，不更新基线。确认合理变更后可本地运行 `node scripts/size.mjs --update-baseline` 并审阅基线差异。详情见[性能测量](performance.md)。
 
 `pack:local` 使用已有构建生成 `artifacts/aig-ui-0.1.0-alpha.0.tgz`。`prepare:consumer` 从 Registry JSON 提取 5 个页面，校验名称、目标路径与内容散列后写入 Vite 消费目录。消费依赖使用本地 tarball，每次重打包后重新安装；版本变更时同步两个消费项目中的 tarball 路径。
 

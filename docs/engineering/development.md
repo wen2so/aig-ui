@@ -27,7 +27,9 @@
 node scripts/preview-catalog.mjs
 ```
 
-预览的 `catalog-model.tsx` 组织用途分类，`examples.tsx` 组织交互场景，`main.tsx` 负责导航与文档展示。`apps/preview/vite.config.ts` 与发布脚本共用 `scripts/component-api.mjs`，从当前 TSX 读取公开属性；README 通过 Story 进入预览。主题的 Story 与 README 也参与此流程。
+预览的 `catalog-model.tsx` 组织轻量目录和资料加载器，`examples/` 按组件保存扩展示例，`example-helpers.tsx` 复用演示逻辑。`main.tsx` 负责导航，`detail-components.tsx` 展示示例与 API，`use-entry-detail.ts` 负责缓存、失败重试与切换身份隔离。目录使用静态缩略标识；进入详情才加载对应 Story、README、源码和 API。页面组合共用页面演示模块。
+
+`apps/preview/vite.config.ts` 与发布脚本共用 `scripts/component-api.mjs`。预览 API 按组件生成动态模块，一个生成周期复用同一 TypeScript reader，源码变化时失效。扫描入口限于组件库源码，排除 Story 与测试；依赖类型仍由 TypeScript 正常解析。
 
 预览通过别名访问源码，因此预览正常与独立安装包可用需要分别验证。
 
@@ -59,13 +61,16 @@ node scripts/preview-catalog.mjs
 | `pnpm build:preview`                    | Vite 预览生产构建                                           |
 | `pnpm build:docs`                       | Storybook 生产构建                                          |
 | `pnpm format:check`                     | 脚本指定的源码、应用、脚本及示例路径                        |
-| `pnpm test:browser`、`pnpm test:motion` | 当前 Playwright 配置的全部场景或动效场景                    |
+| `pnpm test:browser`                     | 顺序执行预览、动效和独立消费检查                            |
+| `pnpm test:preview`、`pnpm test:motion` | 仅启动 5173 预览服务，按目标选择场景                        |
+| `pnpm test:consumer`                    | Vite、Next 独立消费及源码对照                               |
+| `pnpm test:cross-browser`               | Firefox、WebKit 的交互与字体关键流程                        |
+| `pnpm check:size`                       | 独立包入口和预览静态依赖体积预算                            |
 
 根 README 与 `docs/` 未被现有 `format:check` glob 覆盖，文档改动另运行 `pnpm exec prettier --check README.md "docs/**/*.md"`。单测需要控制并发时使用 `pnpm exec vitest run --maxWorkers=2`。
 
-Playwright 会同时启动 4173 的 Vite 消费、5173 的预览和 4174 的 Next 消费服务；Next 的 dev 脚本实际运行 `next start`，需要已有生产构建。即使只跑动效场景，也先按[构建与分发](distribution.md)准备消费环境。当前默认浏览器覆盖以 Chromium 为主，真实设备和辅助技术验收见[项目状态](../progress.md)。
+预览、动效与跨浏览器配置只启动 5173 服务。独立消费检查启动 4173、5173 和 4174，因为其用例包含源码与安装包对照。Next 的 dev 脚本实际运行 `next start`，先按[构建与分发](distribution.md)准备消费环境。各配置使用独立结果目录，动效默认单 worker，避免计时与截图竞争。跨浏览器自动检查不替代真实设备与辅助技术验收。
 
-
-图标统一通过 `Icon` 使用按需导入的 `lucide-react` 组件。原生复选框使用 `scripts/icons.mjs` 生成的 Check、Minus 遮罩，`pnpm tokens` 同步更新 `src/internal/icon-masks.css`，由样式总入口导入。
+图标统一通过 `Icon` 使用按需导入的 `lucide-react` 组件。原生复选框使用 `scripts/icons.mjs` 生成的 Check、Minus 遮罩，`pnpm tokens` 同步更新 `src/internal/icon-masks.css`，由样式总入口导入。生成器读取项目 Prettier 配置，生成后可直接通过格式检查。
 
 jsdom 测试环境在 `tests/setup.ts` 补齐 SVG 点列表的属性读取，点坐标来自实际 `points` 属性，浏览器验收继续使用原生 SVG 接口。
