@@ -12,9 +12,7 @@
   border: 1px solid var(--aig-color-border-subtle);
   border-radius: 4px;
   box-shadow: 0 10px 32px #3a323414;
-  font:
-    13px/1.5 system-ui,
-    sans-serif;
+  font: 13px/1.5 var(--aig-font-family);
 }
 .aig-menu-item {
   padding: 6px 9px;

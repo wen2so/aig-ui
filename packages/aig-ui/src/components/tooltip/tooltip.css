@@ -7,9 +7,7 @@
   color: var(--aig-color-surface);
   background: var(--aig-color-text);
   border-radius: 3px;
-  font:
-    12px/1.5 system-ui,
-    sans-serif;
+  font: 12px/1.5 var(--aig-font-family);
   letter-spacing: 0.03em;
   overflow-wrap: anywhere;
   border: 1px solid color-mix(in srgb, var(--aig-color-surface) 30%, transparent);

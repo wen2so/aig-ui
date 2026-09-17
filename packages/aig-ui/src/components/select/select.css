@@ -55,9 +55,7 @@
   color: var(--aig-color-text);
   border: 1px solid var(--aig-color-border-subtle);
   border-radius: 4px;
-  font:
-    13px/1.5 system-ui,
-    sans-serif;
+  font: 13px/1.5 var(--aig-font-family);
   box-shadow: 0 12px 40px #3a323414;
 }
 .aig-select-item {
