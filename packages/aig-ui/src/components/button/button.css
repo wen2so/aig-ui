@@ -169,9 +169,6 @@
   --aig-color-focus: var(--aig-button-semantic);
   color: var(--aig-button-semantic);
 }
-.aig-button[data-tone]:not([data-tone='brand']) {
-  --aig-button-paint: var(--aig-button-semantic);
-}
 .aig-button[data-tone]:not([data-tone='brand']) .aig-button-contrast-content {
   color: white;
 }
@@ -302,9 +299,9 @@
     display: none;
   }
 }
-/* 无填充层级只留下极淡珍珠白反馈，文字保持原色，燃烧集中在边缘。 */
+/* 珍珠白本身已是浅色，保留完整不透明度以便在浅色画布上辨认交互填充。 */
 .aig-button:is([data-variant='outline'], [data-variant='ghost']) {
-  --aig-button-paint: color-mix(in srgb, #f5f3ee 12%, transparent);
+  --aig-button-paint: #f5f3ee;
 }
 .aig-button:is([data-variant='outline'], [data-variant='ghost']) .aig-button-contrast,
 .aig-button:is([data-variant='outline'], [data-variant='ghost']) .aig-button-heat {

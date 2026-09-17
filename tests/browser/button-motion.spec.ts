@@ -789,9 +789,13 @@ test('无填充按钮保留珍珠白反馈和原色文字，燃烧跟随语义�
     }
     await expect(button.locator('.aig-button-contrast')).toBeHidden();
     await expect(button.locator('.aig-button-heat')).toBeHidden();
-    expect(
-      await button.evaluate((el) => getComputedStyle(el).getPropertyValue('--aig-button-paint')),
-    ).toContain('12%');
+    await expect(button.locator('.aig-button-highlight')).not.toHaveAttribute('data-playing');
+    for (const tone of ['brand', 'success', 'danger']) {
+      await button.evaluate((el, tone) => el.setAttribute('data-tone', tone), tone);
+      await expect(button.locator('.aig-button-highlight')).toHaveCSS('fill', 'rgb(245, 243, 238)');
+      await expect(button.locator('.aig-button-highlight polygon').first()).toHaveCSS('fill-opacity', '1');
+    }
+    await button.screenshot({ path: test.info().outputPath(`pearl-${variant}.png`), scale: 'css' });
   }
   const button = page.locator('#example-variants .preview-actions > .aig-button').first();
   const colors = [];
