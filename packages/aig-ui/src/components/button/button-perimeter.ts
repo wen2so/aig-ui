@@ -27,7 +27,7 @@ export function useButtonPerimeter(frameRef: RefObject<HTMLSpanElement | null>, 
       rate = value;
       // 亮度与光晕随实际速率连续增强，视觉强度渐近饱和，速度仍可持续增长。
       button.style.setProperty('--aig-perimeter-energy', String(1 - Math.exp(-(value - 1) / 12)));
-      // 延长加速绕行阶段：49 倍速时各占周长的三分之一，约持续悬停 13 秒闭合。
+      // 49 倍速时各占周长的三分之一，约持续悬停 8 秒闭合。
       const progress = Math.min(1, Math.max(0, (value - 1) / 48));
       const heat = progress * progress * (3 - 2 * progress);
       button.style.setProperty('--aig-perimeter-heat', String(heat));
@@ -70,9 +70,9 @@ export function useButtonPerimeter(frameRef: RefObject<HTMLSpanElement | null>, 
       const step = (now: number) => {
         const elapsed = Math.max(0, (now - started) / 1000);
         if (accelerating) {
-          // 加速度从零平滑趋近每秒增加 4 倍速，速度随停留时间持续增长，不设上限。
+          // 加速度从零平滑趋近每秒增加 7 倍速，速度随停留时间持续增长，不设上限。
           // 不写入 Infinity，保证浏览器始终接收有限速率并保留当前运动位置。
-          setRate(from + 4 * (elapsed - 0.9 * (1 - Math.exp(-elapsed / 0.9))));
+          setRate(from + 7 * (elapsed - 0.9 * (1 - Math.exp(-elapsed / 0.9))));
           raf = requestAnimationFrame(step);
         } else {
           // 留出三秒逐渐减速、缩短线段与收回光晕。

@@ -622,7 +622,7 @@ test('三个等距亮头带渐隐尾迹加速绕行，高速连成光边并在�
         return { opacity: Number(style.opacity), filter: style.filter };
       });
   const idleLight = await light();
-  expect(idleLight.opacity).toBeCloseTo(0.12);
+  expect(idleLight.opacity).toBeCloseTo(0.08);
   expect(await rate()).toBe(1);
   await button.hover();
   await page.clock.runFor(300);
@@ -637,7 +637,10 @@ test('三个等距亮头带渐隐尾迹加速绕行，高速连成光边并在�
   expect(laterRate).toBeGreaterThan(3);
   await page.clock.runFor(3000);
   const fastestRate = await rate();
-  await expect(button.locator('.aig-button-frame .aig-button-line').first()).toHaveCSS('stroke-width', '1px');
+  await expect(button.locator('.aig-button-frame .aig-button-line').first()).toHaveCSS(
+    'stroke-width',
+    '0.55px',
+  );
   const coreBounds = await button
     .locator('.aig-button-contrast-frame .aig-button-line')
     .first()
@@ -655,7 +658,14 @@ test('三个等距亮头带渐隐尾迹加速绕行，高速连成光边并在�
   expect(fastestRate).toBeGreaterThan(laterRate);
   const fastLight = await light();
   expect(laterLight.opacity).toBeGreaterThan(idleLight.opacity);
-  expect(fastLight.opacity).toBeGreaterThan(laterLight.opacity);
+  // 加速提高后，第 6 秒已开始融合：移动线段变淡，完整光边逐渐显现。
+  expect(fastLight.opacity).toBeLessThan(laterLight.opacity);
+  expect(fastLight.opacity).toBeLessThanOrEqual(0.32);
+  expect(
+    await button
+      .locator('.aig-button-frame .aig-button-ring')
+      .evaluate((el) => Number(getComputedStyle(el).opacity)),
+  ).toBeGreaterThan(0);
   expect(fastLight.filter).toContain('drop-shadow');
   expect(fastLight.filter).not.toBe(idleLight.filter);
   const trail = button.locator('.aig-button-frame .aig-button-line').first();
@@ -686,8 +696,8 @@ test('三个等距亮头带渐隐尾迹加速绕行，高速连成光边并在�
   });
   const growingLengths = await lengths();
   growingLengths.forEach((length) => expect(length).toBeGreaterThan(3));
-  await page.clock.runFor(3000);
-  // 9 秒时仍保留间隔，给持续加速绕行留出更长时间。
+  await page.clock.runFor(1000);
+  // 7 秒时仍保留间隔，约 8 秒融合成完整光边。
   (await lengths()).forEach((length) => expect(length).toBeLessThan(100 / 3));
   await page.clock.runFor(6000);
   (await lengths()).forEach((length) => expect(length).toBeCloseTo(100 / 3, 3));
@@ -696,7 +706,7 @@ test('三个等距亮头带渐隐尾迹加速绕行，高速连成光边并在�
   const ring = button.locator('.aig-button-frame .aig-button-ring');
   await expect(ring).toHaveCSS('stroke-dasharray', 'none');
   await expect(ring).toHaveCSS('animation-name', 'none');
-  await expect(ring).toHaveCSS('opacity', '0.7');
+  await expect(ring).toHaveCSS('opacity', '0.32');
   const phases = await button
     .locator('.aig-button-frame .aig-button-line')
     .evaluateAll((lines) => lines.map((line) => parseFloat(getComputedStyle(line).strokeDashoffset)));
@@ -772,6 +782,11 @@ test('无填充按钮保留珍珠白反馈和原色文字，燃烧跟随语义�
       .locator(`#example-variants .preview-actions > .aig-button[data-variant=${variant}]`)
       .first();
     await button.hover();
+    if (variant === 'ghost') {
+      await expect(button.locator('.aig-button-frame')).toHaveCSS('background-image', 'none');
+      await button.evaluate((el) => el.setAttribute('aria-pressed', 'true'));
+      await expect(button).toHaveCSS('box-shadow', 'none');
+    }
     await expect(button.locator('.aig-button-contrast')).toBeHidden();
     await expect(button.locator('.aig-button-heat')).toBeHidden();
     expect(

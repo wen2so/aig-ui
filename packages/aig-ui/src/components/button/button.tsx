@@ -195,7 +195,7 @@ export function Button({
                     pathLength={100}
                     style={{
                       strokeDasharray: `0 calc(100 - var(--aig-perimeter-length, 3) * ${fraction}) calc(var(--aig-perimeter-length, 3) * ${fraction}) 0`,
-                      strokeWidth: `${0.25 + (1 - fraction) * 0.65}px`,
+                      strokeWidth: `${0.15 + (1 - fraction) * 0.35}px`,
                     }}
                   />
                 );

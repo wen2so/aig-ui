@@ -128,16 +128,14 @@
     center bottom;
 }
 /* 普通操作：连续矩形细框。 */
-/* 幽灵操作：底部基线。 */
+/* 幽灵操作不保留静态边框或底线。 */
 .aig-button[data-variant='ghost'] {
   --aig-button-edge: color-mix(in srgb, var(--aig-color-text) 16%, transparent);
   --aig-button-trace: color-mix(in srgb, var(--aig-color-mark) 55%, transparent);
   color: var(--aig-color-accent);
 }
 .aig-button[data-variant='ghost'] .aig-button-frame {
-  background-image: linear-gradient(var(--aig-button-edge), var(--aig-button-edge));
-  background-size: 100% 1px;
-  background-position: center bottom;
+  background-image: none;
 }
 /* 危险操作：危险色边界配合加厚的底线。 */
 .aig-button[data-variant='danger'] {
@@ -233,14 +231,14 @@
   --aig-line-heat-color: var(--aig-button-facet);
   --aig-line-glow: color-mix(
     in srgb,
-    var(--aig-line-heat-color) calc(var(--aig-line-glow-strength) * 95%),
+    var(--aig-line-heat-color) calc(var(--aig-line-glow-strength) * 45%),
     transparent
   );
   stroke: var(--aig-line-glow-color);
-  stroke-width: 1px;
+  stroke-width: 0.55px;
   stroke-dasharray: var(--aig-perimeter-length, 3) calc(100 - var(--aig-perimeter-length, 3));
   stroke-dashoffset: var(--aig-line-phase, 0px);
-  opacity: calc((0.12 + var(--aig-perimeter-energy, 0) * 0.58) * (1 - var(--aig-perimeter-fusion, 0)));
+  opacity: calc((0.08 + var(--aig-perimeter-energy, 0) * 0.24) * (1 - var(--aig-perimeter-fusion, 0)));
   /* 三层光晕分别形成贴线亮光、近处扩散和外围柔光，线芯保持锐利。 */
   filter: drop-shadow(0 0 calc(var(--aig-line-glow-strength) * 2px) var(--aig-line-glow))
     drop-shadow(0 0 calc(var(--aig-line-glow-strength) * 7px) var(--aig-line-glow))
@@ -257,17 +255,17 @@
   stroke-linecap: round;
   stroke-opacity: 1;
 }
-/* hover 立即显示清晰亮头，速度继续增强光晕与剩余亮度。 */
+/* hover 保留轻淡亮头，随速度温和增强光晕。 */
 .aig-button:is(:hover, :focus-visible):enabled .aig-button-line {
   --aig-line-glow-strength: calc(0.55 + var(--aig-perimeter-energy, 0) * 0.45);
-  stroke-width: 1px;
-  opacity: calc((0.5 + var(--aig-perimeter-energy, 0) * 0.2) * (1 - var(--aig-perimeter-fusion, 0)));
+  stroke-width: 0.55px;
+  opacity: calc((0.22 + var(--aig-perimeter-energy, 0) * 0.1) * (1 - var(--aig-perimeter-fusion, 0)));
 }
 /* 完整光边没有亮头、尾端和位移动画，高速时呈现稳定的整体。 */
 .aig-button .aig-button-ring {
-  stroke-width: 0.9px;
+  stroke-width: 0.5px;
   stroke-dasharray: none;
-  opacity: calc(var(--aig-perimeter-fusion, 0) * 0.7);
+  opacity: calc(var(--aig-perimeter-fusion, 0) * 0.32);
   animation: none;
 }
 .aig-button-line:nth-child(2) {
@@ -455,6 +453,9 @@
 .aig-button:is([aria-pressed='true'], [aria-expanded='true']) {
   color: var(--aig-color-accent);
   box-shadow: inset 0 -3px color-mix(in srgb, var(--aig-button-trace) 70%, transparent);
+}
+.aig-button[data-variant='ghost']:is([aria-pressed='true'], [aria-expanded='true']) {
+  box-shadow: none;
 }
 .aig-button:is([aria-pressed='true'], [aria-expanded='true']) .aig-button-frame::before {
   inset: 2px;
