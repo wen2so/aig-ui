@@ -47,6 +47,7 @@ export function AiAssistant({
         <Conversation
           firstMessageId={messages[0]?.id}
           lastMessageId={messages.at(-1)?.id}
+          contentVersion={JSON.stringify([messages.at(-1)?.content, messages.at(-1)?.status])}
           style={{ height: 360 }}
         >
           {messages.map((message) => (

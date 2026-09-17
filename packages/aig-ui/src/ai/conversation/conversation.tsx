@@ -5,6 +5,8 @@ import { Button } from '../../components/button/button.js';
 export interface ConversationProps extends Omit<ComponentPropsWithRef<'div'>, 'ref'> {
   firstMessageId?: string;
   lastMessageId?: string;
+  /** 消息正文或状态更新时改变；普通父级重渲染保持不变。 */
+  contentVersion?: string | number;
   label?: string;
 }
 /** 只在用户位于底部时跟随更新，保留历史阅读位置。 */
@@ -12,6 +14,7 @@ export function Conversation({
   children,
   firstMessageId,
   lastMessageId,
+  contentVersion,
   label = '对话记录',
   className = '',
   onScroll,
@@ -34,7 +37,7 @@ export function Conversation({
       setUnread(true);
     }
     previous.current = { first: firstMessageId, height: element.scrollHeight };
-  }, [children, firstMessageId, lastMessageId]);
+  }, [contentVersion, firstMessageId, lastMessageId]);
   useLayoutEffect(() => {
     if (!body.current || typeof ResizeObserver === 'undefined') return;
     const observer = new ResizeObserver(() => {
