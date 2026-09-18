@@ -226,7 +226,35 @@
     "./manifest.json": "./dist/manifest.json",
     "./llms.txt": "./dist/llms.txt",
     "./metadata/*": "./dist/*",
-    "./design.md": "./dist/design.md"
+    "./design.md": "./dist/design.md",
+    "./anchor": {
+      "types": "./dist/components/anchor/anchor.d.ts",
+      "import": "./dist/components/anchor/anchor.js"
+    },
+    "./flex": {
+      "types": "./dist/components/flex/flex.d.ts",
+      "import": "./dist/components/flex/flex.js"
+    },
+    "./grid": {
+      "types": "./dist/components/grid/grid.d.ts",
+      "import": "./dist/components/grid/grid.js"
+    },
+    "./layout": {
+      "types": "./dist/components/layout/layout.d.ts",
+      "import": "./dist/components/layout/layout.js"
+    },
+    "./space": {
+      "types": "./dist/components/space/space.d.ts",
+      "import": "./dist/components/space/space.js"
+    },
+    "./splitter": {
+      "types": "./dist/components/splitter/splitter.d.ts",
+      "import": "./dist/components/splitter/splitter.js"
+    },
+    "./steps": {
+      "types": "./dist/components/steps/steps.d.ts",
+      "import": "./dist/components/steps/steps.js"
+    }
   },
   "peerDependencies": {
     "react": "19.3.0",

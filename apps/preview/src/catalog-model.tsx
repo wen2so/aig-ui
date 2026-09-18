@@ -7,8 +7,16 @@ export const groups = [
     caption: '操作、图标与排版',
     names: 'Button IconButton CopyButton Icon Text Heading Link',
   },
-  { label: '布局', caption: '分区与内容结构', names: 'Panel Separator PageHeader' },
-  { label: '导航', caption: '页面与内容切换', names: 'Navigation Breadcrumb DropdownMenu Pagination Tabs' },
+  {
+    label: '布局',
+    caption: '分区与内容结构',
+    names: 'Flex Space Grid Layout Splitter Panel Separator PageHeader',
+  },
+  {
+    label: '导航',
+    caption: '页面与内容切换',
+    names: 'Navigation Breadcrumb DropdownMenu Pagination Tabs Steps Anchor',
+  },
   {
     label: '数据录入',
     caption: '输入与选择',

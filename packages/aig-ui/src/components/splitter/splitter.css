@@ -1,0 +1,26 @@
+.aig-splitter {
+  display: grid;
+  min-width: 0;
+  border: 1px solid var(--aig-color-border-subtle);
+}
+.aig-splitter-panel {
+  min-width: 0;
+  min-height: 0;
+  padding: 16px;
+  overflow: auto;
+}
+.aig-splitter-handle {
+  touch-action: none;
+  cursor: col-resize;
+  background: linear-gradient(var(--aig-color-border-control), var(--aig-color-border-control)) center / 1px
+    100% no-repeat;
+}
+.aig-splitter[data-orientation='vertical'] .aig-splitter-handle {
+  cursor: row-resize;
+  background-size: 100% 1px;
+}
+.aig-splitter-handle:is(:hover, :focus-visible) {
+  background-color: var(--aig-color-accent-soft);
+  outline: 1px solid var(--aig-color-focus);
+  outline-offset: -1px;
+}

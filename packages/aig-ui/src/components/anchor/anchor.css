@@ -1,0 +1,18 @@
+.aig-anchor {
+  display: flex;
+  flex-direction: column;
+  border-inline-start: 1px solid var(--aig-color-border-subtle);
+}
+.aig-anchor a {
+  padding: 8px 14px;
+  text-decoration: none;
+  color: var(--aig-color-text-muted);
+  border-inline-start: 2px solid transparent;
+  margin-inline-start: -1px;
+  overflow-wrap: anywhere;
+}
+.aig-anchor a:is(:hover, [aria-current]) {
+  border-color: var(--aig-color-accent);
+  color: var(--aig-color-accent);
+  background: var(--aig-color-accent-soft);
+}

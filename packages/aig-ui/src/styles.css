@@ -1,3 +1,7 @@
+@import './components/steps/steps.css';
+@import './components/splitter/splitter.css';
+@import './components/layout/layout.css';
+@import './components/anchor/anchor.css';
 @import './internal/icon-masks.css';
 @import './components/table/table.css';
 @import './components/page-header/page-header.css';

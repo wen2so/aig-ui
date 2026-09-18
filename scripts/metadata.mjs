@@ -103,7 +103,12 @@ for (const group of ['components', 'motion', 'ai']) {
     }
   }
 }
-if (components.length !== 50) throw Error(`组件目录数量异常：${components.length}`);
+if (new Set(components.map((entry) => entry.name)).size !== components.length)
+  throw Error('组件目录存在重复名称');
+for (const entry of components) {
+  const subpath = entry.importPath.replace('aig-ui', '.');
+  if (!pkg.exports[subpath]) throw Error(`组件缺少公开导出：${entry.name} (${subpath})`);
+}
 const configuration = {
   name: 'AigProvider',
   importPath: 'aig-ui',
