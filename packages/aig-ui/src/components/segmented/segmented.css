@@ -1,0 +1,49 @@
+.aig-segmented {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.aig-segmented legend {
+  padding: 0 0 8px;
+  font-size: 12px;
+  color: var(--aig-color-text-muted);
+}
+.aig-segmented > div {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid var(--aig-color-border-control);
+}
+.aig-segmented label {
+  position: relative;
+  min-width: 0;
+  cursor: pointer;
+}
+.aig-segmented input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.aig-segmented span {
+  display: block;
+  padding: 6px 14px;
+  border: 1px solid transparent;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.aig-segmented input:checked + span {
+  color: var(--aig-color-accent);
+  background: var(--aig-color-accent-soft);
+  border-color: var(--aig-color-border-control);
+}
+.aig-segmented input:focus-visible + span {
+  outline: 2px solid var(--aig-color-focus);
+  outline-offset: 1px;
+}
+.aig-segmented input:disabled + span {
+  opacity: 0.5;
+  cursor: default;
+}

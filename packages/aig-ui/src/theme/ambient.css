@@ -1,6 +1,6 @@
 /* 正文保持稳定，链接以加粗下划线和背景建立明确的触达范围。 */
 :is(.aig-link, .aig-breadcrumb a, .aig-source-list a, .aig-message-content a, .aig-artifact-content a) {
-  border-radius: 2px;
+  border-radius: var(--aig-radius-control);
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
   transition:
@@ -48,7 +48,7 @@
 .aig-toast-close {
   flex: none;
   align-self: start;
-  border-radius: 50%;
+  border-radius: var(--aig-radius-control);
   transition:
     background-color 180ms,
     box-shadow 180ms,

@@ -11,7 +11,7 @@
 .aig-panel-header,
 .aig-panel-body,
 .aig-panel-footer {
-  padding: var(--aig-space-4);
+  padding: var(--aig-container-padding, var(--aig-space-4));
   overflow-wrap: anywhere;
 }
 .aig-panel-header,
@@ -30,7 +30,4 @@
   overflow: auto;
   min-block-size: 0;
   flex: 1;
-}
-[data-aig-density='compact'] :is(.aig-panel-header, .aig-panel-body, .aig-panel-footer) {
-  padding: var(--aig-space-3);
 }

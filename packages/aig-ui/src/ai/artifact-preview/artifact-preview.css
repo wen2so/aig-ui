@@ -32,7 +32,7 @@
   min-height: 26px;
   padding: 2px 6px;
   border: 1px solid color-mix(in srgb, var(--aig-color-border-control) 55%, transparent);
-  border-radius: 3px;
+  border-radius: var(--aig-radius-control);
   color: var(--aig-color-text);
   background: transparent;
   font-size: 12px;

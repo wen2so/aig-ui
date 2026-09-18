@@ -1,7 +1,7 @@
 /* 骨架：极淡玫瑰底 + 扫光带，保持"未定内容"的平静感。 */
 .aig-skeleton {
   min-height: 12px;
-  border-radius: 3px;
+  border-radius: var(--aig-radius-control);
   background: linear-gradient(
     110deg,
     color-mix(in srgb, var(--aig-color-mark) 8%, transparent),

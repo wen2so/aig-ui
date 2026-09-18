@@ -74,7 +74,7 @@
       "$type": "color",
       "$value": {
         "colorSpace": "srgb",
-        "components": [0.9019607843137255, 0.0, 0.07058823529411765]
+        "components": [0.9019607843137255, 0, 0.07058823529411765]
       }
     },
     "success": {
@@ -117,6 +117,13 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [0.3215686274509804, 0.3215686274509804, 0.3568627450980392]
+      }
+    },
+    "interaction": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.9607843137254902, 0.9529411764705882, 0.9333333333333333]
       }
     }
   },
@@ -210,21 +217,21 @@
     "control": {
       "$type": "dimension",
       "$value": {
-        "value": 4,
+        "value": 0,
         "unit": "px"
       }
     },
     "card": {
       "$type": "dimension",
       "$value": {
-        "value": 12,
+        "value": 0,
         "unit": "px"
       }
     },
     "panel": {
       "$type": "dimension",
       "$value": {
-        "value": 16,
+        "value": 0,
         "unit": "px"
       }
     }

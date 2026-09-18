@@ -1,6 +1,6 @@
 # aig-ui
 
-暖白精密线绘 React 组件库，当前为本地实验性 `0.1.0-alpha.0`。提供 40 个通用组件、2 个加载动效组件、8 个 AI 组件、AigProvider 主题作用域与 5 个 Registry 页面组合。
+暖白精密线绘 React 组件库，当前为本地实验性 `0.1.0-alpha.0`。提供 61 个通用组件、2 个加载动效组件、8 个 AI 组件、AigProvider 主题作用域与 5 个 Registry 页面组合。
 
 ## 接入
 

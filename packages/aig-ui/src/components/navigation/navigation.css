@@ -13,7 +13,7 @@
   letter-spacing: 0.02em;
   text-decoration: none;
   overflow-wrap: anywhere;
-  border-radius: 3px;
+  border-radius: var(--aig-radius-control);
   transition:
     color 200ms linear,
     background-color 240ms,

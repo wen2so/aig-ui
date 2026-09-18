@@ -22,6 +22,11 @@ export interface AigBrand {
   accentColor?: string;
 }
 const BrandContext = createContext<AigBrand>({});
+const ConfigurationContext = createContext({
+  theme: 'warm',
+  density: 'comfortable' as 'comfortable' | 'compact',
+  material: 'glass' as 'glass' | 'solid',
+});
 /** 读取最近作用域的品牌配置。 */
 export function useAigBrand() {
   return useContext(BrandContext);
@@ -108,19 +113,19 @@ export interface AigProviderProps extends ComponentPropsWithRef<'div'> {
   palette?: AigPalette;
   /** 主题字体；省略的字段继承外层 Token，字符串按 CSS 原样使用。 */
   font?: AigFont;
-  /** 主题名称，默认 warm。 */
+  /** 主题名称，省略时继承外层，最外层默认 warm。 */
   theme?: string;
-  /** 布局密度，默认 comfortable。 */
+  /** 布局密度，省略时继承外层，最外层默认 comfortable。 */
   density?: 'comfortable' | 'compact';
-  /** 容器材质，默认 glass。 */
+  /** 容器材质，省略时继承外层，最外层默认 glass。 */
   material?: 'solid' | 'glass';
   style?: CSSProperties & Record<`--aig-${string}`, string | number>;
 }
 /** 浮层挂载到当前主题内部，继承宿主覆盖的 CSS 变量。 */
 export function AigProvider({
-  theme = 'warm',
-  density = 'comfortable',
-  material = 'glass',
+  theme,
+  density,
+  material,
   brand,
   palette,
   font,
@@ -129,6 +134,12 @@ export function AigProvider({
   ...props
 }: AigProviderProps) {
   const inheritedBrand = useAigBrand();
+  const inheritedConfiguration = useContext(ConfigurationContext);
+  const configuration = {
+    theme: theme ?? inheritedConfiguration.theme,
+    density: density ?? inheritedConfiguration.density,
+    material: material ?? inheritedConfiguration.material,
+  };
   const resolvedBrand = { ...inheritedBrand, ...brand };
   const color = brand?.color;
   const accent = brand?.accentColor ?? (color ? `color-mix(in srgb, ${color} 58%, #202024)` : undefined);
@@ -159,15 +170,17 @@ export function AigProvider({
     <div
       {...props}
       style={brandStyle}
-      data-aig-theme={theme}
-      data-aig-density={density}
-      data-aig-material={material}
+      data-aig-theme={configuration.theme}
+      data-aig-density={configuration.density}
+      data-aig-material={configuration.material}
     >
       <BrandContext.Provider value={resolvedBrand}>
-        <PortalContext.Provider value={container}>
-          {children}
-          <div ref={setContainer} className="aig-portal-container" />
-        </PortalContext.Provider>
+        <ConfigurationContext.Provider value={configuration}>
+          <PortalContext.Provider value={container}>
+            {children}
+            <div ref={setContainer} className="aig-portal-container" />
+          </PortalContext.Provider>
+        </ConfigurationContext.Provider>
       </BrandContext.Provider>
     </div>
   );

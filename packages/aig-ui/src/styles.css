@@ -1,3 +1,9 @@
+@import './components/timeline/timeline.css';
+@import './components/statistic/statistic.css';
+@import './components/segmented/segmented.css';
+@import './components/popconfirm/popconfirm.css';
+@import './components/image/image.css';
+@import './components/avatar/avatar.css';
 @import './components/upload/upload.css';
 @import './components/tree-select/tree-select.css';
 @import './components/tree/tree.css';
@@ -54,6 +60,7 @@
 @import './theme/brand-scene.css';
 @import './theme/geometry.css';
 @import './theme/ambient.css';
+@import './theme/precision.css';
 :where([data-aig-theme]) {
   color: var(--aig-color-text);
   font-family: var(--aig-font-family);

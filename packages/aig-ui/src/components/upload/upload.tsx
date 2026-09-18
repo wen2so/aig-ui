@@ -69,7 +69,11 @@ export function Upload({
       await onUpload(item.file, {
         signal: controller.signal,
         onProgress: (percent) => {
-          if (!controller.signal.aborted && Number.isFinite(percent))
+          if (
+            !controller.signal.aborted &&
+            controllers.current.get(item.id) === controller &&
+            Number.isFinite(percent)
+          )
             patch(item.id, { progress: Math.max(0, Math.min(100, percent)) });
         },
       });

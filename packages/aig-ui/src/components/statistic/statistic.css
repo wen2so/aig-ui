@@ -1,0 +1,23 @@
+.aig-statistic {
+  border-top: 1px solid var(--aig-color-border-control);
+  padding-block: 16px;
+  min-width: 0;
+}
+.aig-statistic-title,
+.aig-statistic p {
+  font-size: 12px;
+  color: var(--aig-color-text-muted);
+  margin: 0;
+}
+.aig-statistic-value {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  padding-block: 8px;
+  font-size: 13px;
+}
+.aig-statistic strong {
+  font: 500 clamp(24px, 4vw, 36px) var(--aig-font-mono);
+  overflow-wrap: anywhere;
+}

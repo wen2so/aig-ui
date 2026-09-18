@@ -52,7 +52,7 @@
 
 ## 材质与密度
 
-`material` 影响 Card、Panel、Dialog 与浮层的表面，`density` 影响 Card、Panel、Table 的间距。两者都写成 `data-aig-` 属性，可在同一页面按区域切换。
+`material` 影响 Card、Panel、Dialog 与浮层的表面，`density` 影响 Card、Panel、Table 的间距。内层 Provider 未指定的 theme、density、material 继承外层配置，最外层才使用默认值。输入控件、容器和表格的间距通过密度变量统一。两者都写成 `data-aig-` 属性，可在同一页面按区域切换。
 
 ```tsx
 <AigProvider material="solid" density="compact">

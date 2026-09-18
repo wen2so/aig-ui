@@ -1,6 +1,6 @@
 'use client';
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex -- WAI-ARIA 可调 separator 以范围属性和键盘操作提供交互。 */
-import { useId, useRef, type ComponentPropsWithRef, type ReactNode } from 'react';
+import { useId, useImperativeHandle, useRef, type ComponentPropsWithRef, type ReactNode } from 'react';
 import { useControllableValue } from '../../internal/use-controllable-value.js';
 export interface SplitterProps extends Omit<
   ComponentPropsWithRef<'div'>,
@@ -29,10 +29,12 @@ export function Splitter({
   onValueChange,
   className = '',
   style,
+  ref: forwardedRef,
   ...props
 }: SplitterProps) {
   const [position, setPosition] = useControllableValue(value, defaultValue, onValueChange);
   const root = useRef<HTMLDivElement>(null);
+  useImperativeHandle(forwardedRef, () => root.current!, []);
   const id = useId();
   const lower = Math.min(100, Math.max(0, Number.isFinite(min) ? min : 15));
   const upper = Math.min(100, Math.max(lower, Number.isFinite(max) ? max : 85));

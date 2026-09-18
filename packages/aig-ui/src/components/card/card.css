@@ -1,15 +1,12 @@
 .aig-card {
   min-inline-size: 0;
-  padding: var(--aig-space-4);
+  padding: var(--aig-container-padding, var(--aig-space-4));
   border: 1px solid var(--aig-color-border-subtle);
   border-radius: var(--aig-radius-card);
   background: var(--aig-color-surface);
   color: var(--aig-color-text);
   font-size: 13px;
   overflow-wrap: anywhere;
-}
-[data-aig-density='compact'] .aig-card {
-  padding: var(--aig-space-3);
 }
 @media (forced-colors: active) {
   .aig-card {

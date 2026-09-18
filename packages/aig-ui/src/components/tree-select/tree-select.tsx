@@ -39,7 +39,7 @@ export function TreeSelect({
   return (
     <div {...props} className={`aig-tree-select ${className}`}>
       <input type="hidden" name={name} form={form} disabled={disabled} value={selected ?? ''} />
-      <Popover.Root open={open} onOpenChange={setOpen}>
+      <Popover.Root open={open && !disabled} onOpenChange={setOpen}>
         <Popover.Trigger
           render={
             <Button

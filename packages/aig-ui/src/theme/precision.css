@@ -1,0 +1,122 @@
+/* Button 的直角、稳定轮廓和局部刻面延伸到控件族；阅读内容保持静态。 */
+[data-aig-density='comfortable'] {
+  --aig-container-padding: 24px;
+  --aig-cell-padding: 9px 12px;
+  --aig-control-padding-block: 7px;
+}
+[data-aig-density='compact'] {
+  --aig-container-padding: 16px;
+  --aig-cell-padding: 5px 8px;
+  --aig-control-padding-block: 4px;
+}
+
+/* 输入、菜单和分段选择共用表面色，语义反馈仍由各组件状态决定。 */
+:is(.aig-input, .aig-textarea, .aig-select-trigger, .aig-combobox-input) {
+  padding-block: var(--aig-control-padding-block, 7px);
+}
+:is(.aig-input, .aig-textarea, .aig-select-trigger, .aig-combobox-input):is(:hover, :focus-visible):enabled {
+  background-color: var(--aig-color-interaction);
+}
+:is(
+  .aig-tab,
+  .aig-navigation-item,
+  .aig-select-item,
+  .aig-combobox-item,
+  .aig-menu-item,
+  .aig-tree-row,
+  .aig-segmented span
+) {
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease;
+}
+.aig-navigation-item::before {
+  width: 6px;
+  height: 6px;
+  border: 0;
+  transform: none;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  background: currentColor;
+}
+.aig-tab[data-active] {
+  background: linear-gradient(120deg, var(--aig-color-accent-soft) 0 84%, transparent 84%);
+}
+.aig-checkbox:is(:checked, :indeterminate),
+.aig-switch:checked {
+  background-color: var(--aig-color-accent-soft);
+}
+
+/* 容器使用单一边界；激活只增加角部短线，避免多层卡片阴影叠加。 */
+:is(
+  .aig-card,
+  .aig-panel,
+  .aig-empty-state,
+  .aig-conversation,
+  .aig-prompt-input,
+  .aig-artifact-preview,
+  .aig-confirmation,
+  .aig-tool-result
+) {
+  border-color: var(--aig-color-border-subtle);
+}
+.aig-heading {
+  text-wrap: balance;
+}
+:is(.aig-text, .aig-description-list, .aig-message-content, .aig-artifact-content) {
+  overflow-wrap: anywhere;
+}
+:is(.aig-dialog, .aig-popover, .aig-menu, .aig-select-popup, .aig-combobox-popup, .aig-toast) {
+  border-top-color: var(--aig-color-border-control);
+}
+.aig-table th {
+  background-color: var(--aig-color-interaction);
+  background-image: none;
+}
+.aig-table tbody tr:hover {
+  background: var(--aig-color-interaction);
+}
+.aig-badge {
+  border-inline-start-width: 2px;
+  letter-spacing: 0.02em;
+}
+.aig-empty-state,
+.aig-result {
+  text-align: start;
+}
+.aig-progress {
+  height: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(
+    .aig-tab,
+    .aig-navigation-item,
+    .aig-select-item,
+    .aig-combobox-item,
+    .aig-menu-item,
+    .aig-tree-row,
+    .aig-segmented span
+  ) {
+    transition: none;
+  }
+}
+@media (forced-colors: active) {
+  :is(.aig-tab[data-active], .aig-tree-row[data-selected], .aig-segmented input:checked + span) {
+    background: Highlight;
+    color: HighlightText;
+    border-color: Highlight;
+  }
+  :is(.aig-input, .aig-textarea, .aig-select-trigger, .aig-combobox-input):is(
+      :hover,
+      :focus-visible
+    ):enabled {
+    background: Field;
+    color: FieldText;
+  }
+  .aig-table th,
+  .aig-table tbody tr:hover {
+    background: Canvas;
+    color: CanvasText;
+  }
+}

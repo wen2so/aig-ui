@@ -17,7 +17,7 @@
   background: var(--aig-color-surface);
   color: var(--aig-color-text);
   border: 1px solid var(--aig-color-border-subtle);
-  border-radius: 4px;
+  border-radius: var(--aig-radius-control);
   box-shadow: 0 8px 32px #3a323414;
   font-family: var(--aig-font-family);
   font-size: 13px;

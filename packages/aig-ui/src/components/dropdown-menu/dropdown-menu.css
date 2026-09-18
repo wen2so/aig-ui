@@ -10,13 +10,13 @@
   background: var(--aig-color-surface);
   color: var(--aig-color-text);
   border: 1px solid var(--aig-color-border-subtle);
-  border-radius: 4px;
+  border-radius: var(--aig-radius-control);
   box-shadow: 0 10px 32px #3a323414;
   font: 13px/1.5 var(--aig-font-family);
 }
 .aig-menu-item {
   padding: 6px 9px;
-  border-radius: 2px;
+  border-radius: var(--aig-radius-control);
   outline: none;
   cursor: pointer;
   overflow-wrap: anywhere;

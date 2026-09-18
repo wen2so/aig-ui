@@ -40,7 +40,7 @@
   padding: 10px;
   font-size: 12px;
   background: var(--aig-color-surface-muted);
-  border-radius: 4px;
+  border-radius: var(--aig-radius-control);
 }
 .aig-message-content a {
   color: var(--aig-color-accent);

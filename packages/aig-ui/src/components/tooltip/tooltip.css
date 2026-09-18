@@ -6,7 +6,7 @@
   padding: 5px 10px;
   color: var(--aig-color-surface);
   background: var(--aig-color-text);
-  border-radius: 3px;
+  border-radius: var(--aig-radius-control);
   font: 12px/1.5 var(--aig-font-family);
   letter-spacing: 0.03em;
   overflow-wrap: anywhere;

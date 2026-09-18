@@ -301,7 +301,7 @@
 }
 /* 珍珠白本身已是浅色，保留完整不透明度以便在浅色画布上辨认交互填充。 */
 .aig-button:is([data-variant='outline'], [data-variant='ghost']) {
-  --aig-button-paint: #f5f3ee;
+  --aig-button-paint: var(--aig-color-interaction);
 }
 .aig-button:is([data-variant='outline'], [data-variant='ghost']) .aig-button-contrast,
 .aig-button:is([data-variant='outline'], [data-variant='ghost']) .aig-button-heat {

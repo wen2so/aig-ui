@@ -4,7 +4,7 @@
   overflow-x: auto;
   border: 1px solid var(--aig-color-border-subtle);
   min-inline-size: 0;
-  border-radius: 4px;
+  border-radius: var(--aig-radius-control);
 }
 .aig-table {
   width: 100%;
@@ -23,7 +23,7 @@
 }
 .aig-table th,
 .aig-table td {
-  padding: 7px 10px;
+  padding: var(--aig-cell-padding, 9px 12px);
   text-align: start;
   border-top: 1px solid var(--aig-color-border-subtle);
   vertical-align: middle;
@@ -63,9 +63,6 @@
 .aig-table th + th,
 .aig-table td + td {
   border-inline-start: 1px solid color-mix(in srgb, var(--aig-color-border-subtle) 45%, transparent);
-}
-[data-aig-density='compact'] .aig-table :is(th, td) {
-  padding: 4px 8px;
 }
 @media (prefers-reduced-motion: reduce) {
   .aig-table tbody tr {

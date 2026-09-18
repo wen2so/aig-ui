@@ -5,6 +5,23 @@ import { LoadingSequence } from '../packages/aig-ui/src/motion/index.js';
 
 afterEach(() => vi.unstubAllGlobals());
 
+it('嵌套主题继承外层密度材质，显式局部覆盖不影响兄弟作用域', () => {
+  const tree = (density: 'compact' | 'comfortable') => (
+    <AigProvider theme="workspace" density={density} material="solid">
+      <AigProvider data-testid="inherited" />
+      <AigProvider data-testid="overridden" density="comfortable" material="glass" />
+    </AigProvider>
+  );
+  const { rerender } = render(tree('compact'));
+  expect(screen.getByTestId('inherited')).toHaveAttribute('data-aig-theme', 'workspace');
+  expect(screen.getByTestId('inherited')).toHaveAttribute('data-aig-density', 'compact');
+  expect(screen.getByTestId('inherited')).toHaveAttribute('data-aig-material', 'solid');
+  expect(screen.getByTestId('overridden')).toHaveAttribute('data-aig-density', 'comfortable');
+  expect(screen.getByTestId('overridden')).toHaveAttribute('data-aig-material', 'glass');
+  rerender(tree('comfortable'));
+  expect(screen.getByTestId('inherited')).toHaveAttribute('data-aig-density', 'comfortable');
+});
+
 it('品牌图形与加载图标按作用域继承，局部覆盖保留禁用语义', () => {
   const click = vi.fn();
   const { container } = render(

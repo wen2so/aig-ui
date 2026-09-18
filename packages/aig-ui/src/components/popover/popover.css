@@ -10,7 +10,7 @@
   background: var(--aig-color-surface);
   color: var(--aig-color-text);
   border: 1px solid var(--aig-color-border-subtle);
-  border-radius: 4px;
+  border-radius: var(--aig-radius-control);
   box-shadow: 0 12px 40px #3a323414;
   font:
     13px/1.6 system-ui,

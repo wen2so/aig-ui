@@ -23,7 +23,7 @@
   overflow-wrap: anywhere;
   border-bottom: 1px solid transparent;
   padding: 5px 7px;
-  border-radius: 3px;
+  border-radius: var(--aig-radius-control);
   cursor: pointer;
   transition:
     border-color 240ms linear,

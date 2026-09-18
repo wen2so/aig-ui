@@ -13,7 +13,7 @@
 .aig-tool-result summary {
   padding: 5px 8px;
   border-bottom: 1px solid var(--aig-color-border-subtle);
-  border-radius: 2px;
+  border-radius: var(--aig-radius-control);
   transition:
     background-color 200ms,
     border-color 240ms,

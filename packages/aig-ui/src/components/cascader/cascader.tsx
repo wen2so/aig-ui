@@ -45,7 +45,7 @@ export function Cascader({
     <div {...props} className={`aig-cascader ${className}`}>
       <input type="hidden" name={name} form={form} disabled={disabled} value={JSON.stringify(selected)} />
       <Popover.Root
-        open={open}
+        open={open && !disabled}
         onOpenChange={(next) => {
           if (next) setDraft(selected);
           setOpen(next);

@@ -26,7 +26,7 @@
   max-height: min(300px, var(--available-height));
   overflow-y: auto;
   border: 1px solid var(--aig-color-border-subtle);
-  border-radius: 4px;
+  border-radius: var(--aig-radius-control);
   padding: 5px;
   background: var(--aig-color-surface);
   color: var(--aig-color-text);
@@ -38,7 +38,7 @@
   justify-content: space-between;
   gap: 10px;
   padding: 6px 9px;
-  border-radius: 2px;
+  border-radius: var(--aig-radius-control);
   cursor: pointer;
   overflow-wrap: anywhere;
   transition:

@@ -33,7 +33,7 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   background: var(--aig-color-surface-muted);
-  border-radius: 4px;
+  border-radius: var(--aig-radius-control);
   padding: 10px;
   font-size: 12px;
 }

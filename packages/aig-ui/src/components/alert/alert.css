@@ -5,7 +5,7 @@
   border: 1px solid color-mix(in srgb, currentColor 24%, transparent);
   border-inline-start-width: 2px;
   border-inline-start-color: currentColor;
-  border-radius: 3px;
+  border-radius: var(--aig-radius-control);
   color: var(--aig-color-info);
   background: color-mix(in srgb, currentColor 5%, transparent);
   font-size: 13px;

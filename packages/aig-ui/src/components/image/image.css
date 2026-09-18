@@ -1,0 +1,41 @@
+.aig-image {
+  margin: 0;
+  min-width: 0;
+}
+.aig-image img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+.aig-image-trigger {
+  display: block;
+  border: 1px solid var(--aig-color-border-subtle);
+  padding: 0;
+  background: transparent;
+  max-width: 100%;
+  cursor: zoom-in;
+}
+.aig-image-fallback {
+  display: grid;
+  place-items: center;
+  min-height: 120px;
+  padding: 16px;
+  border: 1px dashed var(--aig-color-border-control);
+  color: var(--aig-color-text-muted);
+  font-size: 13px;
+}
+.aig-image figcaption {
+  margin-top: 8px;
+  color: var(--aig-color-text-muted);
+  font-size: 12px;
+}
+.aig-image-dialog {
+  width: min(880px, calc(100vw - 40px));
+}
+.aig-image-dialog > img {
+  display: block;
+  width: 100%;
+  max-height: 65vh;
+  object-fit: contain;
+}

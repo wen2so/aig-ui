@@ -1,0 +1,14 @@
+.aig-popconfirm {
+  max-width: min(360px, calc(100vw - 40px));
+}
+.aig-popconfirm [role='alert'] {
+  color: var(--aig-color-danger);
+  font-size: 13px;
+}
+.aig-popconfirm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}

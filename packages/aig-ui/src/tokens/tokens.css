@@ -17,6 +17,7 @@
   --aig-color-signal: rgb(86 139 155);
   --aig-color-info: rgb(29 78 216);
   --aig-color-neutral: rgb(82 82 91);
+  --aig-color-interaction: rgb(245 243 238);
   --aig-font-family: Inter, 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
   --aig-font-display: Inter, 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
   --aig-font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
@@ -30,9 +31,9 @@
   --aig-space-8: 40px;
   --aig-space-9: 48px;
   --aig-space-10: 64px;
-  --aig-radius-control: 4px;
-  --aig-radius-card: 12px;
-  --aig-radius-panel: 16px;
+  --aig-radius-control: 0px;
+  --aig-radius-card: 0px;
+  --aig-radius-panel: 0px;
   --aig-motion-breath-period: 4800ms;
   --aig-motion-rest-period: 7200ms;
   --aig-motion-glint-period: 6400ms;

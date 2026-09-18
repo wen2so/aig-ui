@@ -286,6 +286,30 @@
     "./upload": {
       "types": "./dist/components/upload/upload.d.ts",
       "import": "./dist/components/upload/upload.js"
+    },
+    "./avatar": {
+      "types": "./dist/components/avatar/avatar.d.ts",
+      "import": "./dist/components/avatar/avatar.js"
+    },
+    "./image": {
+      "types": "./dist/components/image/image.d.ts",
+      "import": "./dist/components/image/image.js"
+    },
+    "./popconfirm": {
+      "types": "./dist/components/popconfirm/popconfirm.d.ts",
+      "import": "./dist/components/popconfirm/popconfirm.js"
+    },
+    "./segmented": {
+      "types": "./dist/components/segmented/segmented.d.ts",
+      "import": "./dist/components/segmented/segmented.js"
+    },
+    "./statistic": {
+      "types": "./dist/components/statistic/statistic.d.ts",
+      "import": "./dist/components/statistic/statistic.js"
+    },
+    "./timeline": {
+      "types": "./dist/components/timeline/timeline.d.ts",
+      "import": "./dist/components/timeline/timeline.js"
     }
   },
   "peerDependencies": {

@@ -1,4 +1,4 @@
-/* 开关保留胶囊轨道与菱形内核，平移表达开闭状态。 */
+/* 开关使用直角轨道与菱形内核，平移表达开闭状态。 */
 .aig-switch {
   appearance: none;
   box-sizing: border-box;
@@ -10,7 +10,7 @@
   vertical-align: middle;
   cursor: pointer;
   border: 1px solid color-mix(in srgb, var(--aig-color-border-control) 60%, transparent);
-  border-radius: 99px;
+  border-radius: var(--aig-radius-control);
   background-color: transparent;
 
   transition:

@@ -11,7 +11,7 @@
   overflow-wrap: anywhere;
   max-inline-size: 100%;
   border: 1px solid color-mix(in srgb, currentColor 28%, transparent);
-  border-radius: 99px;
+  border-radius: var(--aig-radius-control);
   font-variant-numeric: tabular-nums;
   gap: 5px;
 }

@@ -1,5 +1,5 @@
 'use client';
-import { useId, useMemo, useRef, useState, type ComponentPropsWithRef } from 'react';
+import { useId, useImperativeHandle, useMemo, useRef, useState, type ComponentPropsWithRef } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { Icon } from '../icon/icon.js';
 import { indexTree, type TreeNode } from '../../internal/tree-data.js';
@@ -29,6 +29,7 @@ export function Tree({
   leafOnly = false,
   className = '',
   onKeyDown,
+  ref: forwardedRef,
   ...props
 }: TreeProps) {
   const [selected, setSelected] = useControllableValue<string | null>(value, defaultValue, (next) => {
@@ -38,6 +39,7 @@ export function Tree({
   const [active, setActive] = useState<string | null>(null);
   const id = useId();
   const root = useRef<HTMLDivElement>(null);
+  useImperativeHandle(forwardedRef, () => root.current!, []);
   const search = useRef({ value: '', time: 0 });
   const paths = useMemo(() => indexTree(nodes), [nodes]);
   const flat: { node: TreeNode; parent?: string; disabled: boolean }[] = [];
@@ -53,7 +55,11 @@ export function Tree({
     flat.find((item) => item.node.id === active)?.node.id ??
     flat.find((item) => item.node.id === selected)?.node.id ??
     flat[0]?.node.id;
-  const domId = (nodeId: string) => `${id}-${Array.from(paths.keys()).indexOf(nodeId)}`;
+  const domIds = useMemo(
+    () => new Map(Array.from(paths.keys(), (key, index) => [key, `${id}-${index}`])),
+    [paths, id],
+  );
+  const domId = (nodeId: string) => domIds.get(nodeId)!;
   const toggle = (nodeId: string, open: boolean) =>
     setExpanded(open ? [...new Set([...expanded, nodeId])] : expanded.filter((value) => value !== nodeId));
   const select = (node: TreeNode, disabled: boolean) => {

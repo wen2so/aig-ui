@@ -54,7 +54,7 @@
   background: var(--aig-color-surface);
   color: var(--aig-color-text);
   border: 1px solid var(--aig-color-border-subtle);
-  border-radius: 4px;
+  border-radius: var(--aig-radius-control);
   font: 13px/1.5 var(--aig-font-family);
   box-shadow: 0 12px 40px #3a323414;
 }
@@ -63,7 +63,7 @@
   justify-content: space-between;
   gap: 10px;
   padding: 6px 9px;
-  border-radius: 2px;
+  border-radius: var(--aig-radius-control);
   cursor: pointer;
   outline: none;
   overflow-wrap: anywhere;

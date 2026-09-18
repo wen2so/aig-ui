@@ -14,6 +14,14 @@
 
 Card、Panel、Dialog 支持 glass 与 solid 材质。模糊能力缺失时使用兼容表面，强制颜色模式使用系统颜色。容器层次由边界、表面与间距共同表达。
 
+## 控件族统一规则
+
+Button 的直角轮廓、细线和珍珠白局部激活延伸到通用控件及 AI 组合。control、card、panel 三个圆角 Token 默认均为 0；单选内核、状态点和旋转加载仍保留圆形以表达功能。交互表面统一使用 `--aig-color-interaction`（默认 #f5f3ee），语义色独立于品牌色。
+
+输入、树、菜单和分段选择只在交互区域改变表面；导航使用三角定位，Tabs 用局部斜切底色表达激活。表格保留行状态，消息与产物正文保持稳定阅读。容器尺寸通过密度变量设置，内层 Provider 继承外层密度和材质，显式局部覆盖不会污染兄弟作用域。
+
+预览站使用单层文档外壳，站点布局与示例样式分文件维护。首页按用途发现组件，支持网格和列表；示例说明位于操作区上方，工具区保留独立重置、复制和展开源码。目录使用静态几何图形，真实控件按详情加载，API 与源码声明同步。
+
 ## 字体与颜色
 
 正文和标题沿用参考页的 `Inter, 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif`；代码和编号使用 `'JetBrains Mono', ui-monospace, Consolas, monospace`。预览应用本地加载 Inter 与 JetBrains Mono 的字重资源，中文按字体栈回退。主题提供正文、标题和等宽三组覆盖，Portal 继承所属作用域。
