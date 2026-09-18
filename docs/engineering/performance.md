@@ -13,6 +13,12 @@
 
 主 JS 不等于全部初次请求。本次按 manifest 累加入口及其静态 JS 依赖为 **408,330 bytes，gzip 合计 135,079 bytes**，预算按这个口径检查。该统计不含 CSS、字体和详情动态块，也不代表组件库按需消费体积。API reader 排除 Story、测试和应用入口，同一构建周期复用；没有跨构建的磁盘缓存。多次本地构建的 API load 约为 2.8～3.5 秒，审核报告为约 5.2 秒，环境与缓存会影响耗时。
 
+## 2026-09-18 控件扩充测量
+
+新增 21 项控件后，组件元数据为 71 项、预览入口为 78 项。安装本轮 tarball 测量：基础样式从 84,162 增至 **97,897 bytes**，gzip 从 17,491 增至 **19,733 bytes**；增长来自新增控件样式、统一交互表面和密度规则。本轮仅更新 styles.css 的基线，增长容差仍为 10%，其余入口预算保持不变。
+
+当前预览入口及静态 JS 依赖合计 **420,109 bytes，gzip 137,909 bytes**，仍在原预算内；目录未提前加载全部示例。Button 独立入口 **19,263 bytes，gzip 6,273 bytes**，未引入 AI Markdown 依赖。组件数量增加不等于运行时变慢，本轮没有重新测量密集按钮挂载耗时，下节保留 2026-09-17 样本。
+
 ## 密集按钮
 
 入口：`http://127.0.0.1:5173/button-performance.html?count=200`。组件为 `entrance={false}`，观察静止状态、首次 hover 和 30 次逐帧滚动。执行 `pnpm exec playwright test -c playwright.motion.config.ts button-performance --workers=1`，报告写入 `artifacts/performance/`。

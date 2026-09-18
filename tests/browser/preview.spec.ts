@@ -1,3 +1,5 @@
+import { groups } from '../../apps/preview/src/component-groups.js';
+const catalogCount = groups.reduce((count, group) => count + group.names.split(' ').length, 0);
 import { test, expect } from '@playwright/test';
 import { AxeBuilder } from '@axe-core/playwright';
 
@@ -7,21 +9,25 @@ test('总览分类、检索、组件直达和浏览器返回保持一致', async
     if (message.type() === 'error') errors.push(message.text());
   });
   await page.goto('http://127.0.0.1:5173/');
-  await expect(page.locator('.catalog-card')).toHaveCount(57);
+  await expect(page.locator('.catalog-card')).toHaveCount(catalogCount);
   await page.getByRole('button', { name: '数据展示', exact: true }).click();
-  await expect(page.locator('.catalog-card')).toHaveCount(9);
+  await expect(page.locator('.catalog-card')).toHaveCount(
+    groups.find((group) => group.label === '数据展示')!.names.split(' ').length,
+  );
   for (const name of ['卡片 Card', '空状态 EmptyState', '状态指示 StatusIndicator']) {
     await expect(page.getByRole('link', { name, exact: true })).toBeVisible();
   }
   await page.getByRole('button', { name: '全部', exact: true }).click();
   await page.screenshot({ path: 'artifacts/preview-redesign/overview-desktop.png' });
   await page.getByRole('button', { name: '数据录入', exact: true }).click();
-  await expect(page.locator('.catalog-card')).toHaveCount(8);
+  await expect(page.locator('.catalog-card')).toHaveCount(
+    groups.find((group) => group.label === '数据录入')!.names.split(' ').length,
+  );
   await page.getByRole('link', { name: '输入框 Input', exact: true }).click();
   await expect(page).toHaveURL(/component=Input/);
   await expect(page.getByRole('heading', { name: 'Input 输入框', exact: true })).toBeVisible();
   await page.goBack();
-  await expect(page.locator('.catalog-card')).toHaveCount(57);
+  await expect(page.locator('.catalog-card')).toHaveCount(catalogCount);
   await page.getByLabel('查找组件').fill('  LoAdInGmArK  ');
   await expect(page.locator('.catalog-card')).toHaveCount(1);
   await page.getByRole('link', { name: '加载标记 LoadingMark', exact: true }).click();
@@ -256,7 +262,7 @@ test('顶部分类在总览、详情、筛选与历史间准确定位，当前�
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('http://127.0.0.1:5173/#%FF');
-  await expect(page.getByRole('heading', { name: '线条，自有节奏。', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '组件工作台', exact: true })).toBeVisible();
   await page.goto('http://127.0.0.1:5173/?component=LoadingSequence');
   const sidebar = page.getByRole('navigation', { name: '组件目录', exact: true });
   const active = sidebar.getByRole('link', { name: 'LoadingSequence 加载序列', exact: true });
@@ -279,34 +285,38 @@ test('顶部分类在总览、详情、筛选与历史间准确定位，当前�
     );
     await expect
       .poll(() => page.locator(`#${id}`).evaluate((el) => Math.round(el.getBoundingClientRect().top)))
-      .toBe(92);
+      .toBe(
+        await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop)),
+      );
     await expect(page.locator(`#${id}`)).toBeFocused();
   }
 
   await page.getByRole('button', { name: '数据录入', exact: true }).click();
-  await expect(page.locator('.catalog-card')).toHaveCount(8);
+  await expect(page.locator('.catalog-card')).toHaveCount(
+    groups.find((group) => group.label === '数据录入')!.names.split(' ').length,
+  );
   await topNav.getByRole('link', { name: '动效', exact: true }).click();
-  await expect(page.locator('.catalog-card')).toHaveCount(57);
+  await expect(page.locator('.catalog-card')).toHaveCount(catalogCount);
   await expect
     .poll(() => page.locator('#catalog-motion').evaluate((el) => Math.round(el.getBoundingClientRect().top)))
-    .toBe(92);
+    .toBe(await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop)));
   await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
   await topNav.getByRole('link', { name: '动效', exact: true }).click();
   await expect
     .poll(() => page.locator('#catalog-motion').evaluate((el) => Math.round(el.getBoundingClientRect().top)))
-    .toBe(92);
+    .toBe(await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop)));
   await page.getByRole('link', { name: '加载序列 LoadingSequence', exact: true }).click();
   await page.goBack();
   await expect(page).toHaveURL(/#catalog-motion$/);
   await expect
     .poll(() => page.locator('#catalog-motion').evaluate((el) => Math.round(el.getBoundingClientRect().top)))
-    .toBe(92);
+    .toBe(await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop)));
 
   await page.setViewportSize({ width: 360, height: 800 });
   await topNav.getByRole('link', { name: '页面组合', exact: true }).click();
   await expect
     .poll(() => page.locator('#catalog-pages').evaluate((el) => Math.round(el.getBoundingClientRect().top)))
-    .toBe(148);
+    .toBe(await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop)));
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await topNav.getByRole('link', { name: '组件', exact: true }).click();
@@ -314,13 +324,13 @@ test('顶部分类在总览、详情、筛选与历史间准确定位，当前�
     .poll(() =>
       page.locator('#catalog-components').evaluate((el) => Math.round(el.getBoundingClientRect().top)),
     )
-    .toBe(148);
+    .toBe(await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop)));
   await page.keyboard.press('Control+k');
   await expect(page.getByLabel('查找组件')).toBeFocused();
   await page.getByLabel('查找组件').fill('Button');
   await topNav.getByRole('link', { name: '动效', exact: true }).click();
   await expect(page.getByLabel('查找组件')).toHaveValue('');
-  await expect(page.locator('.catalog-card')).toHaveCount(57);
+  await expect(page.locator('.catalog-card')).toHaveCount(catalogCount);
   expect(errors).toEqual([]);
 });
 

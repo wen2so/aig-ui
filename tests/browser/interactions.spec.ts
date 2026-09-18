@@ -1,3 +1,4 @@
+import { groups } from '../../apps/preview/src/component-groups.js';
 import { test, expect } from '@playwright/test';
 import { AxeBuilder } from '@axe-core/playwright';
 
@@ -92,7 +93,9 @@ test('所有组件在移动视口可达，代表性预览通过 axe', async ({ p
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('http://127.0.0.1:5173');
-  await expect(page.locator('.preview-count')).toContainText('51 个已实现组件');
+  await expect(page.locator('.catalog-card')).toHaveCount(
+    groups.reduce((count, group) => count + group.names.split(' ').length, 0),
+  );
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.getByLabel('查找组件').fill('Confirmation');
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);

@@ -1,4 +1,4 @@
-import { defineConfig, type Plugin } from 'vite';
+import { defineConfig, type Plugin, type ViteDevServer } from 'vite';
 import { fileURLToPath } from 'node:url';
 import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -9,8 +9,27 @@ const root = fileURLToPath(new URL('../../', import.meta.url));
 function componentDocs(): Plugin {
   const id = '\0virtual:component-api';
   let apiFor: ReturnType<typeof createApiReader> | undefined;
+  const invalidate = (server: ViteDevServer) => {
+    apiFor = undefined;
+    for (const [moduleId, module] of server.moduleGraph.idToModuleMap) {
+      if (moduleId.startsWith(id)) server.moduleGraph.invalidateModule(module);
+    }
+    server.ws.send({ type: 'full-reload' });
+  };
   return {
     name: 'aig-component-docs',
+    configureServer(server) {
+      // 新增或删除组件后重建虚拟目录和类型程序，避免长期运行的预览遗漏新 API。
+      const refresh = (file: string) => {
+        if (/\/packages\/aig-ui\/src\/.*\.tsx$/.test(file.replaceAll('\\', '/'))) invalidate(server);
+      };
+      server.watcher.on('add', refresh);
+      server.watcher.on('unlink', refresh);
+      server.httpServer?.once('close', () => {
+        server.watcher.off('add', refresh);
+        server.watcher.off('unlink', refresh);
+      });
+    },
     resolveId(source: string) {
       if (source === 'virtual:component-api' || source.startsWith('virtual:component-api/'))
         return `\0${source}`;
@@ -49,11 +68,7 @@ function componentDocs(): Plugin {
         context.file.endsWith('.tsx') &&
         !context.file.endsWith('.stories.tsx')
       ) {
-        apiFor = undefined;
-        for (const [moduleId, module] of context.server.moduleGraph.idToModuleMap) {
-          if (moduleId.startsWith(id)) context.server.moduleGraph.invalidateModule(module);
-        }
-        context.server.ws.send({ type: 'full-reload' });
+        invalidate(context.server);
       }
     },
   };

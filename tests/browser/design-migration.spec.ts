@@ -1,11 +1,13 @@
+import { groups } from '../../apps/preview/src/component-groups.js';
+const catalogCount = groups.reduce((count, group) => count + group.names.split(' ').length, 0);
 import { test, expect } from '@playwright/test';
 
 test('全部组件与页面在品牌环境和窄屏保持可见，记录迁移样张', async ({ page }) => {
-  test.setTimeout(120000);
+  test.setTimeout(240000);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('http://127.0.0.1:5173/');
   const cards = page.locator('.catalog-card');
-  await expect(cards).toHaveCount(57);
+  await expect(cards).toHaveCount(catalogCount);
   const links = await cards.evaluateAll((els) =>
     els.map((el) => el.querySelector('.catalog-card-caption')!.getAttribute('href')!),
   );

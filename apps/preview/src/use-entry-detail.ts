@@ -13,10 +13,10 @@ export function useEntryDetail(entry: Entry | undefined) {
     let active = true;
     let request = cache.get(entry.name);
     if (!request) {
-      request = Promise.all([entry.load(), apiLoaders[entry.name]?.()]).then(([detail, api]) => ({
-        ...detail,
-        api: api?.default ?? [],
-      }));
+      request = Promise.all([entry.load(), apiLoaders[entry.name]?.()]).then(([detail, api]) => {
+        if (!api && entry.group !== '页面组合') throw new Error(`组件 API 缺失：${entry.name}`);
+        return { ...detail, api: api?.default ?? [] };
+      });
       cache.set(entry.name, request);
     }
     request.then(

@@ -1,3 +1,5 @@
+import { groups } from '../../apps/preview/src/component-groups.js';
+const catalogCount = groups.reduce((count, group) => count + group.names.split(' ').length, 0);
 import { test, expect } from '@playwright/test';
 
 for (const [component, trigger, popup] of [
@@ -30,7 +32,7 @@ test('目录不请求示例资料，组件直达只请求对应 Story 与 API', 
   const requests: string[] = [];
   page.on('request', (request) => requests.push(decodeURIComponent(request.url())));
   await page.goto('http://127.0.0.1:5173/');
-  await expect(page.locator('.catalog-card')).toHaveCount(57);
+  await expect(page.locator('.catalog-card')).toHaveCount(catalogCount);
   expect(requests.filter((url) => /\.stories\.|README\.md|component-api\//.test(url))).toEqual([]);
   await page.goto('http://127.0.0.1:5173/?component=Icon');
   await expect(page.locator('.example-card').first()).toBeVisible();

@@ -1,3 +1,5 @@
+import { groups } from '../../apps/preview/src/component-groups.js';
+const catalogCount = groups.reduce((count, group) => count + group.names.split(' ').length, 0);
 import { expect, test } from '@playwright/test';
 
 test('样板沿用参考字体，保存与删除确认继承主题，静态阅读保持稳定', async ({ page }) => {
@@ -61,7 +63,7 @@ test('加载完成后交接给可编辑内容，窄屏内容自然重排', async
 test('组件总览的缩略图保持静态，真实演示从详情进入', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/');
   const miniatures = page.locator('.catalog-miniature');
-  await expect(miniatures).toHaveCount(57);
+  await expect(miniatures).toHaveCount(catalogCount);
   await expect
     .poll(() =>
       miniatures.evaluateAll(

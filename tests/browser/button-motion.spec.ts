@@ -712,8 +712,9 @@ test('三个等距亮头带渐隐尾迹加速绕行，高速连成光边并在�
   const phases = await button
     .locator('.aig-button-frame .aig-button-line')
     .evaluateAll((lines) => lines.map((line) => parseFloat(getComputedStyle(line).strokeDashoffset)));
-  expect(phases[0]! - phases[1]!).toBeCloseTo(100 / 3, 3);
-  expect(phases[1]! - phases[2]!).toBeCloseTo(100 / 3, 3);
+  // CSSOM 对大偏移量保留有限小数，相减会累计至 0.001 的序列化误差。
+  expect(Math.abs(phases[0]! - phases[1]! - 100 / 3)).toBeLessThanOrEqual(0.001);
+  expect(Math.abs(phases[1]! - phases[2]! - 100 / 3)).toBeLessThanOrEqual(0.001);
   const beforeLeaveRate = await rate();
   const bounds = (await button.boundingBox())!;
   await page.screenshot({

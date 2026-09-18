@@ -10,12 +10,12 @@ export function ExampleCard({ example }: { example: Example }) {
   const [codeOpen, setCodeOpen] = useState(false);
   return (
     <article className="example-card" data-wide={example.wide || undefined} id={`example-${example.id}`}>
-      <div className="preview-example" key={run}>
-        {example.render()}
-      </div>
       <div className="example-caption">
         <h3>{example.title}</h3>
         <p>{example.description}</p>
+      </div>
+      <div className="preview-example" key={run}>
+        {example.render()}
       </div>
       <div className="example-toolbar">
         <span>可交互示例</span>

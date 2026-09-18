@@ -18,8 +18,8 @@ import {
   type MouseEvent,
 } from 'react';
 import { createRoot } from 'react-dom/client';
-import { AigProvider, Icon, Accordion, BrandMark, Button, CopyButton } from 'aig-ui';
-import { LoadingMark } from 'aig-ui/motion';
+import { AigProvider, Icon, Accordion, BrandMark, CopyButton } from 'aig-ui';
+import { CatalogOverview } from './catalog-overview.js';
 import {
   brandShapes,
   BrandControls,
@@ -86,7 +86,6 @@ function Preview() {
       .includes(query),
   );
   const visible = matches.filter((entry) => category === '全部' || entry.group === category);
-  const filteredGroups = groups.filter((group) => visible.some((entry) => entry.group === group.label));
 
   useEffect(() => {
     const restoration = history.scrollRestoration;
@@ -345,7 +344,9 @@ function Preview() {
                 {entry.group !== '页面组合' && (
                   <CopyButton
                     value={`import { ${entry.name} } from '${entry.importPath}';`}
-                    label="复制导入语句"
+                    label="复制导入"
+                    aria-label="复制导入语句"
+                    size="sm"
                     variant="ghost"
                   />
                 )}
@@ -371,15 +372,6 @@ function Preview() {
               <ApiTable entry={entry} signatures={detail?.api ?? []} />
               <section className="doc-section" id="guidelines">
                 <h2>使用说明</h2>
-                <div className="guideline-note">
-                  <span aria-hidden="true">01</span>
-                  <div>
-                    <h3>线条随状态响应，内容清晰稳定。</h3>
-                    <p>
-                      线条沿控件边界与基线运行，文字与图标保持稳定。悬停、聚焦、按压与选择通过轮廓变化表达状态；加载图形随任务推进。系统减少动态效果偏好会停止装饰运动。
-                    </p>
-                  </div>
-                </div>
                 <p>
                   基础组件导入 <code>aig-ui/styles.css</code>。动效与 AI 组件分别补充导入对应入口的{' '}
                   <code>styles.css</code>。
@@ -458,144 +450,23 @@ function Preview() {
           </>
         ) : (
           <>
-            <header className="overview-header">
-              <div>
-                <div className="preview-eyebrow">THE COMPONENT COLLECTION / 2026</div>
-                <h1 ref={title} tabIndex={-1}>
-                  {query ? '搜索结果' : '线条，自有节奏。'}
-                </h1>
-                <p>
-                  {query
-                    ? `找到 ${visible.length} 项与「${search.trim()}」相关的组件与页面。`
-                    : '以留白组织内容，让线条随操作建立，在完成后从容归位。'}
-                </p>
-                <div className="preview-count">
-                  <strong>{entries.filter((item) => item.group !== '页面组合').length}</strong> 个已实现组件{' '}
-                  <span>·</span> <strong>{entries.filter((item) => item.group === '页面组合').length}</strong>{' '}
-                  个页面组合 <span>·</span> 实验性 Alpha
-                </div>
-              </div>
-              <div className="overview-mark" aria-hidden="true">
-                <LoadingMark phase="static" label="" />
-                <span>FORM IN MOTION</span>
-              </div>
-            </header>
-            {!query && (
-              <div className="featured-links">
-                <a {...link('visual-study')}>
-                  <span>01 / FORM</span>
-                  <strong>从一次行动开始</strong>
-                  <small>
-                    查看完整操作样板 <Icon icon={ArrowUpRight} size={14} />
-                  </small>
-                </a>
-                <a {...link('LoadingSequence')}>
-                  <span>02 / MOTION</span>
-                  <strong>让等待自然流动</strong>
-                  <small>
-                    体验完整的绘制与交接 <Icon icon={ArrowUpRight} size={14} />
-                  </small>
-                </a>
-                <a {...link('ai-assistant')}>
-                  <span>03 / INTELLIGENCE</span>
-                  <strong>与智能一起工作</strong>
-                  <small>
-                    体验消息、任务与产物 <Icon icon={ArrowUpRight} size={14} />
-                  </small>
-                </a>
-              </div>
-            )}
-            <div className="category-filter" id="catalog-filter" aria-label="按用途筛选">
-              {['全部', ...groups.map((group) => group.label)].map((label) => (
-                <button
-                  key={label}
-                  aria-pressed={category === label}
-                  onClick={() => {
-                    setCategory(label);
-                    requestAnimationFrame(() =>
-                      document.getElementById('catalog-filter')?.scrollIntoView({ block: 'start' }),
-                    );
-                  }}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-            {filteredGroups.map((group) => (
-              <section
-                className="catalog-group"
-                key={group.label}
-                id={catalogId(group.label)}
-                tabIndex={-1}
-                aria-labelledby={`${catalogId(group.label)}-heading`}
-              >
-                <div className="catalog-group-heading">
-                  <h2 id={`${catalogId(group.label)}-heading`}>
-                    {group.label}
-                    <span>{visible.filter((item) => item.group === group.label).length}</span>
-                  </h2>
-                  <p>{group.caption}</p>
-                </div>
-                <div className="catalog-grid">
-                  {visible
-                    .filter((item) => item.group === group.label)
-                    .map((item) => (
-                      <article className="catalog-card" key={item.name}>
-                        <div className="catalog-art" data-group={item.group}>
-                          <div className="catalog-miniature" data-ambient="paused" inert aria-hidden="true">
-                            {item.group === '页面组合' || item.name === 'LoadingSequence' ? (
-                              <>
-                                <LoadingMark phase="static" label="" />
-                                <p>{item.label}</p>
-                              </>
-                            ) : item.name === 'Button' ? (
-                              <div className="preview-actions">
-                                <Button entrance={false}>开始创作</Button>
-                                <Button entrance={false} variant="ghost">
-                                  了解更多
-                                </Button>
-                              </div>
-                            ) : (
-                              <span>{item.label}</span>
-                            )}
-                          </div>
-                          <Icon icon={ArrowUpRight} className="catalog-arrow" size={16} />
-                        </div>
-                        <a
-                          className="catalog-card-caption"
-                          {...link(item.name)}
-                          aria-label={`${item.label} ${item.name}`}
-                        >
-                          <h3>
-                            {item.name}
-                            <span>{item.label}</span>
-                          </h3>
-                          <p>{item.description}</p>
-                        </a>
-                      </article>
-                    ))}
-                </div>
-              </section>
-            ))}
-            {visible.length === 0 && (
-              <div className="search-empty">
-                <span>∅</span>
-                <h2>当前没有匹配的组件</h2>
-                <p>尝试输入组件名称或用途，例如“按钮”“输入”或“加载”。</p>
-                <Button
-                  onClick={() => {
-                    setSearch('');
-                    setCategory('全部');
-                    setSelected('');
-                    history.pushState(null, '', location.pathname);
-                    setSection('');
-                    setNavigation((value) => value + 1);
-                  }}
-                >
-                  查看全部组件
-                </Button>
-              </div>
-            )}
+            <CatalogOverview
+              search={search}
+              category={category}
+              visible={visible}
+              titleRef={title}
+              link={link}
+              catalogId={catalogId}
+              onCategoryChange={setCategory}
+              onReset={() => {
+                setSearch('');
+                setCategory('全部');
+                setSelected('');
+                history.pushState(null, '', location.pathname);
+                setSection('');
+                setNavigation((value) => value + 1);
+              }}
+            />
           </>
         )}
         <footer className="site-footer">
