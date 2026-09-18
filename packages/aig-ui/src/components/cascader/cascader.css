@@ -1,0 +1,21 @@
+.aig-cascader-popup {
+  max-width: calc(100vw - 40px);
+}
+.aig-cascader-columns {
+  display: flex;
+  gap: 8px;
+  overflow: auto;
+  max-height: 320px;
+}
+.aig-cascader-column {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 130px;
+  border-inline-end: 1px solid var(--aig-color-border-subtle);
+  padding-inline-end: 8px;
+}
+.aig-cascader-column .aig-button {
+  justify-content: flex-start;
+  text-align: start;
+}

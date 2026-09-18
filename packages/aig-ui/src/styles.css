@@ -1,3 +1,8 @@
+@import './components/upload/upload.css';
+@import './components/tree-select/tree-select.css';
+@import './components/tree/tree.css';
+@import './components/slider/slider.css';
+@import './components/cascader/cascader.css';
 @import './components/steps/steps.css';
 @import './components/splitter/splitter.css';
 @import './components/layout/layout.css';

@@ -1,0 +1,46 @@
+.aig-tree {
+  min-width: 0;
+  padding: 4px;
+  font-size: 13px;
+}
+.aig-tree-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 6px 10px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  overflow-wrap: anywhere;
+}
+.aig-tree-row:hover {
+  background: var(--aig-color-interaction);
+}
+.aig-tree-row[data-selected] {
+  background: var(--aig-color-accent-soft);
+  color: var(--aig-color-accent);
+  border-inline-start-color: var(--aig-color-accent);
+}
+.aig-tree:focus-visible .aig-tree-row[data-active] {
+  outline: 1px solid var(--aig-color-focus);
+  outline-offset: -1px;
+}
+.aig-tree [aria-disabled='true'] > .aig-tree-row {
+  opacity: 0.5;
+  cursor: default;
+}
+.aig-tree-toggle {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 20px;
+  flex: none;
+}
+.aig-tree-toggle[data-open] svg {
+  rotate: 90deg;
+}
+.aig-tree-empty {
+  display: block;
+  padding: 16px;
+  color: var(--aig-color-text-muted);
+}

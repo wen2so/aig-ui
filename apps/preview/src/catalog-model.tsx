@@ -20,12 +20,13 @@ export const groups = [
   {
     label: '数据录入',
     caption: '输入与选择',
-    names: 'Field Input Textarea Checkbox RadioGroup Switch Select Combobox',
+    names:
+      'Field Input Textarea InputNumber DatePicker TimePicker Checkbox RadioGroup Switch Select Combobox Slider Upload TreeSelect Cascader',
   },
   {
     label: '数据展示',
     caption: '内容、数据与补充说明',
-    names: 'Table Card DescriptionList Badge StatusIndicator Accordion EmptyState Popover Tooltip',
+    names: 'Table Card DescriptionList Badge StatusIndicator Accordion EmptyState Popover Tooltip Tree',
   },
   {
     label: '反馈',

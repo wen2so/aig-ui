@@ -1,0 +1,25 @@
+.aig-slider {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.aig-slider label {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+.aig-slider output {
+  font-family: var(--aig-font-mono);
+  color: var(--aig-color-accent);
+}
+.aig-slider input {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--aig-color-accent);
+  cursor: pointer;
+}
+.aig-slider input:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

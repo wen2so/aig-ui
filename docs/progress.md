@@ -6,6 +6,8 @@
 
 本轮按控件清单补齐 21 项能力，并统一组件视觉和预览工作台。布局与导航已加入 Flex、Space、Grid、Layout、Splitter、Steps、Anchor；保留原生布局和锚点语义，Splitter 支持指针、键盘、百分比边界及受控比例。组件资料校验改为检查唯一名称和真实公开导出，避免固定数量阻止目录扩充。其余能力和整体验收随实现更新。
 
+数据输入加入 InputNumber、DatePicker、TimePicker、Slider、Upload、TreeSelect、Cascader，数据展示加入单选 Tree。日期和时间使用原生单值选择，不进行 UTC 转换；Upload 支持类型、大小、数量校验、进度、取消和重试。树焦点与选中分离，并共享层级路径索引。树键盘和上传迟到回调两项单测通过；完整浏览器交互在预览整合后验收。
+
 ## 组件目录整理
 
 通用控件参考 Ant Design 按六类用途组织，保留动效、AI、页面组合和主题扩展。Card、EmptyState、StatusIndicator 归入数据展示；Storybook 分类同步。预览按目录声明排序，支持 Divider、Tag、Collapse、Modal 等常见名称检索。新增[组件分类与选用](guides/component-catalog.md)，区分现有控件、相近能力和待评估项。TypeScript 检查及分类、别名检索两项 Chromium 浏览器检查通过。

@@ -254,6 +254,38 @@
     "./steps": {
       "types": "./dist/components/steps/steps.d.ts",
       "import": "./dist/components/steps/steps.js"
+    },
+    "./cascader": {
+      "types": "./dist/components/cascader/cascader.d.ts",
+      "import": "./dist/components/cascader/cascader.js"
+    },
+    "./date-picker": {
+      "types": "./dist/components/date-picker/date-picker.d.ts",
+      "import": "./dist/components/date-picker/date-picker.js"
+    },
+    "./input-number": {
+      "types": "./dist/components/input-number/input-number.d.ts",
+      "import": "./dist/components/input-number/input-number.js"
+    },
+    "./slider": {
+      "types": "./dist/components/slider/slider.d.ts",
+      "import": "./dist/components/slider/slider.js"
+    },
+    "./time-picker": {
+      "types": "./dist/components/time-picker/time-picker.d.ts",
+      "import": "./dist/components/time-picker/time-picker.js"
+    },
+    "./tree": {
+      "types": "./dist/components/tree/tree.d.ts",
+      "import": "./dist/components/tree/tree.js"
+    },
+    "./tree-select": {
+      "types": "./dist/components/tree-select/tree-select.d.ts",
+      "import": "./dist/components/tree-select/tree-select.js"
+    },
+    "./upload": {
+      "types": "./dist/components/upload/upload.d.ts",
+      "import": "./dist/components/upload/upload.js"
     }
   },
   "peerDependencies": {

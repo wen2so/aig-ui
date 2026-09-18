@@ -1,0 +1,54 @@
+.aig-upload {
+  min-width: 0;
+}
+.aig-upload-dropzone {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 28px 16px;
+  border: 1px dashed var(--aig-color-border-control);
+  background: var(--aig-color-surface);
+}
+.aig-upload[data-dragging] .aig-upload-dropzone {
+  border-color: var(--aig-color-accent);
+  background: var(--aig-color-accent-soft);
+}
+.aig-upload p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--aig-color-text-muted);
+}
+.aig-upload [role='alert'] {
+  color: var(--aig-color-danger);
+  padding-block: 8px;
+}
+.aig-upload ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.aig-upload li {
+  display: grid;
+  gap: 8px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--aig-color-border-subtle);
+}
+.aig-upload li > div:first-child {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+}
+.aig-upload strong {
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+.aig-upload li span {
+  font-size: 12px;
+  color: var(--aig-color-text-muted);
+}
+.aig-upload-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

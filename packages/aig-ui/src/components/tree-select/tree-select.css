@@ -1,0 +1,11 @@
+.aig-tree-select {
+  min-width: 0;
+}
+.aig-tree-select-popup {
+  min-width: min(280px, calc(100vw - 40px));
+  max-width: min(480px, calc(100vw - 40px));
+}
+.aig-tree-select-popup .aig-tree {
+  max-height: 320px;
+  overflow: auto;
+}
