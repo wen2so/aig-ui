@@ -35,8 +35,8 @@ export interface Example {
   wide?: boolean;
 }
 
-const variants = ['primary', 'secondary', 'outline', 'ghost', 'danger'] as const;
-const labels = ['开始创作', '保存草稿', '查看详情', '了解更多', '删除草稿'];
+const variants = ['primary', 'secondary', 'outline', 'ghost'] as const;
+const labels = ['开始创作', '保存草稿', '查看详情', '更多操作'];
 const actionArrow = <Icon icon={ArrowRight} />;
 const bookmarkIcon = <Icon icon={Bookmark} />;
 
@@ -65,6 +65,7 @@ function ButtonReference() {
 /** 让层级、尺寸和实际执行反馈可以一起试用。 */
 function ButtonPlayground() {
   const [variant, setVariant] = useState<(typeof variants)[number]>('primary');
+  const [tone, setTone] = useState<'brand' | (typeof tones)[number]>('brand');
   const [size, setSize] = useState<'sm' | 'md' | 'lg'>('md');
   const [state, setState] = useState('idle');
   const [count, setCount] = useState(0);
@@ -88,9 +89,17 @@ function ButtonPlayground() {
           </select>
         </label>
         <label>
+          语义颜色
+          <select value={tone} onChange={(e) => setTone(e.target.value as typeof tone)}>
+            {['brand', ...tones].map((value) => (
+              <option key={value}>{value}</option>
+            ))}
+          </select>
+        </label>
+        <label>
           按钮状态
           <select value={state} onChange={(e) => setState(e.target.value)}>
-            <option value="idle">静止</option>
+            <option value="idle">默认</option>
             <option value="disabled">禁用</option>
             <option value="loading">加载</option>
           </select>
@@ -99,6 +108,7 @@ function ButtonPlayground() {
       <div className="example-focus">
         <Button
           variant={variant}
+          tone={tone}
           size={size}
           disabled={state === 'disabled'}
           loading={state === 'loading'}
@@ -109,7 +119,7 @@ function ButtonPlayground() {
         </Button>
         <span role="status">已执行 {count} 次</span>
       </div>
-      <code className="example-live-code">{`<Button variant="${variant}" size="${size}"${state === 'disabled' ? ' disabled' : state === 'loading' ? ' loading' : ''}>开始创作</Button>`}</code>
+      <code className="example-live-code">{`<Button variant="${variant}" tone="${tone}" size="${size}"${state === 'disabled' ? ' disabled' : state === 'loading' ? ' loading' : ''}>开始创作</Button>`}</code>
     </div>
   );
 }
@@ -143,25 +153,19 @@ function ButtonSelection() {
   );
 }
 
-/** 对比静止、加载和禁用，禁用操作保持静态等价形态。 */
+/** 同一外观只对比三种状态，其他组合通过试验台查看。 */
 function ButtonStates() {
   return (
     <div className="button-state-matrix">
-      <span /> <small>静止</small>
+      <span /> <small>默认</small>
       <small>加载</small>
       <small>禁用</small>
-      {variants.map((variant, index) => (
-        <div className="button-state-row" key={variant}>
-          <small>{variant}</small>
-          <Button variant={variant}>{labels[index]}</Button>
-          <Button variant={variant} loading>
-            正在处理
-          </Button>
-          <Button variant={variant} disabled>
-            等待开放
-          </Button>
-        </div>
-      ))}
+      <div className="button-state-row">
+        <small>primary</small>
+        <Button>保存设置</Button>
+        <Button loading>正在处理</Button>
+        <Button disabled>等待开放</Button>
+      </div>
     </div>
   );
 }

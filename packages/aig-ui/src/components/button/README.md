@@ -14,11 +14,26 @@ import 'aig-ui/styles.css';
 
 默认 `variant="primary"`、`size="md"`、`type="button"`、`loading={false}`、`entrance={true}`。小、中、大尺寸的最小高度分别为 26、32、40px。
 
-挂载时播放一次入场：同一批按钮按视觉行从左到右间隔 120ms，最多延迟 360ms。单按钮前 600ms 按 40ms 帧格闪切，后段收束，总长 1000ms；选中项保留底色，其他项退回透明。密集列表或静态预览可设置 `entrance={false}`。方形 IconButton 默认关闭入场，保留完整操作边界。
+## 外观、颜色与状态
 
-首次悬停或键盘聚焦可重播一次随机组合，后续进入直接高亮，不重新抽取或播放；普通重渲染与加载恢复保留首次交互记录。一轮内保持基础网格与原始块归属，只有独立三角和平行四边形改变闪切组合；梯形主体统一显现和收束。四段边线布局在挂载期间固定。primary 使用外围短标，outline 保留完整细框；按压收拢，选中与展开保留实底、左侧标记和底线。
+| 维度     | 属性                  | 用法                                                       |
+| -------- | --------------------- | ---------------------------------------------------------- |
+| 操作外观 | `variant`             | primary、secondary、outline、ghost，按操作层级选择         |
+| 语义颜色 | `tone`                | brand、neutral、info、success、warning、danger，默认 brand |
+| 尺寸     | `size`                | sm、md、lg，默认 md                                        |
+| 执行状态 | `loading`、`disabled` | 执行中与业务不可用；加载时自动禁用重复激活                 |
+| 持续选择 | `aria-pressed`        | 用于开关或切换按钮，由业务状态控制                         |
+| 展开状态 | `aria-expanded`       | 仅在按钮控制关联内容展开时使用                             |
+| 入场     | `entrance`            | 默认开启，密集列表或静态预览可关闭                         |
 
-`tone` 支持 brand、neutral、info、success、warning、danger，默认 brand；`variant="danger"` 固定使用危险色。语义色统一作用于文字、边框、细线和高亮，主题通过 `AigProvider.palette` 配置，完整色表见[主题说明](../../theme/README.md)。
+新用法通过 `tone="danger"` 表达危险操作，可配合不同外观。`variant="danger"` 保留原有轮廓与行为，固定使用危险色并优先于 `tone`，作为兼容写法单独说明。`variant="ghost"` 表示低强调的无静态边框按钮，不等同于其他组件库的同名属性。
+
+```tsx
+<Button tone="danger">删除记录</Button>
+<Button variant="outline" tone="danger">移除关联</Button>
+```
+
+悬停、键盘聚焦和瞬时按压由实际交互触发，不作为额外业务状态保存。颜色由 `AigProvider.palette` 配置；outline 和 ghost 的交互填充保留珍珠白，语义色作用于文字和边缘。完整色表见[主题说明](../../theme/README.md)。
 
 ## 图标与内容
 
@@ -55,6 +70,10 @@ import 'aig-ui/styles.css';
 加载图标优先级为本按钮的 `loadingIcon`、最近的 `AigProvider.brand.loadingIcon`、品牌图形、默认线绘标记。IconButton 加载时显示加载图标并保持正方形尺寸。
 
 ## 品牌与交互
+
+挂载时播放一次入场：同一批按钮按视觉行从左到右间隔 120ms，最多延迟 360ms。单按钮前 600ms 按 40ms 帧格闪切，后段收束，总长 1000ms；选中项保留底色，其他项退回透明。方形 IconButton 默认关闭入场，保留完整操作边界。
+
+首次悬停或键盘聚焦可重播一次，后续进入直接高亮；普通重渲染与加载恢复保留交互记录。outline 保留完整细框，ghost 默认和选中均无底线。按压收拢，选中或展开保留底色和左侧标记。边缘亮头及尾迹在 hover 或键盘聚焦后显示，离开后三秒收回。
 
 几何比例固定为：两个相邻三角单元组成基础平行四边形，其上、下边长度与单个三角形底边一致；三个单元可组成梯形。属于同一梯形的单元合并渲染，不再独立闪切。
 

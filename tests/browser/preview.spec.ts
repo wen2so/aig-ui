@@ -58,12 +58,16 @@ test('示例参数、重置、源码复制和当前 API 可实际使用', async 
   const playground = page.locator('#example-playground');
   await playground.getByLabel('操作层级').selectOption('secondary');
   await playground.getByLabel('按钮尺寸').selectOption('lg');
+  await playground.getByLabel('语义颜色').selectOption('danger');
+  await expect(playground.getByRole('button', { name: '开始创作' })).toHaveAttribute('data-tone', 'danger');
+  await expect(playground.locator('.example-live-code')).toContainText('tone="danger"');
   await playground.getByRole('button', { name: '开始创作' }).click();
   await expect(playground.getByRole('status').filter({ hasText: '已执行' })).toHaveText('已执行 1 次');
   await playground.getByLabel('按钮状态').selectOption('disabled');
   await expect(playground.getByRole('button', { name: '开始创作' })).toBeDisabled();
   await playground.getByRole('button', { name: '重置交互试验台' }).click();
   await expect(playground.getByLabel('操作层级')).toHaveValue('primary');
+  await expect(playground.getByLabel('语义颜色')).toHaveValue('brand');
   await expect(playground.getByRole('status').filter({ hasText: '已执行' })).toHaveText('已执行 0 次');
   await page.getByRole('button', { name: '查看操作层级代码' }).click();
   await expect(page.locator('#code-variants')).toContainText('variant="secondary"');
@@ -78,11 +82,13 @@ test('示例参数、重置、源码复制和当前 API 可实际使用', async 
 
 test('普通按钮与禁用状态保持静态，加载标记支持减少动画', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Button');
-  const idle = page.locator('#example-states .aig-button[data-variant=primary]:enabled');
+  const idle = page.locator('#example-states .button-state-matrix .aig-button[data-variant=primary]:enabled');
   const disabled = page.locator(
-    '#example-states .aig-button[data-variant=primary]:disabled:not([aria-busy])',
+    '#example-states .button-state-matrix .aig-button[data-variant=primary]:disabled:not([aria-busy])',
   );
-  const busy = page.locator('#example-states .aig-button[data-variant=primary][aria-busy=true]');
+  const busy = page.locator(
+    '#example-states .button-state-matrix .aig-button[data-variant=primary][aria-busy=true]',
+  );
   await expect(idle.locator('.aig-button-frame')).toHaveCSS('animation-name', 'none');
   await expect(disabled.locator('.aig-button-frame')).toHaveCSS('animation-name', 'none');
   await expect(disabled).toBeDisabled();
@@ -148,6 +154,9 @@ test('品牌 SVG 和颜色在加载、浮层与导航中保持一致', async ({ 
     'M100 38 162 100 100 162 38 100Z',
   );
   await expect(page.locator('#example-custom-loading .aig-button-loading')).toHaveCount(3);
+  await page.locator('#example-custom-loading summary').click();
+  await expect(page.getByRole('button', { name: '全局加载图标', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: '局部加载图标', exact: true })).toBeVisible();
   await page
     .getByRole('navigation', { name: '组件目录', exact: true })
     .getByRole('link', { name: 'Dialog 对话框', exact: true })

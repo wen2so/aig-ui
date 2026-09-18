@@ -12,9 +12,9 @@ import {
 
 /** 执行动作的原生按钮。 */
 export interface ButtonProps extends ComponentPropsWithRef<'button'> {
-  /** 操作层级，默认 primary。 */
+  /** 操作层级，默认 primary。danger 保留兼容；新用法通过 tone="danger" 表达危险操作。 */
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
-  /** 语义色；danger 层级固定使用危险色，其余默认使用品牌色。 */
+  /** 语义色，默认 brand；兼容写法 variant="danger" 固定使用危险色并优先于 tone。 */
   tone?: 'brand' | 'neutral' | 'info' | 'success' | 'warning' | 'danger';
   /** 控件尺寸，默认 md。 */
   size?: 'sm' | 'md' | 'lg';

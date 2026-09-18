@@ -509,12 +509,13 @@ test('加载保留按钮尺寸，长文字与图标槽位在窄视口中保持�
   await expect(button.locator('.aig-button-highlight polygon').first()).toHaveCSS('fill-opacity', '0');
   const sizes = page.locator('#example-sizes');
   await expect(sizes.locator('.aig-button[data-size=sm]').first()).toHaveCSS('min-height', '26px');
-  const icon = sizes.locator('.aig-icon-button');
+  const icons = page.locator('#example-icons');
+  const icon = icons.locator('.aig-icon-button');
   await expect(icon.locator('.aig-button-frame')).toHaveCSS('border-style', 'solid');
   expect(await icon.evaluate((element) => element.clientWidth === element.clientHeight)).toBe(true);
 
   await page.setViewportSize({ width: 360, height: 900 });
-  const longButton = sizes.locator('.aig-button').filter({ has: page.locator('[data-slot=trailing]') });
+  const longButton = icons.locator('.aig-button').filter({ has: page.locator('[data-slot=trailing]') });
   await longButton.scrollIntoViewIfNeeded();
   const bounds = await longButton.evaluate((element) => {
     const label = element.querySelector('.aig-button-label')!.getBoundingClientRect();
@@ -533,7 +534,7 @@ test('加载保留按钮尺寸，长文字与图标槽位在窄视口中保持�
   expect(bounds.trailingFits).toBe(true);
   expect(bounds.iconWidth).toBeGreaterThan(12);
   expect(bounds.iconWidth).toBe(bounds.iconHeight);
-  await sizes.screenshot({ path: test.info().outputPath('button-sizes-mobile.png') });
+  await icons.screenshot({ path: test.info().outputPath('button-icons-mobile.png') });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(longButton.locator('.aig-button-frame')).toHaveCSS('animation-name', 'none');
   await page.emulateMedia({ forcedColors: 'active' });

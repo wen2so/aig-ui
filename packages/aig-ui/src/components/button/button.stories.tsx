@@ -6,9 +6,10 @@ export default { title: '通用/Button', component: Button, args: { children: '�
 >;
 export const Default: StoryObj<typeof Button> = {};
 export const Loading: StoryObj<typeof Button> = { args: { loading: true } };
+export const Disabled: StoryObj<typeof Button> = { args: { disabled: true } };
 export const Variants = () => (
   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-    {(['primary', 'secondary', 'outline', 'ghost', 'danger'] as const).map((variant) => (
+    {(['primary', 'secondary', 'outline', 'ghost'] as const).map((variant) => (
       <Button key={variant} variant={variant}>
         {variant}
       </Button>
@@ -20,14 +21,13 @@ export const Sizes = () => (
     <Button size="sm">小尺寸</Button>
     <Button size="md">中尺寸</Button>
     <Button size="lg">大尺寸</Button>
-    <Button disabled>暂不可用</Button>
   </div>
 );
-export const LoadingVariants = () => (
+export const Tones = () => (
   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-    {(['primary', 'secondary', 'outline', 'ghost', 'danger'] as const).map((variant) => (
-      <Button key={variant} variant={variant} loading>
-        {variant}
+    {(['brand', 'neutral', 'info', 'success', 'warning', 'danger'] as const).map((tone) => (
+      <Button key={tone} tone={tone}>
+        {tone}
       </Button>
     ))}
   </div>

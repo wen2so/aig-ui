@@ -23,7 +23,7 @@ Card、Panel 和浮层以完整边界、表面和间距组织内容，卡片与�
 
 ## 按钮与状态
 
-Button、IconButton、CopyButton 共用边框、端部刻线与基线扫描。稳定轮廓按 primary、secondary、outline、ghost、danger 区分；最小高度为 26 / 32 / 40px。
+Button、IconButton、CopyButton 共用边框、端部刻线与基线扫描。操作外观按 primary、secondary、outline、ghost 区分，颜色由 tone 设置；危险操作推荐 tone="danger"，variant="danger" 保留原有兼容轮廓。最小高度为 26 / 32 / 40px。
 
 按钮以统一斜率的三角网格为基础，两单元组成平行四边形，三单元组成梯形，基础平行四边形上、下边与单个三角形底边等长。同源单元合并为一个绘制面，梯形只整体显现和收束，其内部元素不参与独立闪切；独立三角和平行四边形随机亮起。块面和文字遮罩取消额外描边，并累加共边覆盖率，消除闪切与半透明收束时的深浅接缝。按行错峰入场，首次 hover 或键盘聚焦可重播一次，后续进入直接高亮；选中与展开保留实底。primary 使用外围短标，outline 保留完整框线；运动时文字、图标和细线按可见面同步显示浅色。`entrance={false}` 可关闭入场。语义颜色由 AigProvider.palette 统一配置，危险默认鲜红 #E60012。逐帧依据见[Button 参考拆解](design/button-reference.md)。
 
