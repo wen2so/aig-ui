@@ -1,5 +1,5 @@
 import { Select } from './select.js';
-export default { title: '通用/Select', component: Select };
+export default { title: '数据录入/Select', component: Select };
 export const preview = {
   name: 'Select',
   label: '选择器',

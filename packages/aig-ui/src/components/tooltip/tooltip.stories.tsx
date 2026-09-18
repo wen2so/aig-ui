@@ -1,6 +1,6 @@
 import { Button } from '../button/button.js';
 import { Tooltip } from './tooltip.js';
-export default { title: '通用/Tooltip', component: Tooltip.Root };
+export default { title: '数据展示/Tooltip', component: Tooltip.Root };
 export const preview = {
   name: 'Tooltip',
   label: '工具提示',

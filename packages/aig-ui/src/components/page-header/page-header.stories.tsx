@@ -1,6 +1,6 @@
 import { Button } from '../button/button.js';
 import { PageHeader } from './page-header.js';
-export default { title: '通用/PageHeader', component: PageHeader };
+export default { title: '布局/PageHeader', component: PageHeader };
 export const preview = {
   name: 'PageHeader',
   label: '页面标题区',

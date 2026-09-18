@@ -1,6 +1,6 @@
 import { useId, useState } from 'react';
 import { Navigation } from './navigation.js';
-export default { title: '通用/Navigation', component: Navigation };
+export default { title: '导航/Navigation', component: Navigation };
 export const preview = {
   name: 'Navigation',
   label: '导航',

@@ -1,5 +1,5 @@
 import { Field } from './field.js';
-export default { title: '通用/Field', component: Field };
+export default { title: '数据录入/Field', component: Field };
 export const preview = {
   name: 'Field',
   label: '表单字段',

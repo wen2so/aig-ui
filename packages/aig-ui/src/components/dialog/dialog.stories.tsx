@@ -1,6 +1,6 @@
 import { Button } from '../button/button.js';
 import { Dialog } from './dialog.js';
-export default { title: '通用/Dialog', component: Dialog.Root };
+export default { title: '反馈/Dialog', component: Dialog.Root };
 export const preview = {
   name: 'Dialog',
   label: '对话框',

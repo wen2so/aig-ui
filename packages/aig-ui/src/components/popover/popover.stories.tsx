@@ -1,6 +1,6 @@
 import { Button } from '../button/button.js';
 import { Popover } from './popover.js';
-export default { title: '通用/Popover', component: Popover.Root };
+export default { title: '数据展示/Popover', component: Popover.Root };
 export const preview = {
   name: 'Popover',
   label: '弹出内容',

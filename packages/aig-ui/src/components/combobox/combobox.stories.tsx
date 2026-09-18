@@ -1,5 +1,5 @@
 import { Combobox } from './combobox.js';
-export default { title: '通用/Combobox', component: Combobox };
+export default { title: '数据录入/Combobox', component: Combobox };
 export const preview = {
   name: 'Combobox',
   label: '检索选择',

@@ -1,5 +1,5 @@
 import { StatusIndicator } from './status-indicator.js';
-export default { title: '通用/StatusIndicator', component: StatusIndicator };
+export default { title: '数据展示/StatusIndicator', component: StatusIndicator };
 export const preview = {
   name: 'StatusIndicator',
   label: '状态指示',

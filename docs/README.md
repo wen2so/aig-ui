@@ -4,13 +4,14 @@
 
 ## 接入使用
 
-| 文档                                  | 内容                                                 |
-| ------------------------------------- | ---------------------------------------------------- |
-| [快速接入](guides/getting-started.md) | 本地预览、安装 tarball、样式入口与最小应用           |
-| [主题与品牌](guides/theme.md)         | AigProvider、品牌 SVG、字体、材质、密度与局部覆盖    |
-| [预览指南](guides/preview.md)         | 搜索、组件目录、交互示例、API 与全局主题             |
-| [加载与动效](guides/motion.md)        | LoadingMark、LoadingSequence、任务交接与减少动态效果 |
-| [AI 交互](guides/ai.md)               | 消息、输入、工具、来源、产物版本与确认               |
+| 文档                                          | 内容                                                 |
+| --------------------------------------------- | ---------------------------------------------------- |
+| [快速接入](guides/getting-started.md)         | 本地预览、安装 tarball、样式入口与最小应用           |
+| [主题与品牌](guides/theme.md)                 | AigProvider、品牌 SVG、字体、材质、密度与局部覆盖    |
+| [预览指南](guides/preview.md)                 | 搜索、组件目录、交互示例、API 与全局主题             |
+| [组件分类与选用](guides/component-catalog.md) | 当前控件清单、常见名称对照与能力边界                 |
+| [加载与动效](guides/motion.md)                | LoadingMark、LoadingSequence、任务交接与减少动态效果 |
+| [AI 交互](guides/ai.md)                       | 消息、输入、工具、来源、产物版本与确认               |
 
 具体组件的 API、默认值与键盘约定由源码旁的 README 和 Story 维护。预览站直接读取这些资料，入口见[通用组件目录](../packages/aig-ui/src/components/)、[AI 组件目录](../packages/aig-ui/src/ai/)与[主题说明](../packages/aig-ui/src/theme/README.md)。
 

@@ -1,5 +1,5 @@
 import { Alert } from './alert.js';
-export default { title: '通用/Alert', component: Alert };
+export default { title: '反馈/Alert', component: Alert };
 export const preview = {
   name: 'Alert',
   label: '区域提示',

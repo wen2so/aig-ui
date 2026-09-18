@@ -1,5 +1,5 @@
 import { Breadcrumb } from './breadcrumb.js';
-export default { title: '通用/Breadcrumb', component: Breadcrumb };
+export default { title: '导航/Breadcrumb', component: Breadcrumb };
 export const preview = {
   name: 'Breadcrumb',
   label: '面包屑',

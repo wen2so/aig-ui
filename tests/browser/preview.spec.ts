@@ -8,6 +8,12 @@ test('总览分类、检索、组件直达和浏览器返回保持一致', async
   });
   await page.goto('http://127.0.0.1:5173/');
   await expect(page.locator('.catalog-card')).toHaveCount(57);
+  await page.getByRole('button', { name: '数据展示', exact: true }).click();
+  await expect(page.locator('.catalog-card')).toHaveCount(9);
+  for (const name of ['卡片 Card', '空状态 EmptyState', '状态指示 StatusIndicator']) {
+    await expect(page.getByRole('link', { name, exact: true })).toBeVisible();
+  }
+  await page.getByRole('button', { name: '全部', exact: true }).click();
   await page.screenshot({ path: 'artifacts/preview-redesign/overview-desktop.png' });
   await page.getByRole('button', { name: '数据录入', exact: true }).click();
   await expect(page.locator('.catalog-card')).toHaveCount(8);
@@ -28,6 +34,22 @@ test('总览分类、检索、组件直达和浏览器返回保持一致', async
   await page.getByLabel('查找组件').fill('Button');
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   expect(errors).toEqual([]);
+});
+
+test('常见控件名称可检索到实际组件并保留本库导入路径', async ({ page }) => {
+  await page.goto('http://127.0.0.1:5173/');
+  for (const [alias, name] of [
+    ['Divider', 'Separator'],
+    ['Tag', 'Badge'],
+    ['Modal', 'Dialog'],
+  ]) {
+    await page.getByLabel('查找组件').fill(alias!);
+    const card = page.locator('.catalog-card').filter({ hasText: name });
+    await expect(card).toHaveCount(1);
+    await card.click();
+    await expect(page).toHaveURL(new RegExp(`component=${name}`));
+    await expect(page.locator('.import-bar')).toContainText(`aig-ui/${name!.toLowerCase()}`);
+  }
 });
 
 test('示例参数、重置、源码复制和当前 API 可实际使用', async ({ page, context }) => {

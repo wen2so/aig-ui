@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '../button/button.js';
 import { Checkbox } from '../checkbox/checkbox.js';
 import { Table } from './table.js';
-export default { title: '通用/Table', component: Table };
+export default { title: '数据展示/Table', component: Table };
 export const preview = {
   name: 'Table',
   label: '表格',

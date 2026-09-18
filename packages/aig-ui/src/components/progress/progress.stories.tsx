@@ -1,5 +1,5 @@
 import { Progress } from './progress.js';
-export default { title: '通用/Progress', component: Progress };
+export default { title: '反馈/Progress', component: Progress };
 export const preview = {
   name: 'Progress',
   label: '进度',

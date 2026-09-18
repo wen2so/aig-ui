@@ -1,5 +1,5 @@
 import { Panel } from './panel.js';
-export default { title: '通用/Panel', component: Panel };
+export default { title: '布局/Panel', component: Panel };
 export const preview = {
   name: 'Panel',
   label: '面板',

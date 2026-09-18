@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Pagination } from './pagination.js';
-export default { title: '通用/Pagination', component: Pagination };
+export default { title: '导航/Pagination', component: Pagination };
 export const preview = {
   name: 'Pagination',
   label: '分页',

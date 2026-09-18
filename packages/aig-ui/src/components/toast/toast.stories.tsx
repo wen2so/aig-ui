@@ -1,6 +1,6 @@
 import { Button } from '../button/button.js';
 import { Toast } from './toast.js';
-export default { title: '通用/Toast', component: Toast };
+export default { title: '反馈/Toast', component: Toast };
 export const preview = {
   name: 'Toast',
   label: '轻提示',

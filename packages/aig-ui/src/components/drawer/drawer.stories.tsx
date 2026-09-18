@@ -1,6 +1,6 @@
 import { Button } from '../button/button.js';
 import { Drawer } from './drawer.js';
-export default { title: '通用/Drawer', component: Drawer.Root };
+export default { title: '反馈/Drawer', component: Drawer.Root };
 export const preview = {
   name: 'Drawer',
   label: '抽屉',

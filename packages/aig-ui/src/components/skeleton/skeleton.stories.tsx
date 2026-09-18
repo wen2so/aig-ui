@@ -1,5 +1,5 @@
 import { Skeleton } from './skeleton.js';
-export default { title: '通用/Skeleton', component: Skeleton };
+export default { title: '反馈/Skeleton', component: Skeleton };
 export const preview = {
   name: 'Skeleton',
   label: '加载占位',

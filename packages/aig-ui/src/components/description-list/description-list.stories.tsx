@@ -1,5 +1,5 @@
 import { DescriptionList } from './description-list.js';
-export default { title: '通用/DescriptionList', component: DescriptionList };
+export default { title: '数据展示/DescriptionList', component: DescriptionList };
 export const preview = {
   name: 'DescriptionList',
   label: '描述列表',

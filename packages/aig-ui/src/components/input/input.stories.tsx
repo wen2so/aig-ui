@@ -1,6 +1,6 @@
 import { Field } from '../field/field.js';
 import { Input } from './input.js';
-export default { title: '通用/Input', component: Input };
+export default { title: '数据录入/Input', component: Input };
 export const preview = {
   name: 'Input',
   label: '输入框',

@@ -1,5 +1,5 @@
 import { Spinner } from './spinner.js';
-export default { title: '通用/Spinner', component: Spinner };
+export default { title: '反馈/Spinner', component: Spinner };
 export const preview = {
   name: 'Spinner',
   label: '等待指示',

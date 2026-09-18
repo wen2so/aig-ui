@@ -1,5 +1,5 @@
 import { Checkbox } from './checkbox.js';
-export default { title: '通用/Checkbox', component: Checkbox };
+export default { title: '数据录入/Checkbox', component: Checkbox };
 export const preview = {
   name: 'Checkbox',
   label: '复选框',

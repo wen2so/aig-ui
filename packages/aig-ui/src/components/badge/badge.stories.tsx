@@ -1,5 +1,5 @@
 import { Badge } from './badge.js';
-export default { title: '通用/Badge', component: Badge };
+export default { title: '数据展示/Badge', component: Badge };
 export const preview = {
   name: 'Badge',
   label: '标签',

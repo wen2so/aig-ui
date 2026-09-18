@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '../button/button.js';
 import { DropdownMenu } from './dropdown-menu.js';
-export default { title: '通用/DropdownMenu', component: DropdownMenu.Root };
+export default { title: '导航/DropdownMenu', component: DropdownMenu.Root };
 export const preview = {
   name: 'DropdownMenu',
   label: '操作菜单',

@@ -1,5 +1,5 @@
 import { Tabs } from './tabs.js';
-export default { title: '通用/Tabs', component: Tabs.Root };
+export default { title: '导航/Tabs', component: Tabs.Root };
 export const preview = {
   name: 'Tabs',
   label: '页签',

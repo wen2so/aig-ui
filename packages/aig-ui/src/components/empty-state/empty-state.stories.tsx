@@ -1,5 +1,5 @@
 import { EmptyState } from './empty-state.js';
-export default { title: '通用/EmptyState', component: EmptyState };
+export default { title: '数据展示/EmptyState', component: EmptyState };
 export const preview = {
   name: 'EmptyState',
   label: '空状态',

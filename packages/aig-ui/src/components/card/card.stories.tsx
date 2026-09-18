@@ -1,5 +1,5 @@
 import { Card } from './card.js';
-export default { title: '通用/Card', component: Card };
+export default { title: '数据展示/Card', component: Card };
 export const preview = {
   name: 'Card',
   label: '卡片',

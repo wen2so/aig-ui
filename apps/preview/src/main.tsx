@@ -81,7 +81,9 @@ function Preview() {
   const { detail, error, retry } = useEntryDetail(entry);
   const query = search.trim().toLocaleLowerCase();
   const matches = entries.filter((entry) =>
-    `${entry.name} ${entry.label} ${entry.group} ${entry.description}`.toLocaleLowerCase().includes(query),
+    `${entry.name} ${entry.label} ${entry.group} ${entry.description} ${entry.aliases}`
+      .toLocaleLowerCase()
+      .includes(query),
   );
   const visible = matches.filter((entry) => category === '全部' || entry.group === category);
   const filteredGroups = groups.filter((group) => visible.some((entry) => entry.group === group.label));

@@ -1,5 +1,5 @@
 import { Switch } from './switch.js';
-export default { title: '通用/Switch', component: Switch };
+export default { title: '数据录入/Switch', component: Switch };
 export const preview = {
   name: 'Switch',
   label: '开关',

@@ -1,5 +1,5 @@
 import { RadioGroup } from './radio-group.js';
-export default { title: '通用/RadioGroup', component: RadioGroup };
+export default { title: '数据录入/RadioGroup', component: RadioGroup };
 export const preview = {
   name: 'RadioGroup',
   label: '单选组',

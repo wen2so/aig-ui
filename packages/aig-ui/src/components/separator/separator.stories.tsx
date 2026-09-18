@@ -1,5 +1,5 @@
 import { Separator } from './separator.js';
-export default { title: '通用/Separator', component: Separator };
+export default { title: '布局/Separator', component: Separator };
 export const preview = {
   name: 'Separator',
   label: '分隔线',

@@ -1,5 +1,5 @@
 import { Accordion } from './accordion.js';
-export default { title: '通用/Accordion', component: Accordion.Root };
+export default { title: '数据展示/Accordion', component: Accordion.Root };
 export const preview = {
   name: 'Accordion',
   label: '折叠面板',

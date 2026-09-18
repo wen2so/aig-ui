@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Button } from './button.js';
 
-export default { title: '基础/Button', component: Button, args: { children: '保存设置' } } satisfies Meta<
+export default { title: '通用/Button', component: Button, args: { children: '保存设置' } } satisfies Meta<
   typeof Button
 >;
 export const Default: StoryObj<typeof Button> = {};

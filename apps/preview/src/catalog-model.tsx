@@ -2,9 +2,13 @@ import { componentStories, pageMetadata } from './catalog.js';
 import { loadExtraExamples, type Example } from './examples.js';
 
 export const groups = [
-  { label: '通用', caption: '动作与文字', names: 'Button IconButton CopyButton Link Text Heading Icon' },
-  { label: '布局', caption: '内容的秩序', names: 'Card Panel Separator PageHeader' },
-  { label: '导航', caption: '流畅地抵达', names: 'Navigation Breadcrumb Tabs Pagination DropdownMenu' },
+  {
+    label: '通用',
+    caption: '操作、图标与排版',
+    names: 'Button IconButton CopyButton Icon Text Heading Link',
+  },
+  { label: '布局', caption: '分区与内容结构', names: 'Panel Separator PageHeader' },
+  { label: '导航', caption: '页面与内容切换', names: 'Navigation Breadcrumb DropdownMenu Pagination Tabs' },
   {
     label: '数据录入',
     caption: '输入与选择',
@@ -12,13 +16,13 @@ export const groups = [
   },
   {
     label: '数据展示',
-    caption: '让信息清晰',
-    names: 'Table Badge DescriptionList Accordion Tooltip Popover',
+    caption: '内容、数据与补充说明',
+    names: 'Table Card DescriptionList Badge StatusIndicator Accordion EmptyState Popover Tooltip',
   },
   {
     label: '反馈',
     caption: '状态与回应',
-    names: 'Alert Dialog Drawer Toast Progress Spinner Skeleton StatusIndicator EmptyState Result',
+    names: 'Alert Dialog Drawer Toast Progress Spinner Skeleton Result',
   },
   { label: '动效', caption: '从等待到就绪', names: 'LoadingMark LoadingSequence' },
   {
@@ -33,6 +37,26 @@ export const groups = [
   },
   { label: '主题', caption: '作用域与品牌', names: 'AigProvider' },
 ];
+
+/** 常见控件名称用于检索；映射保留本库公开名称，不承诺其他组件库的 API。 */
+const aliases: Record<string, string> = {
+  Text: 'Typography 排版',
+  Heading: 'Typography 排版',
+  Separator: 'Divider 分割线',
+  Navigation: 'Menu 导航菜单',
+  DropdownMenu: 'Dropdown 下拉菜单',
+  Textarea: 'Input.TextArea 多行输入',
+  RadioGroup: 'Radio 单选框',
+  Combobox: '可搜索选择器',
+  Badge: 'Tag 标签',
+  DescriptionList: 'Descriptions 描述列表',
+  Accordion: 'Collapse 折叠面板',
+  EmptyState: 'Empty 空状态',
+  Dialog: 'Modal 模态框',
+  Toast: '全局提示 轻提示 通知提醒',
+  Spinner: 'Spin 加载中',
+  AigProvider: 'ConfigProvider 全局配置',
+};
 
 const rawFiles = import.meta.glob('../../../packages/aig-ui/src/**/*.{stories.tsx,md}', {
   query: '?raw',
@@ -50,6 +74,7 @@ export interface Entry {
   group: string;
   load: () => Promise<EntryDetail>;
   importPath: string;
+  aliases: string;
 }
 
 export interface EntryDetail {
@@ -123,6 +148,7 @@ export const entries: Entry[] = [
     return {
       ...entry,
       group,
+      aliases: aliases[entry.name] ?? '',
       load,
       importPath:
         entry.name === 'visual-study'
@@ -138,6 +164,10 @@ export const entries: Entry[] = [
                   : `aig-ui/${id}`,
     };
   })
-  .sort(
-    (a, b) => groups.findIndex((g) => g.label === a.group) - groups.findIndex((g) => g.label === b.group),
-  );
+  .sort((a, b) => {
+    const groupDifference =
+      groups.findIndex((g) => g.label === a.group) - groups.findIndex((g) => g.label === b.group);
+    if (groupDifference) return groupDifference;
+    const names = groups.find((group) => group.label === a.group)!.names.split(' ');
+    return names.indexOf(a.name) - names.indexOf(b.name);
+  });

@@ -1,6 +1,6 @@
 import { Field } from '../field/field.js';
 import { Textarea } from './textarea.js';
-export default { title: '通用/Textarea', component: Textarea };
+export default { title: '数据录入/Textarea', component: Textarea };
 export const preview = {
   name: 'Textarea',
   label: '多行输入',

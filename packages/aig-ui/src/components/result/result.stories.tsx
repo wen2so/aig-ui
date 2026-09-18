@@ -1,5 +1,5 @@
 import { Result } from './result.js';
-export default { title: '通用/Result', component: Result };
+export default { title: '反馈/Result', component: Result };
 export const preview = {
   name: 'Result',
   label: '结果',
