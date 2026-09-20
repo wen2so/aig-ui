@@ -1,5 +1,12 @@
 import { expect, test } from '@playwright/test';
 
+// 固定未命中分支，逐帧用例在采样前单独启用命中，避免随机波动。
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    Math.random = () => 0.5;
+  });
+});
+
 test('规则刻面按实际宽高适配，窄屏保留对称三角和一致斜率', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Button');
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
@@ -64,6 +71,9 @@ test('规则刻面按实际宽高适配，窄屏保留对称三角和一致斜�
   await expect.poll(async () => (await geometry()).edgeDifference).toBeLessThan(0.01);
   await expect.poll(async () => (await geometry()).error).toBeLessThan(0.5);
   await page.setViewportSize({ width: 1280, height: 720 });
+  await page.evaluate(() => {
+    Math.random = () => 0;
+  });
   await button.hover();
   await highlight.evaluate((el) => {
     el.getAnimations({ subtree: true }).forEach((animation) => {
@@ -103,7 +113,7 @@ test('按钮视图切换和图标收藏支持键盘，并保留可见激活反�
   await expect(selection).toContainText('当前显示数据视图');
 });
 
-test('梯形内部不闪切，独立块首次 hover 随机闪切，后续 hover 和键盘聚焦直接高亮', async ({ page }) => {
+test('梯形内部不闪切，独立块命中时闪切，冷却内 hover 和键盘聚焦直接高亮', async ({ page }) => {
   await page.goto('http://127.0.0.1:5173/?component=Button');
   await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
@@ -117,6 +127,9 @@ test('梯形内部不闪切，独立块首次 hover 随机闪切，后续 hover 
   await expect.poll(hidden).toBe(true);
   const initial = await facets.evaluateAll((elements) => elements.map((el) => el.getAttribute('points')));
   expect(initial.length).toBeGreaterThanOrEqual(5);
+  await page.evaluate(() => {
+    Math.random = () => 0;
+  });
   await primary.hover();
   await expect(highlight).toHaveAttribute('data-playing', 'interaction');
   const firstGeometry = await facets.evaluateAll((elements) =>
@@ -298,6 +311,9 @@ test('浅字区域与实际闪切刻面同步，未覆盖区域保留深字', as
   // 首次打开时等待字体完成排版，避免取样期间按钮移位导致 hover 退出。
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
   const idle = await button.locator('.aig-button-content').evaluate((el) => getComputedStyle(el).color);
+  await page.evaluate(() => {
+    Math.random = () => 0;
+  });
   await button.hover();
   await highlight.evaluate((el) => {
     el.querySelectorAll('polygon').forEach((polygon) =>
@@ -391,7 +407,10 @@ test('中间帧的满亮和半透明拼接不产生浅色接缝，文字遮罩�
       // 截图前完成定位并移开指针，避免截图滚动触发 hover，替换正在采样的入场动画。
       await page.mouse.move(0, 0);
       await button.scrollIntoViewIfNeeded();
-      await expect(highlight).toHaveAttribute('data-playing', 'entrance');
+      // 此用例只验证渲染接缝，固定采样面，触发概率与冷却由交互用例覆盖。
+      await highlight.evaluate((el) => {
+        el.setAttribute('data-playing', 'entrance');
+      });
       for (const time of [280, 880]) {
         await highlight.evaluate(async (el, time) => {
           el.getAnimations({ subtree: true }).forEach((animation) => {
@@ -607,7 +626,8 @@ test('三个等距亮头带渐隐尾迹加速绕行，高速连成光边并在�
   expect(await lengths()).toEqual([]);
   await button.hover();
   await page.mouse.move(0, 0);
-  await page.clock.runFor(100);
+  // 等待三秒收回完成后检查初始速度，避免采到减速过程中的浮点值。
+  await page.clock.runFor(3100);
   const initial = await lengths();
   expect(initial).toEqual([3, 3, 3]);
   const rate = () =>

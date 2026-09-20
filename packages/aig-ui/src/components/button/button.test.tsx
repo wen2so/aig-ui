@@ -1,9 +1,32 @@
 import { createRef } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { Button } from './button.js';
+import { replayButtonFacets } from './button-motion.js';
 
-it('首次交互播放随机组合，重复进入与加载恢复保持几何且不重播，支持宿主取消', () => {
+let testTime = 0;
+beforeEach(() => {
+  vi.spyOn(Math, 'random').mockReturnValue(0);
+  vi.spyOn(performance, 'now').mockReturnValue((testTime += 20_000));
+});
+afterEach(() => vi.restoreAllMocks());
+
+it('入场未命中时不播放，命中后与交互共享冷却', () => {
+  render(<Button entrance={false}>保存</Button>);
+  const highlight = screen.getByRole('button').querySelector<SVGSVGElement>('.aig-button-highlight')!;
+  vi.mocked(Math.random).mockReturnValue(0.5);
+  replayButtonFacets(highlight, true);
+  expect(highlight).not.toHaveAttribute('data-playing');
+  vi.mocked(Math.random).mockReturnValue(0);
+  replayButtonFacets(highlight, true);
+  expect(highlight).toHaveAttribute('data-playing', 'entrance');
+  delete highlight.dataset.playing;
+  fireEvent.pointerOver(screen.getByRole('button'));
+  expect(highlight).toHaveAttribute('data-hovered');
+  expect(highlight).not.toHaveAttribute('data-playing');
+});
+
+it('命中概率时播放随机组合，重复进入与加载恢复保持几何且不重播，支持宿主取消', () => {
   const enter = vi.fn();
   const { rerender } = render(<Button onPointerEnter={enter}>保存</Button>);
   const button = screen.getByRole('button', { name: '保存' });
@@ -127,4 +150,27 @@ it('首次交互可由宿主取消，entrance 不透传到原生按钮', () => {
   expect(button).not.toHaveAttribute('entrance');
   expect(button.querySelector('.aig-button-highlight')).not.toHaveAttribute('data-hovered');
   expect(button.querySelector('.aig-button-highlight')).not.toHaveAttribute('data-playing');
+});
+
+it('未命中时稳定高亮，跨按钮与重新挂载共享冷却，冷却结束后可再次随机触发', () => {
+  vi.mocked(Math.random).mockReturnValue(0.5);
+  const { unmount } = render(<Button entrance={false}>保存</Button>);
+  const button = screen.getByRole('button', { name: '保存' });
+  const highlight = button.querySelector('.aig-button-highlight');
+  fireEvent.pointerOver(button);
+  expect(highlight).toHaveAttribute('data-hovered');
+  expect(highlight).not.toHaveAttribute('data-playing');
+  fireEvent.pointerLeave(button);
+  vi.mocked(Math.random).mockReturnValue(0);
+  fireEvent.pointerOver(button);
+  expect(highlight).toHaveAttribute('data-playing', 'interaction');
+  unmount();
+  render(<Button entrance={false}>继续</Button>);
+  const next = screen.getByRole('button', { name: '继续' });
+  fireEvent.pointerOver(next);
+  expect(next.querySelector('.aig-button-highlight')).not.toHaveAttribute('data-playing');
+  fireEvent.pointerLeave(next);
+  vi.mocked(performance.now).mockReturnValue(testTime + 15_000);
+  fireEvent.pointerOver(next);
+  expect(next.querySelector('.aig-button-highlight')).toHaveAttribute('data-playing', 'interaction');
 });

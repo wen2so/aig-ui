@@ -1,4 +1,4 @@
-/* 挂载与首次交互播放随机组合；组合主体保持完整，独立小块按帧闪切。 */
+/* 挂载与交互低频随机播放组合；组合主体保持完整，独立小块按帧闪切。 */
 .aig-button {
   --aig-button-edge: color-mix(in srgb, var(--aig-color-text) 26%, transparent);
   --aig-button-trace: var(--aig-color-mark);

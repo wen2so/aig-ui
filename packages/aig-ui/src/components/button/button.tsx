@@ -20,7 +20,7 @@ export interface ButtonProps extends ComponentPropsWithRef<'button'> {
   size?: 'sm' | 'md' | 'lg';
   /** 保留名称和尺寸，并禁用重复激活。 */
   loading?: boolean;
-  /** 挂载时播放一次错峰入场，默认 true；密集列表或静态缩略图可关闭。 */
+  /** 挂载时允许低频随机入场，默认 true；密集列表或静态缩略图可关闭。 */
   entrance?: boolean;
   /** 本按钮的加载 SVG，优先于 AigProvider.brand.loadingIcon；使用 currentColor 继承颜色。 */
   loadingIcon?: ReactNode;
@@ -71,22 +71,19 @@ export function Button({
   const frameRef = useRef<HTMLSpanElement>(null);
   const setPerimeterActive = useButtonPerimeter(frameRef, Boolean(disabled || loading));
   useButtonContrast(highlightRef, contentRef, contrastRef);
-  const interactedRef = useRef(false);
   const entranceConsumedRef = useRef(false);
   const cancelEntranceRef = useRef<(() => void) | undefined>(undefined);
   const finishFrameRef = useRef(0);
   useEffect(() => observeButtonFacets(highlightRef.current), []);
-  /** 首次交互播放随机组合，后续进入直接高亮，保留首次交互标记。 */
+  /** 进入时立即高亮，闪切由共享概率与冷却限制。 */
   const activateHighlight = () => {
     setPerimeterActive(true);
     const element = highlightRef.current;
     if (!element || element.hasAttribute('data-hovered')) return;
     cancelEntranceRef.current?.();
+    entranceConsumedRef.current = true;
     element.dataset.hovered = '';
-    if (!interactedRef.current) {
-      interactedRef.current = true;
-      replayButtonFacets(element);
-    }
+    replayButtonFacets(element);
   };
   useEffect(() => {
     const element = highlightRef.current;

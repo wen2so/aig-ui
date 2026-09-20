@@ -135,7 +135,7 @@ const examples: Example[] = [
     id: 'reference',
     title: '菜单入场与选中',
     description:
-      '品牌动效示例：观察首次入场和收束后选中项的底色。右下角重置可重播；entrance={false} 可关闭挂载入场。',
+      '入场与悬停偶尔触发闪切，选中项保留底色。重置后仍按低频随机触发；entrance={false} 可关闭挂载入场。',
     render: () => <ButtonReference />,
     code: '<Button size="sm" aria-pressed={selected} onClick={handleSelect}>音频语言</Button>\n<Button entrance={false}>关闭入场动画</Button>',
     wide: true,

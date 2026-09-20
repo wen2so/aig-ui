@@ -11,6 +11,11 @@ let entranceFrame = 0;
 
 let seedSerial = 0;
 
+/** 入场与交互共享冷却，切换页面或扫过多个按钮时也不会连续闪切。 */
+let nextFlashAt = 0;
+const FLASH_CHANCE = 0.08;
+const FLASH_COOLDOWN_MS = 15_000;
+
 function nextButtonSeed(previous = -1) {
   const seed = (Math.floor(Math.random() * 4294967296) ^ ++seedSerial) >>> 0;
   return seed === previous ? (seed + 1) >>> 0 : seed;
@@ -104,8 +109,11 @@ export function observeButtonFacets(element: SVGSVGElement | null) {
 export function replayButtonFacets(element: SVGSVGElement | null, entrance = false) {
   if (!element) return;
   initializeButtonFacets(element);
-  delete element.dataset.playing;
   if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+  const now = performance.now();
+  if (now < nextFlashAt || Math.random() >= FLASH_CHANCE) return;
+  nextFlashAt = now + FLASH_COOLDOWN_MS;
+  delete element.dataset.playing;
   if (!entrance) {
     element.dataset.facetSeed = String(nextButtonSeed(Number(element.dataset.facetSeed)));
     layoutButtonFacets(element);
