@@ -1047,3 +1047,150 @@ button {
     color: CanvasText;
   }
 }
+
+/* 共享品牌色的仪器工作台；装饰网格只放在页面与示意图区。 */
+.preview-shell {
+  background-image:
+    radial-gradient(
+      ellipse at 85% 0%,
+      color-mix(in srgb, var(--aig-color-signal) 9%, transparent),
+      transparent 48%
+    ),
+    linear-gradient(var(--aig-color-border-subtle) 1px, transparent 1px),
+    linear-gradient(90deg, var(--aig-color-border-subtle) 1px, transparent 1px);
+  background-size:
+    auto,
+    80px 80px,
+    80px 80px;
+}
+.site-header {
+  background: color-mix(in srgb, var(--aig-color-bg) 92%, transparent);
+  backdrop-filter: blur(20px);
+  border-bottom-color: var(--aig-color-border-control);
+}
+.preview-sidebar {
+  background: color-mix(in srgb, var(--aig-color-bg) 96%, transparent);
+}
+.overview-header {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 260px;
+  padding: 36px 28px;
+  margin-bottom: 24px;
+  border: 1px solid var(--aig-color-border-subtle);
+  background:
+    var(--aig-frame-corner),
+    linear-gradient(
+      110deg,
+      var(--aig-color-surface) 30%,
+      color-mix(in srgb, var(--aig-color-accent-soft) 60%, transparent)
+    );
+}
+.overview-header > div {
+  position: relative;
+  z-index: 1;
+}
+.overview-header > div:first-of-type {
+  max-width: 58%;
+}
+.overview-header h1 {
+  font-size: clamp(32px, 3.5vw, 48px);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+.overview-orbit {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  right: 8px;
+  top: -30px;
+  color: var(--aig-color-mark);
+  stroke: currentColor;
+  opacity: 0.3;
+  pointer-events: none;
+}
+.catalog-metrics {
+  align-self: flex-end;
+  gap: 20px;
+  padding: 16px;
+  border-top: 1px solid var(--aig-color-mark);
+  background: color-mix(in srgb, var(--aig-color-surface) 88%, transparent);
+  backdrop-filter: blur(8px);
+}
+.catalog-metrics strong {
+  color: var(--aig-color-accent);
+}
+.featured-links {
+  gap: 12px;
+  border: 0;
+}
+.featured-links a {
+  border: 1px solid var(--aig-color-border-subtle);
+  background: var(--aig-frame-corner), var(--aig-color-surface);
+}
+.featured-links a > span {
+  color: var(--aig-color-accent);
+  letter-spacing: 0.08em;
+}
+.catalog-toolbar {
+  background: var(--aig-color-bg);
+  padding: 12px;
+}
+.catalog-card {
+  background: var(--aig-color-surface);
+}
+.catalog-art {
+  background:
+    radial-gradient(ellipse at center, var(--aig-color-accent-soft), transparent 75%),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 23px,
+      color-mix(in srgb, var(--aig-color-mark) 10%, transparent) 23px 24px
+    ),
+    var(--aig-color-bg);
+}
+.catalog-card:hover,
+.catalog-card:focus-within {
+  border-color: var(--aig-color-mark);
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--aig-color-mark) 12%, transparent);
+}
+.catalog-group-heading h2 small {
+  color: var(--aig-color-accent);
+}
+@media (max-width: 900px) {
+  .overview-header {
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+  .overview-header > div:first-of-type {
+    max-width: 100%;
+  }
+  .overview-orbit {
+    right: -100px;
+    opacity: 0.16;
+  }
+}
+@media (max-width: 600px) {
+  .overview-header {
+    padding: 24px 18px;
+  }
+  .catalog-metrics {
+    align-self: stretch;
+    justify-content: space-between;
+  }
+}
+@media (forced-colors: active) {
+  .preview-shell,
+  .site-header,
+  .preview-sidebar,
+  .overview-header,
+  .catalog-metrics,
+  .featured-links a,
+  .catalog-art {
+    background: Canvas;
+  }
+  .overview-orbit {
+    display: none;
+  }
+}

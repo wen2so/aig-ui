@@ -65,6 +65,14 @@ export function CatalogOverview({
   return (
     <>
       <header className="overview-header">
+        <svg className="overview-orbit" viewBox="0 0 320 320" fill="none" aria-hidden="true">
+          <circle cx="160" cy="160" r="145" strokeDasharray="1 9" />
+          <circle cx="160" cy="160" r="126" strokeDasharray="190 24 50 24" />
+          <circle cx="160" cy="160" r="104" />
+          <path d="M160 4V52M160 268V316M4 160H52M268 160H316M82 238 160 82 238 238ZM116 204H204" />
+          <path d="M60 60 260 260M60 260 260 60" strokeDasharray="3 8" />
+          <circle cx="160" cy="34" r="4" fill="currentColor" />
+        </svg>
         <div>
           <div className="preview-eyebrow">AIG UI / COMPONENT WORKSPACE</div>
           <h1 ref={titleRef} tabIndex={-1}>

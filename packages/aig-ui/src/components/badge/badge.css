@@ -2,8 +2,8 @@
 .aig-badge {
   display: inline-flex;
   align-items: center;
-  padding: 1px 8px;
-  background: transparent;
+  padding: 3px 9px;
+  background: color-mix(in srgb, currentColor 6%, transparent);
   color: var(--aig-color-text);
   font-size: 11px;
   letter-spacing: 0.05em;

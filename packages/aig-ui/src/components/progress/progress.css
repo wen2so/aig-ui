@@ -6,7 +6,7 @@
   border: 0;
   border-radius: var(--aig-radius-control);
   overflow: hidden;
-  height: 2px;
+  height: 5px;
   background: color-mix(in srgb, var(--aig-color-mark) 16%, transparent);
   color: var(--aig-color-mark);
   outline: 1px solid color-mix(in srgb, var(--aig-color-mark) 22%, transparent);
@@ -18,14 +18,14 @@
 }
 .aig-progress::-webkit-progress-value {
   border-radius: var(--aig-radius-control);
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--aig-color-mark) 55%, transparent),
-    var(--aig-color-mark)
-  );
+  background:
+    repeating-linear-gradient(90deg, transparent 0 15px, var(--aig-color-surface) 15px 17px),
+    linear-gradient(90deg, var(--aig-color-mark), var(--aig-color-accent));
 }
 .aig-progress::-moz-progress-bar {
-  background: var(--aig-color-mark);
+  background:
+    repeating-linear-gradient(90deg, transparent 0 15px, var(--aig-color-surface) 15px 17px),
+    linear-gradient(90deg, var(--aig-color-mark), var(--aig-color-accent));
 }
 .aig-progress:indeterminate {
   background-image: linear-gradient(90deg, transparent 0%, var(--aig-color-mark) 50%, transparent 100%);

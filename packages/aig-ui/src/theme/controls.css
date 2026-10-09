@@ -15,13 +15,28 @@
     background-size 360ms cubic-bezier(0.22, 0.61, 0.36, 1),
     box-shadow 240ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
-/* 输入框使用稳定边界与一条聚焦基线，长度变化表达输入位置。 */
+/* 角部短线建立输入边界，底部基线随聚焦展开。 */
 :is(.aig-input, .aig-textarea, .aig-select-trigger, .aig-combobox-input) {
   border: 1px solid var(--aig-field-line);
   border-radius: var(--aig-radius-control);
-  background-image: linear-gradient(var(--aig-field-line), var(--aig-field-line));
-  background-size: 0% 1px;
-  background-position: center bottom;
+  background-image:
+    linear-gradient(var(--aig-field-line), var(--aig-field-line)),
+    linear-gradient(var(--aig-field-line), var(--aig-field-line)),
+    linear-gradient(var(--aig-field-line), var(--aig-field-line)),
+    linear-gradient(var(--aig-field-line), var(--aig-field-line)),
+    linear-gradient(var(--aig-field-line), var(--aig-field-line));
+  background-size:
+    0% 2px,
+    7px 2px,
+    2px 7px,
+    7px 2px,
+    2px 7px;
+  background-position:
+    center bottom,
+    left top,
+    left top,
+    right bottom,
+    right bottom;
   background-repeat: no-repeat;
 }
 :is(.aig-input, .aig-textarea, .aig-select-trigger, .aig-combobox-input):hover:enabled {
@@ -32,12 +47,22 @@
     [aria-expanded='true']
   ):enabled {
   --aig-field-line: var(--aig-color-accent);
-  background-size: 100% 1px;
+  background-size:
+    100% 2px,
+    7px 2px,
+    2px 7px,
+    7px 2px,
+    2px 7px;
   background-color: color-mix(in srgb, var(--aig-color-mark) 3%, transparent);
 }
 :is(.aig-input, .aig-textarea, .aig-select-trigger, .aig-combobox-input)[aria-invalid='true'] {
   --aig-field-line: var(--aig-color-danger);
-  background-size: 100% 1px;
+  background-size:
+    100% 2px,
+    7px 2px,
+    2px 7px,
+    7px 2px,
+    2px 7px;
 }
 /* 浮层选项将侧轨留在固定缩进内，鼠标与键盘共享同一定位反馈。 */
 :is(.aig-select-item, .aig-combobox-item, .aig-menu-item) {

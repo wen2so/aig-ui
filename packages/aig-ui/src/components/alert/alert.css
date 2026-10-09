@@ -3,11 +3,15 @@
   position: relative;
   padding: 11px 13px;
   border: 1px solid color-mix(in srgb, currentColor 24%, transparent);
-  border-inline-start-width: 2px;
+  border-inline-start-width: 3px;
   border-inline-start-color: currentColor;
   border-radius: var(--aig-radius-control);
   color: var(--aig-color-info);
-  background: color-mix(in srgb, currentColor 5%, transparent);
+  background: linear-gradient(
+    110deg,
+    color-mix(in srgb, currentColor 8%, transparent),
+    color-mix(in srgb, currentColor 2%, transparent)
+  );
   font-size: 13px;
   line-height: 1.6;
   overflow-wrap: anywhere;

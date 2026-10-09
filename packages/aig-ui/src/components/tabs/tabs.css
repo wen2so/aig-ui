@@ -3,7 +3,9 @@
   display: flex;
   gap: 2px;
   flex-wrap: wrap;
-  border-bottom: 1px solid var(--aig-color-border-subtle);
+  border-bottom: 1px solid var(--aig-color-border-control);
+  padding: 4px 4px 0;
+  background: var(--aig-color-surface-muted);
 }
 .aig-tab {
   position: relative;

@@ -20,7 +20,7 @@
 :root,
 [data-aig-theme] {
   /* 仪器角标：四角括线的完整背景层列表，按需以 background 简写取用。 */
-  --aig-frame-bracket: color-mix(in srgb, var(--aig-color-mark) 42%, transparent);
+  --aig-frame-bracket: color-mix(in srgb, var(--aig-color-mark) 78%, transparent);
   --aig-frame-corner:
     linear-gradient(var(--aig-frame-bracket), var(--aig-frame-bracket)) left top / 9px 1px no-repeat,
     linear-gradient(var(--aig-frame-bracket), var(--aig-frame-bracket)) left top / 1px 9px no-repeat,

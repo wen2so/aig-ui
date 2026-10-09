@@ -85,7 +85,7 @@
   text-align: start;
 }
 .aig-progress {
-  height: 3px;
+  height: 5px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -118,5 +118,72 @@
   .aig-table tbody tr:hover {
     background: Canvas;
     color: CanvasText;
+  }
+}
+
+/* 仪器框固定在边缘，不遮挡内容或截断控件的焦点轮廓。 */
+:is(
+  .aig-card,
+  .aig-panel,
+  .aig-dialog,
+  .aig-popover,
+  .aig-menu,
+  .aig-select-popup,
+  .aig-combobox-popup,
+  .aig-toast,
+  .aig-prompt-input,
+  .aig-artifact-preview,
+  .aig-confirmation,
+  .aig-tool-result
+)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--aig-frame-corner);
+  pointer-events: none;
+  border-radius: inherit;
+}
+:is(.aig-popover, .aig-menu, .aig-select-popup, .aig-combobox-popup, .aig-toast) {
+  position: relative;
+}
+.aig-panel-header {
+  background: linear-gradient(110deg, var(--aig-color-accent-soft), transparent 75%);
+  border-bottom-color: var(--aig-color-border-subtle);
+}
+:is(.aig-card, .aig-panel):focus-within::after {
+  --aig-frame-bracket: var(--aig-color-accent);
+}
+:is(.aig-input, .aig-textarea, .aig-select-trigger, .aig-combobox-input):is(
+    :focus,
+    :focus-visible,
+    [aria-expanded='true']
+  ):enabled {
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--aig-color-mark) 12%, transparent),
+    inset 3px 0 var(--aig-field-line);
+}
+.aig-table th {
+  font-variant-numeric: tabular-nums;
+  border-bottom: 1px solid var(--aig-color-border-control);
+}
+@media (forced-colors: active) {
+  :is(
+    .aig-card,
+    .aig-panel,
+    .aig-dialog,
+    .aig-popover,
+    .aig-menu,
+    .aig-select-popup,
+    .aig-combobox-popup,
+    .aig-toast,
+    .aig-prompt-input,
+    .aig-artifact-preview,
+    .aig-confirmation,
+    .aig-tool-result
+  )::after {
+    display: none;
+  }
+  .aig-panel-header {
+    background: Canvas;
   }
 }
